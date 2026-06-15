@@ -1,0 +1,39 @@
+import mongoose from 'mongoose';
+
+const RequestSchema = new mongoose.Schema(
+  {
+    collegeId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'College',
+      required: true,
+    },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
+    bookId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Book',
+      required: true,
+    },
+    status: {
+      type: String,
+      enum: ['requested', 'approved', 'rejected', 'issued', 'cancelled'],
+      default: 'requested',
+    },
+    note: { type: String, default: '' }, // librarian rejection note
+    respondedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      default: null,
+    },
+    respondedAt: { type: Date, default: null },
+  },
+  { timestamps: true }
+);
+
+RequestSchema.index({ collegeId: 1, status: 1 });
+RequestSchema.index({ userId: 1 });
+
+export default mongoose.models.Request || mongoose.model('Request', RequestSchema);
