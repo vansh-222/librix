@@ -90,22 +90,14 @@ export default function StudentSignupPage() {
           )}
 
           <form onSubmit={handleSubmit}>
-            {/* Role */}
+            {/* Role — students only; teachers are created by librarians */}
             <div className="form-group">
-              <label className="label">I am a</label>
-              <div style={{ display: 'flex', gap: 8 }}>
-                {['student', 'teacher'].map(r => (
-                  <button key={r} type="button" onClick={() => setForm(f => ({ ...f, role: r }))}
-                    style={{
-                      flex: 1, padding: '9px 0', borderRadius: 8, border: 'none',
-                      background: form.role === r ? 'var(--brand)' : 'var(--surface-2)',
-                      color: form.role === r ? '#fff' : 'var(--muted)',
-                      fontWeight: 600, fontSize: 14, cursor: 'pointer', transition: 'all 0.2s',
-                      textTransform: 'capitalize',
-                    }}>
-                    {r}
-                  </button>
-                ))}
+              <div style={{
+                background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.2)',
+                borderRadius: 8, padding: '10px 14px', fontSize: 13, color: 'var(--muted)',
+              }}>
+                📚 This page is for <strong style={{ color: 'var(--text)' }}>Students</strong> only.
+                Teachers are added directly by the Librarian.
               </div>
             </div>
 

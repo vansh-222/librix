@@ -87,18 +87,34 @@ export async function POST(req) {
   }
 }
 
-// PATCH /api/users — toggle active status
+// PATCH /api/users — update user profile
 export async function PATCH(req) {
   try {
     const session = await auth();
-    if (!session || !['super_admin', 'librarian'].includes(session.user.role)) {
+    if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const { userId, ...updates } = await req.json();
     await connectDB();
 
-    const allowedUpdates = ['isActive', 'department', 'phone'];
+    // Users can update their own profile
+    const isSelf = session.user.id === userId;
+    const isAdmin = ['super_admin', 'librarian'].includes(session.user.role);
+
+    if (!isSelf && !isAdmin) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+    }
+
+    // Define allowed fields based on role
+    let allowedUpdates = [];
+    if (isSelf) {
+      allowedUpdates = ['department', 'phone', 'rollNumber', 'studentId'];
+    }
+    if (isAdmin) {
+      allowedUpdates = ['isActive', 'department', 'phone', 'rollNumber', 'studentId', 'name', 'email'];
+    }
+
     const safeUpdates = Object.fromEntries(
       Object.entries(updates).filter(([k]) => allowedUpdates.includes(k))
     );
@@ -108,6 +124,7 @@ export async function PATCH(req) {
 
     return NextResponse.json({ success: true, user });
   } catch (err) {
+    console.error('[Users PATCH]', err);
     return NextResponse.json({ error: 'Update failed' }, { status: 500 });
   }
 }

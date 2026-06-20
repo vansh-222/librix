@@ -89,7 +89,7 @@ function LoginContent() {
             display: 'flex', gap: 4, background: 'var(--surface-2)',
             borderRadius: 8, padding: 4, marginBottom: 24,
           }}>
-            {['Member Login', 'Super Admin'].map((tab, i) => (
+            {['Student Login', 'Librarian Login'].map((tab, i) => (
               <button key={tab} onClick={() => { setIsSuperAdmin(i === 1); setError(''); }}
                 style={{
                   flex: 1, padding: '7px 0', borderRadius: 6, border: 'none',

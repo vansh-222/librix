@@ -3,17 +3,8 @@ import Credentials from 'next-auth/providers/credentials';
 import connectDB from './db';
 import User from '@/models/User';
 
-import { AuthError } from 'next-auth';
-
-class CustomAuthError extends AuthError {
-  constructor(message) {
-    super();
-    this.message = message;
-    this.type = 'CredentialsSignin';
-  }
-}
-
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  debug: false,
   providers: [
     Credentials({
       name: 'Credentials',
@@ -23,46 +14,55 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         collegeId: { label: 'College ID', type: 'text' },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) return null;
+        try {
+          if (!credentials?.email || !credentials?.password) return null;
 
-        await connectDB();
+          await connectDB();
 
-        // Normalize email
-        const email = credentials.email.trim().toLowerCase();
+          const email = credentials.email.trim().toLowerCase();
+          const rawCollegeId = credentials.collegeId;
 
-        // NextAuth sometimes coerces empty/null to string "undefined" or "null"
-        const isSuperAdmin = !credentials.collegeId || credentials.collegeId === 'undefined' || credentials.collegeId === 'null' || credentials.collegeId.trim() === '';
+          // Treat empty / literal "undefined" / "null" as super_admin path
+          const isSuperAdmin =
+            !rawCollegeId ||
+            rawCollegeId === 'undefined' ||
+            rawCollegeId === 'null' ||
+            rawCollegeId.trim() === '';
 
-        const query = isSuperAdmin
-          ? { email: email, role: 'super_admin' }
-          : { email: email, collegeId: credentials.collegeId };
+          const query = isSuperAdmin
+            ? { email, role: 'super_admin' }
+            : { email, collegeId: rawCollegeId };
 
-        console.log('[Auth] Attempting login with query:', query);
+          console.log('[Auth] query:', JSON.stringify(query));
 
-        const user = await User.findOne(query);
-        if (!user) {
-          throw new CustomAuthError('User not found in DB with query: ' + JSON.stringify(query));
+          const user = await User.findOne(query).select('+passwordHash');
+          if (!user) {
+            console.log('[Auth] no user found');
+            return null;
+          }
+          if (!user.isActive) {
+            console.log('[Auth] user inactive');
+            return null;
+          }
+
+          const isValid = await user.comparePassword(credentials.password);
+          console.log('[Auth] password valid:', isValid);
+          if (!isValid) return null;
+
+          await User.findByIdAndUpdate(user._id, { lastLogin: new Date() });
+
+          return {
+            id: user._id.toString(),
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            collegeId: user.collegeId ? user.collegeId.toString() : null,
+            avatarUrl: user.avatarUrl || '',
+          };
+        } catch (err) {
+          console.error('[Auth] authorize error:', err);
+          return null;
         }
-        if (!user.isActive) {
-          throw new CustomAuthError('User account is inactive');
-        }
-
-        const isValid = await user.comparePassword(credentials.password);
-        if (!isValid) {
-          throw new CustomAuthError('Invalid password provided');
-        }
-
-        // Update last login
-        await User.findByIdAndUpdate(user._id, { lastLogin: new Date() });
-
-        return {
-          id: user._id.toString(),
-          name: user.name,
-          email: user.email,
-          role: user.role,
-          collegeId: user.collegeId?.toString() || null,
-          avatarUrl: user.avatarUrl || '',
-        };
       },
     }),
   ],
