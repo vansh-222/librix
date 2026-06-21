@@ -1,19 +1,18 @@
 import connectDB from '@/lib/db';
 import User from '@/models/User';
-import College from '@/models/College';
 import { NextResponse } from 'next/server';
 
-// POST /api/users/register — student/teacher self-registration
+// POST /api/users/register — student self-registration (single-college mode)
 export async function POST(req) {
   try {
     const body = await req.json();
-    const { collegeId, name, email, password, role, studentId, rollNumber, department, phone } = body;
+    const { name, email, password, role, collegeId, studentId, rollNumber, department, phone } = body;
 
-    if (!collegeId || !name || !email || !password || !role) {
-      return NextResponse.json({ error: 'Required fields missing' }, { status: 400 });
+    if (!name || !email || !password) {
+      return NextResponse.json({ error: 'Name, email and password are required' }, { status: 400 });
     }
-    if (!['student', 'teacher'].includes(role)) {
-      return NextResponse.json({ error: 'Invalid role' }, { status: 400 });
+    if (role && role !== 'student') {
+      return NextResponse.json({ error: 'Only student accounts can self-register' }, { status: 403 });
     }
     if (password.length < 8) {
       return NextResponse.json({ error: 'Password must be at least 8 characters' }, { status: 400 });
@@ -21,35 +20,25 @@ export async function POST(req) {
 
     await connectDB();
 
-    // Verify college exists and is active
-    const college = await College.findById(collegeId);
-    if (!college) return NextResponse.json({ error: 'College not found' }, { status: 404 });
-    if (college.status !== 'active') {
-      return NextResponse.json({ error: 'This college is not yet active. Please contact your librarian.' }, { status: 403 });
-    }
-    if (!college.settings.allowStudentRegistration) {
-      return NextResponse.json({ error: 'Self-registration is disabled for this college.' }, { status: 403 });
-    }
-
-    // Check duplicate email within same college
-    const existing = await User.findOne({ email: email.toLowerCase(), collegeId });
+    // Check duplicate email
+    const existing = await User.findOne({ email: email.toLowerCase() });
     if (existing) {
-      return NextResponse.json({ error: 'An account with this email already exists at this college' }, { status: 409 });
+      return NextResponse.json({ error: 'An account with this email already exists' }, { status: 409 });
     }
 
     const passwordHash = await User.hashPassword(password);
 
     await User.create({
-      collegeId,
-      name: name.trim(),
-      email: email.toLowerCase().trim(),
+      collegeId: collegeId || 'default',
+      name:      name.trim(),
+      email:     email.toLowerCase().trim(),
       passwordHash,
-      role,
-      studentId: studentId || '',
+      role:      'student',
+      studentId:  studentId  || '',
       rollNumber: rollNumber || '',
       department: department || '',
-      phone: phone || '',
-      isActive: true,
+      phone:      phone      || '',
+      isActive:   true,
     });
 
     return NextResponse.json({ success: true }, { status: 201 });

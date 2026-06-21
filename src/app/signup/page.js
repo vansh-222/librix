@@ -1,27 +1,23 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { BookOpen, Loader2, AlertCircle, CheckCircle } from 'lucide-react';
 
+// Single fixed college ID — change this to your college's MongoDB _id if needed
+const COLLEGE_ID = process.env.NEXT_PUBLIC_COLLEGE_ID || 'default';
+
 export default function StudentSignupPage() {
   const router = useRouter();
-  const [colleges, setColleges] = useState([]);
   const [form, setForm] = useState({
-    collegeId: '', name: '', email: '', password: '', confirmPassword: '',
-    role: 'student', studentId: '', rollNumber: '', department: '', phone: '',
+    name: '', email: '', password: '', confirmPassword: '',
+    studentId: '', rollNumber: '', department: '', phone: '',
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
 
   const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }));
-
-  useEffect(() => {
-    fetch('/api/colleges/list').then(r => r.json()).then(d => {
-      if (d.colleges) setColleges(d.colleges);
-    });
-  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -35,7 +31,7 @@ export default function StudentSignupPage() {
       const res = await fetch('/api/users/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, role: 'student', collegeId: COLLEGE_ID }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Registration failed');
@@ -79,6 +75,15 @@ export default function StudentSignupPage() {
         </div>
 
         <div className="card" style={{ padding: 32 }}>
+          {/* Info banner */}
+          <div style={{
+            background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.2)',
+            borderRadius: 8, padding: '10px 14px', fontSize: 13, color: 'var(--muted)', marginBottom: 20,
+          }}>
+            📚 This page is for <strong style={{ color: 'var(--text)' }}>Students</strong> only.
+            Librarian accounts are created by the admin.
+          </div>
+
           {error && (
             <div style={{
               background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)',
@@ -90,28 +95,6 @@ export default function StudentSignupPage() {
           )}
 
           <form onSubmit={handleSubmit}>
-            {/* Role — students only; teachers are created by librarians */}
-            <div className="form-group">
-              <div style={{
-                background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.2)',
-                borderRadius: 8, padding: '10px 14px', fontSize: 13, color: 'var(--muted)',
-              }}>
-                📚 This page is for <strong style={{ color: 'var(--text)' }}>Students</strong> only.
-                Teachers are added directly by the Librarian.
-              </div>
-            </div>
-
-            {/* College */}
-            <div className="form-group">
-              <label className="label">Your College *</label>
-              <select className="input" value={form.collegeId} onChange={set('collegeId')} required>
-                <option value="">Select your college...</option>
-                {colleges.map(c => (
-                  <option key={c._id} value={c._id}>{c.name}</option>
-                ))}
-              </select>
-            </div>
-
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
               <div className="form-group">
                 <label className="label">Full Name *</label>
@@ -130,7 +113,7 @@ export default function StudentSignupPage() {
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
               <div className="form-group">
-                <label className="label">{form.role === 'student' ? 'Student ID' : 'Teacher ID'}</label>
+                <label className="label">Student ID</label>
                 <input className="input" placeholder="STU2024001" value={form.studentId} onChange={set('studentId')} />
               </div>
               <div className="form-group">

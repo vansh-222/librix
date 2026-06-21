@@ -9,9 +9,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     Credentials({
       name: 'Credentials',
       credentials: {
-        email: { label: 'Email', type: 'email' },
-        password: { label: 'Password', type: 'password' },
-        collegeId: { label: 'College ID', type: 'text' },
+        email:         { label: 'Email',          type: 'email'    },
+        password:      { label: 'Password',       type: 'password' },
+        librarianCode: { label: 'Librarian Code', type: 'text'     },
       },
       async authorize(credentials) {
         try {
@@ -20,42 +20,49 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           await connectDB();
 
           const email = credentials.email.trim().toLowerCase();
-          const rawCollegeId = credentials.collegeId;
+          const isLibrarianLogin = !!credentials.librarianCode;
 
-          // Treat empty / literal "undefined" / "null" as super_admin path
-          const isSuperAdmin =
-            !rawCollegeId ||
-            rawCollegeId === 'undefined' ||
-            rawCollegeId === 'null' ||
-            rawCollegeId.trim() === '';
+          // --- Librarian path: validate access code FIRST ---
+          if (isLibrarianLogin) {
+            const validCode = process.env.LIBRARIAN_ACCESS_CODE;
+            if (!validCode || credentials.librarianCode.trim() !== validCode) {
+              console.log('[Auth] invalid librarian access code');
+              return null;
+            }
+            // Find user and enforce role = librarian
+            const user = await User.findOne({ email, role: 'librarian' }).select('+passwordHash');
+            if (!user || !user.isActive) return null;
+            const isValid = await user.comparePassword(credentials.password);
+            if (!isValid) return null;
+            await User.findByIdAndUpdate(user._id, { lastLogin: new Date() });
+            return {
+              id:        user._id.toString(),
+              name:      user.name,
+              email:     user.email,
+              role:      user.role,
+              collegeId: user.collegeId ? user.collegeId.toString() : null,
+              avatarUrl: user.avatarUrl || '',
+            };
+          }
 
-          const query = isSuperAdmin
-            ? { email, role: 'super_admin' }
-            : { email, collegeId: rawCollegeId };
-
-          console.log('[Auth] query:', JSON.stringify(query));
-
-          const user = await User.findOne(query).select('+passwordHash');
+          // --- Student path: no access code, role must NOT be librarian ---
+          const user = await User.findOne({ email, role: { $ne: 'librarian' } }).select('+passwordHash');
           if (!user) {
-            console.log('[Auth] no user found');
+            console.log('[Auth] student not found or tried librarian login without code');
             return null;
           }
-          if (!user.isActive) {
-            console.log('[Auth] user inactive');
-            return null;
-          }
+          if (!user.isActive) return null;
 
           const isValid = await user.comparePassword(credentials.password);
-          console.log('[Auth] password valid:', isValid);
           if (!isValid) return null;
 
           await User.findByIdAndUpdate(user._id, { lastLogin: new Date() });
 
           return {
-            id: user._id.toString(),
-            name: user.name,
-            email: user.email,
-            role: user.role,
+            id:        user._id.toString(),
+            name:      user.name,
+            email:     user.email,
+            role:      user.role,
             collegeId: user.collegeId ? user.collegeId.toString() : null,
             avatarUrl: user.avatarUrl || '',
           };
@@ -69,16 +76,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id;
-        token.role = user.role;
+        token.id        = user.id;
+        token.role      = user.role;
         token.collegeId = user.collegeId;
         token.avatarUrl = user.avatarUrl;
       }
       return token;
     },
     async session({ session, token }) {
-      session.user.id = token.id;
-      session.user.role = token.role;
+      session.user.id        = token.id;
+      session.user.role      = token.role;
       session.user.collegeId = token.collegeId;
       session.user.avatarUrl = token.avatarUrl;
       return session;
@@ -86,7 +93,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
   pages: {
     signIn: '/login',
-    error: '/login',
+    error:  '/login',
   },
   session: { strategy: 'jwt' },
 });
