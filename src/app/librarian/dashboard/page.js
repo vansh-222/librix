@@ -2,10 +2,11 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { signOut } from 'next-auth/react';
 import {
   LayoutDashboard, BookOpen, Users, ArrowLeftRight, ClipboardList,
   CreditCard, BarChart2, Bell, Settings, ChevronRight, ChevronDown,
-  Search, Clock, Plus, UserPlus, RotateCcw, FileText,
+  Search, Clock, Plus, UserPlus, RotateCcw, FileText, LogOut,
 } from 'lucide-react';
 
 /* ─── NAV ─────────────────────────────── */
@@ -162,6 +163,31 @@ export default function LibrarianDashboard() {
             <div style={{ fontSize: 11, color: '#4B5563', textAlign: 'center' }}>If you need any assistance,{' '}we're here to help you.</div>
             <button style={{ width: '100%', padding: '7px 12px', borderRadius: 8, border: '1px solid #6C5CE7', background: 'transparent', color: '#6C5CE7', fontSize: 12, fontWeight: 500, cursor: 'pointer', marginTop: 4 }}>Contact Support</button>
           </div>
+        </div>
+
+        {/* Logout button */}
+        <div style={{ padding: '0 12px 16px' }}>
+          <button 
+            onClick={() => signOut({ callbackUrl: '/login' })}
+            style={{ 
+              width: '100%', 
+              padding: '10px 12px', 
+              borderRadius: 8, 
+              border: 'none', 
+              background: '#DC2626', 
+              color: 'white', 
+              fontSize: 13, 
+              fontWeight: 600, 
+              cursor: 'pointer', 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center', 
+              gap: 8 
+            }}
+          >
+            <LogOut size={16} />
+            Logout
+          </button>
         </div>
       </div>
 

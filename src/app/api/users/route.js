@@ -8,6 +8,8 @@ import { NextResponse } from 'next/server';
 export async function GET(req) {
   try {
     const session = await auth();
+    console.log('[Users API] Session:', session?.user);
+    
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     await connectDB();
@@ -23,6 +25,7 @@ export async function GET(req) {
       query.collegeId = session.user.collegeId;
       query.role = { $in: ['student', 'teacher'] };
       if (role && ['student', 'teacher'].includes(role)) query.role = role;
+      console.log('[Users API] Librarian query:', JSON.stringify(query));
     } else {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
@@ -41,8 +44,10 @@ export async function GET(req) {
       .sort({ createdAt: -1 })
       .lean();
 
+    console.log('[Users API] Found users:', users.length);
     return NextResponse.json({ users });
   } catch (err) {
+    console.error('[Users API] Error:', err);
     return NextResponse.json({ error: 'Failed to fetch users' }, { status: 500 });
   }
 }
