@@ -1,230 +1,478 @@
 'use client';
 import { useState, useEffect } from 'react';
-import TopBar from '@/components/shared/TopBar';
-import { Users, UserPlus, Search, GraduationCap, BookOpen, ToggleLeft, ToggleRight, X, Loader2 } from 'lucide-react';
-import { formatDate } from '@/lib/utils';
+import { Search, Users, UserCheck, UserPlus, UserX, Eye, Edit, Trash2, ChevronRight, ChevronLeft, ChevronDown, Filter, Plus, Book, Bell, Settings, LayoutDashboard, BookMarked, FileText, IndianRupee, BarChart3 } from 'lucide-react';
+import Link from 'next/link';
 
 export default function LibrarianMembersPage() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [tab, setTab] = useState('student');
   const [search, setSearch] = useState('');
-  const [showAdd, setShowAdd] = useState(false);
-  const [form, setForm] = useState({ name: '', email: '', password: '', role: 'teacher', department: '', phone: '' });
-  const [saving, setSaving] = useState(false);
-  const [togglingId, setTogglingId] = useState(null);
-  const [toast, setToast] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
 
-  const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(''), 3000); };
-  const set = k => e => setForm(f => ({ ...f, [k]: e.target.value }));
-
-  const fetchUsers = () => {
-    setLoading(true);
-    fetch(`/api/users?role=${tab}&search=${search}`).then(r => r.json()).then(d => {
-      setUsers(d.users || []);
-      setLoading(false);
-    });
-  };
-
-  useEffect(fetchUsers, [tab, search]);
-
-  const toggleActive = async (user) => {
-    setTogglingId(user._id);
-    await fetch('/api/users', {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId: user._id, isActive: !user.isActive }),
-    });
-    setTogglingId(null);
+  useEffect(() => {
     fetchUsers();
+  }, []);
+
+  const fetchUsers = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch('/api/users');
+      const data = await res.json();
+      setUsers(data.users || []);
+    } catch (error) {
+      console.error('Failed to fetch users:', error);
+    }
+    setLoading(false);
   };
 
-  const addTeacher = async (e) => {
-    e.preventDefault();
-    setSaving(true);
-    const res = await fetch('/api/users', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...form, role: 'teacher' }),
-    });
-    const data = await res.json();
-    setSaving(false);
-    if (res.ok) {
-      showToast('Teacher added successfully!');
-      setShowAdd(false);
-      setForm({ name: '', email: '', password: '', role: 'teacher', department: '', phone: '' });
-      fetchUsers();
-    } else {
-      showToast(data.error || 'Failed to add teacher');
-    }
+  // Calculate stats
+  const totalMembers = users.length;
+  const activeMembers = users.filter(u => u.isActive).length;
+  const thisMonth = new Date();
+  thisMonth.setDate(1);
+  const newThisMonth = users.filter(u => new Date(u.createdAt) >= thisMonth).length;
+  const inactiveMembers = users.filter(u => !u.isActive).length;
+
+  // Filter
+  const filteredMembers = users.filter(user => {
+    const searchLower = search.toLowerCase();
+    return user.name?.toLowerCase().includes(searchLower) ||
+      user.email?.toLowerCase().includes(searchLower) ||
+      user.phone?.includes(search);
+  });
+
+  // Pagination
+  const totalPages = Math.ceil(filteredMembers.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedMembers = filteredMembers.slice(startIndex, startIndex + itemsPerPage);
+
+  const getMembershipType = (role) => {
+    if (role === 'student') return { label: 'Student', bg: '#DBEAFE', color: '#1D4ED8' };
+    if (role === 'teacher') return { label: 'Faculty', bg: '#E0E7FF', color: '#6366F1' };
+    return { label: 'Staff', bg: '#FEF3C7', color: '#D97706' };
   };
+
+  const formatDate = (dateStr) => {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  };
+
+  const menuItems = [
+    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, href: '/librarian/dashboard' },
+    { id: 'books', label: 'Books Management', icon: Book, href: '/librarian/books' },
+    { id: 'members', label: 'Members', icon: Users, href: '/librarian/members' },
+    { id: 'returns', label: 'Issue / Return', icon: BookMarked, href: '/librarian/returns' },
+    { id: 'requests', label: 'Requests', icon: FileText, href: '/librarian/requests' },
+    { id: 'fines', label: 'Fines & Payments', icon: IndianRupee, href: '/librarian/fines' },
+    { id: 'reports', label: 'Reports', icon: BarChart3, href: '/librarian/reports' },
+    { id: 'notifications', label: 'Notifications', icon: Bell, href: '/librarian/notifications', badge: 6 },
+    { id: 'settings', label: 'Settings', icon: Settings, href: '/librarian/settings' },
+  ];
+
+  if (loading) {
+    return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>Loading...</div>;
+  }
 
   return (
-    <div style={{ animation: 'fadeIn 0.3s ease' }}>
-      <TopBar title="Members" subtitle="Manage students and teachers" />
-
-      {toast && (
-        <div style={{
-          position: 'fixed', top: 20, right: 20, zIndex: 999,
-          background: 'var(--brand)', color: '#fff', padding: '10px 20px',
-          borderRadius: 10, fontSize: 14, fontWeight: 600,
-          boxShadow: '0 4px 24px rgba(99,102,241,0.4)',
-        }}>{toast}</div>
-      )}
-
-      {/* Controls */}
-      <div style={{ display: 'flex', gap: 12, marginBottom: 24, flexWrap: 'wrap', alignItems: 'center' }}>
-        {/* Tab */}
-        <div style={{ display: 'flex', gap: 4, background: 'var(--surface-2)', borderRadius: 10, padding: 4 }}>
-          {['student', 'teacher'].map(t => (
-            <button key={t} onClick={() => setTab(t)} style={{
-              padding: '7px 18px', borderRadius: 7, border: 'none', cursor: 'pointer',
-              background: tab === t ? 'var(--brand)' : 'transparent',
-              color: tab === t ? '#fff' : 'var(--muted)',
-              fontWeight: 600, fontSize: 13, textTransform: 'capitalize', transition: 'all 0.2s',
-            }}>{t}s</button>
-          ))}
-        </div>
-        {/* Search */}
-        <div style={{ position: 'relative', flex: 1, minWidth: 200 }}>
-          <Search size={15} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--muted)' }} />
-          <input
-            className="input" placeholder={`Search ${tab}s...`}
-            value={search} onChange={e => setSearch(e.target.value)}
-            style={{ paddingLeft: 36, margin: 0 }}
-          />
-        </div>
-        {/* Add Teacher Button */}
-        {tab === 'teacher' && (
-          <button onClick={() => setShowAdd(true)} className="btn btn-primary" style={{ gap: 8, flexShrink: 0 }}>
-            <UserPlus size={15} /> Add Teacher
-          </button>
-        )}
-      </div>
-
-      {/* Add Teacher Modal */}
-      {showAdd && (
-        <div style={{
-          position: 'fixed', inset: 0, zIndex: 100,
-          background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24,
-        }}>
-          <div className="card" style={{ width: '100%', maxWidth: 480, padding: 32 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 24 }}>
-              <h2 style={{ fontSize: 18, fontWeight: 800 }}>Add Teacher</h2>
-              <button onClick={() => setShowAdd(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--muted)' }}>
-                <X size={20} />
-              </button>
+    <div style={{ display: 'flex', minHeight: '100vh', background: '#F8F9FC', fontFamily: 'Inter' }}>
+      {/* Sidebar */}
+      <div style={{
+        width: 185,
+        background: 'white',
+        borderRight: '1px solid #E5E7EB',
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100vh',
+        position: 'sticky',
+        top: 0
+      }}>
+        {/* Logo */}
+        <div style={{ padding: 24 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{
+              width: 32,
+              height: 40,
+              background: '#6366F1',
+              borderRadius: 8,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              <Book size={24} color="white" />
             </div>
-            <form onSubmit={addTeacher}>
-              <div className="form-group">
-                <label className="label">Full Name *</label>
-                <input className="input" value={form.name} onChange={set('name')} required placeholder="Dr. Priya Sharma" />
-              </div>
-              <div className="form-group">
-                <label className="label">Email *</label>
-                <input type="email" className="input" value={form.email} onChange={set('email')} required placeholder="teacher@college.edu" />
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-                <div className="form-group">
-                  <label className="label">Department</label>
-                  <input className="input" value={form.department} onChange={set('department')} placeholder="Computer Science" />
-                </div>
-                <div className="form-group">
-                  <label className="label">Phone</label>
-                  <input className="input" value={form.phone} onChange={set('phone')} placeholder="+91 98765 43210" />
-                </div>
-              </div>
-              <div className="form-group">
-                <label className="label">Temporary Password *</label>
-                <input type="password" className="input" value={form.password} onChange={set('password')} required minLength={8} placeholder="Min 8 characters" />
-              </div>
-              <div style={{ display: 'flex', gap: 10, marginTop: 8 }}>
-                <button type="button" onClick={() => setShowAdd(false)} className="btn" style={{ flex: 1, background: 'var(--surface-2)', color: 'var(--muted)', border: 'none' }}>
-                  Cancel
-                </button>
-                <button type="submit" className="btn btn-primary" disabled={saving} style={{ flex: 1, gap: 8 }}>
-                  {saving ? <Loader2 size={15} style={{ animation: 'spin 1s linear infinite' }} /> : <UserPlus size={15} />}
-                  Add Teacher
-                </button>
-              </div>
-            </form>
+            <div>
+              <div style={{ color: '#1E293B', fontSize: 18, fontWeight: 700, lineHeight: '28px' }}>LibraSys</div>
+              <div style={{ color: '#64748B', fontSize: 12, lineHeight: '16px' }}>Library<br />Management</div>
+            </div>
           </div>
         </div>
-      )}
 
-      {/* Table */}
-      {loading ? (
-        <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 60 }}>
-          <Loader2 size={28} style={{ animation: 'spin 0.8s linear infinite', color: 'var(--brand)' }} />
+        {/* User Profile */}
+        <div style={{ paddingBottom: 24, paddingLeft: 16, paddingRight: 16 }}>
+          <div style={{
+            padding: 12,
+            background: '#F9FAFB',
+            borderRadius: 8,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12
+          }}>
+            <div style={{
+              width: 40,
+              height: 40,
+              borderRadius: '50%',
+              background: 'linear-gradient(135deg, #6366F1, #8B5CF6)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'white',
+              fontSize: 14,
+              fontWeight: 700
+            }}>
+              AS
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ color: '#1E293B', fontSize: 14, fontWeight: 600 }}>Anita Sharma</div>
+              <div style={{ color: '#64748B', fontSize: 12 }}>Librarian</div>
+            </div>
+            <ChevronDown size={12} color="#64748B" />
+          </div>
         </div>
-      ) : users.length === 0 ? (
-        <div className="card" style={{ textAlign: 'center', padding: 60 }}>
-          <Users size={40} style={{ margin: '0 auto 12px', color: 'var(--muted)' }} />
-          <p style={{ color: 'var(--muted)' }}>No {tab}s found.</p>
+
+        {/* Navigation */}
+        <div style={{
+          flex: 1,
+          paddingLeft: 16,
+          paddingRight: 16,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 4,
+          overflowY: 'auto'
+        }}>
+          {menuItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = item.id === 'members';
+            
+            return (
+              <Link
+                key={item.id}
+                href={item.href}
+                style={{
+                  position: 'relative',
+                  padding: '12px 16px',
+                  borderRadius: 8,
+                  background: isActive ? '#6366F1' : 'transparent',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 12,
+                  textDecoration: 'none',
+                  transition: 'all 0.2s'
+                }}
+              >
+                <Icon size={20} color={isActive ? 'white' : '#64748B'} />
+                <span style={{
+                  color: isActive ? 'white' : '#64748B',
+                  fontSize: 14,
+                  fontWeight: 500
+                }}>
+                  {item.label}
+                </span>
+                {item.badge && (
+                  <div style={{
+                    position: 'absolute',
+                    right: 12,
+                    width: 20,
+                    height: 20,
+                    background: '#EF4444',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: 'white',
+                    fontSize: 12,
+                    fontWeight: 600
+                  }}>
+                    {item.badge}
+                  </div>
+                )}
+              </Link>
+            );
+          })}
         </div>
-      ) : (
-        <div className="table-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>{tab === 'student' ? 'Roll No.' : 'Department'}</th>
-                <th>Email</th>
-                <th>Joined</th>
-                <th>Status</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.map(u => (
-                <tr key={u._id}>
-                  <td>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                      <div style={{
-                        width: 32, height: 32, borderRadius: '50%',
-                        background: 'linear-gradient(135deg, #6366F1, #8B5CF6)',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: 12, fontWeight: 700, color: '#fff', flexShrink: 0,
-                      }}>
-                        {(u.name || '?').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
-                      </div>
-                      <div style={{ fontSize: 14, fontWeight: 600 }}>{u.name}</div>
-                    </div>
-                  </td>
-                  <td style={{ fontSize: 13, color: 'var(--muted)' }}>
-                    {tab === 'student' ? (u.rollNumber || '—') : (u.department || '—')}
-                  </td>
-                  <td style={{ fontSize: 13, color: 'var(--muted)' }}>{u.email}</td>
-                  <td style={{ fontSize: 12, color: 'var(--muted)' }}>{formatDate(u.createdAt)}</td>
-                  <td>
-                    <span style={{
-                      background: u.isActive ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)',
-                      color: u.isActive ? '#22C55E' : '#EF4444',
-                      padding: '3px 10px', borderRadius: 20, fontSize: 12, fontWeight: 700,
-                    }}>{u.isActive ? 'Active' : 'Inactive'}</span>
-                  </td>
-                  <td>
-                    <button onClick={() => toggleActive(u)} disabled={togglingId === u._id}
-                      style={{
-                        background: 'none', border: 'none', cursor: 'pointer',
-                        color: u.isActive ? '#EF4444' : '#22C55E',
-                        display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, fontWeight: 600,
-                      }}>
-                      {togglingId === u._id
-                        ? <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} />
-                        : u.isActive ? <ToggleRight size={16} /> : <ToggleLeft size={16} />
-                      }
-                      {u.isActive ? 'Deactivate' : 'Activate'}
-                    </button>
-                  </td>
+
+        {/* Help Card */}
+        <div style={{ padding: 24 }}>
+          <div style={{
+            padding: 16,
+            background: '#F8F9FC',
+            borderRadius: 12,
+            textAlign: 'center'
+          }}>
+            <div style={{ fontSize: 40, marginBottom: 8 }}>💡</div>
+            <div style={{ color: '#1E293B', fontSize: 14, fontWeight: 600, marginBottom: 4 }}>Need Help?</div>
+            <div style={{ color: '#64748B', fontSize: 12, marginBottom: 12, lineHeight: '16px' }}>
+              If you need any<br />assistance, we're<br />here to help you.
+            </div>
+            <button style={{
+              width: '100%',
+              padding: '8px 16px',
+              borderRadius: 8,
+              border: '2px solid #6366F1',
+              background: 'transparent',
+              color: '#6366F1',
+              fontSize: 14,
+              fontWeight: 500,
+              cursor: 'pointer'
+            }}>
+              Contact Support
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      {/* Main Content */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+        {/* Top Bar */}
+        <div style={{ 
+          background: 'white', 
+          borderBottom: '1px solid #E5E7EB',
+          padding: '16px 32px' 
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <h1 style={{ color: '#1E293B', fontSize: 24, fontWeight: 700, margin: 0, marginBottom: 4 }}>Members</h1>
+              <p style={{ color: '#64748B', fontSize: 14, margin: 0 }}>Manage and view all library members</p>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
+              <div style={{ 
+                width: 400,
+                background: '#F8F9FC',
+                borderRadius: 8,
+                padding: '8px 16px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 12
+              }}>
+                <Search size={20} color="#64748B" />
+                <input
+                  type="text"
+                  placeholder="Search members by name, ID, email, phone..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  style={{
+                    flex: 1,
+                    border: 'none',
+                    background: 'transparent',
+                    outline: 'none',
+                    color: '#1E293B',
+                    fontSize: 14
+                  }}
+                />
+              </div>
+
+              <div style={{ position: 'relative' }}>
+                <Bell size={24} color="#64748B" />
+                <div style={{
+                  position: 'absolute',
+                  top: -4,
+                  right: -4,
+                  width: 20,
+                  height: 20,
+                  background: '#6366F1',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'white',
+                  fontSize: 12,
+                  fontWeight: 600
+                }}>9</div>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <div style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: '50%',
+                  background: 'linear-gradient(135deg, #6366F1, #8B5CF6)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'white',
+                  fontSize: 14,
+                  fontWeight: 700
+                }}>
+                  AS
+                </div>
+                <div>
+                  <div style={{ color: '#1E293B', fontSize: 14, fontWeight: 600 }}>Anita Sharma</div>
+                  <div style={{ color: '#64748B', fontSize: 12 }}>Librarian</div>
+                </div>
+                <ChevronDown size={16} color="#64748B" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Stats Cards */}
+        <div style={{ padding: '24px 32px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24, marginBottom: 16 }}>
+            {[
+              { label: 'Total Members', value: totalMembers, bg: '#EEF2FF', icon: Users, iconColor: '#6366F1' },
+              { label: 'Active Members', value: activeMembers, bg: '#D1FAE5', icon: UserCheck, iconColor: '#10B981' },
+              { label: 'New This Month', value: newThisMonth, bg: '#FEF3C7', icon: UserPlus, iconColor: '#F59E0B' },
+              { label: 'Inactive Members', value: inactiveMembers, bg: '#FEE2E2', icon: UserX, iconColor: '#EF4444' }
+            ].map((stat, idx) => {
+              const Icon = stat.icon;
+              return (
+                <div key={idx} style={{ padding: 24, background: stat.bg, borderRadius: 12 }}>
+                  <div style={{ width: 48, height: 48, background: 'white', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
+                    <Icon size={24} color={stat.iconColor} />
+                  </div>
+                  <div style={{ color: '#1E293B', fontSize: 30, fontWeight: 700, marginBottom: 4 }}>{stat.value}</div>
+                  <div style={{ color: '#64748B', fontSize: 14, marginBottom: 8 }}>{stat.label}</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer' }}>
+                    <span style={{ color: '#6366F1', fontSize: 14, fontWeight: 500 }}>View all</span>
+                    <ChevronRight size={16} color="#6366F1" />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Filters */}
+          <div style={{ padding: '16px', background: 'white', borderRadius: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+            <div style={{ display: 'flex', gap: 16 }}>
+              <div style={{ width: 240, background: '#F8F9FC', borderRadius: 8, padding: '8px 24px' }}>
+                <input type="text" placeholder="Search members..." style={{ width: '100%', border: 'none', background: 'transparent', outline: 'none', color: '#9CA3AF', fontSize: 14 }} />
+              </div>
+              <div style={{ padding: '8px 16px', background: '#F8F9FC', borderRadius: 8, display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+                <span style={{ color: '#64748B', fontSize: 14 }}>All Membership Types</span>
+                <ChevronDown size={16} color="#64748B" />
+              </div>
+              <div style={{ padding: '8px 16px', background: '#F8F9FC', borderRadius: 8, display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+                <span style={{ color: '#64748B', fontSize: 14 }}>All Status</span>
+                <ChevronDown size={16} color="#64748B" />
+              </div>
+              <div style={{ padding: '8px 16px', background: '#F8F9FC', borderRadius: 8, display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+                <Filter size={20} color="#64748B" />
+                <span style={{ color: '#64748B', fontSize: 14 }}>Filters</span>
+              </div>
+            </div>
+            <button style={{ padding: '8px 24px', background: '#6366F1', borderRadius: 8, border: 'none', display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+              <Plus size={20} color="white" />
+              <span style={{ color: 'white', fontSize: 14, fontWeight: 500 }}>Add New Member</span>
+            </button>
+          </div>
+
+          {/* Table */}
+          <div style={{ background: 'white', borderRadius: 12, overflow: 'hidden' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <thead style={{ background: '#F8F9FC', borderBottom: '1px solid #E5E7EB' }}>
+                <tr>
+                  {['MEMBER', 'MEMBER ID', 'MEMBERSHIP TYPE', 'EMAIL', 'BOOKS BORROWED', 'FINE (₹)', 'JOIN DATE', 'STATUS', 'ACTION'].map((header) => (
+                    <th key={header} style={{ padding: '24px', textAlign: 'left', color: '#64748B', fontSize: 12, fontWeight: 600 }}>{header}</th>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {paginatedMembers.map((member, idx) => {
+                  const memberType = getMembershipType(member.role);
+                  return (
+                    <tr key={member._id} style={{ borderBottom: '1px solid #F3F4F6' }}>
+                      <td style={{ padding: '24px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                          <div style={{
+                            width: 40,
+                            height: 40,
+                            borderRadius: '50%',
+                            background: 'linear-gradient(135deg, #6366F1, #8B5CF6)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: 'white',
+                            fontSize: 12,
+                            fontWeight: 700
+                          }}>
+                            {member.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
+                          </div>
+                          <div>
+                            <div style={{ color: '#1E293B', fontSize: 14, fontWeight: 600 }}>{member.name}</div>
+                            <div style={{ color: '#64748B', fontSize: 12 }}>{member.phone || '—'}</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td style={{ padding: '24px', color: '#64748B', fontSize: 14 }}>
+                        {member.studentId || member.teacherId || 'MEM' + String(1001 + idx).padStart(4, '0')}
+                      </td>
+                      <td style={{ padding: '24px' }}>
+                        <span style={{ padding: '4px 12px', background: memberType.bg, color: memberType.color, borderRadius: 9999, fontSize: 12, fontWeight: 500 }}>
+                          {memberType.label}
+                        </span>
+                      </td>
+                      <td style={{ padding: '24px', color: '#64748B', fontSize: 14 }}>{member.email}</td>
+                      <td style={{ padding: '24px', color: '#1E293B', fontSize: 14 }}>0</td>
+                      <td style={{ padding: '24px', fontSize: 14, fontWeight: 600, color: '#10B981' }}>₹0.00</td>
+                      <td style={{ padding: '24px', color: '#64748B', fontSize: 14 }}>{formatDate(member.createdAt)}</td>
+                      <td style={{ padding: '24px' }}>
+                        <span style={{
+                          padding: '4px 12px',
+                          background: member.isActive ? '#D1FAE5' : '#FEE2E2',
+                          color: member.isActive ? '#059669' : '#DC2626',
+                          borderRadius: 9999,
+                          fontSize: 12,
+                          fontWeight: 500
+                        }}>
+                          {member.isActive ? 'Active' : 'Inactive'}
+                        </span>
+                      </td>
+                      <td style={{ padding: '24px' }}>
+                        <div style={{ display: 'flex', gap: 12 }}>
+                          <Eye size={20} color="#6366F1" style={{ cursor: 'pointer' }} />
+                          <Edit size={20} color="#64748B" style={{ cursor: 'pointer' }} />
+                          <Trash2 size={20} color="#EF4444" style={{ cursor: 'pointer' }} />
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+
+            {/* Pagination */}
+            <div style={{ padding: '16px 24px', borderTop: '1px solid #E5E7EB', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ color: '#64748B', fontSize: 14 }}>
+                Showing {startIndex + 1} to {Math.min(startIndex + itemsPerPage, filteredMembers.length)} of {filteredMembers.length} results
+              </div>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1} style={{ width: 32, height: 32, borderRadius: 8, border: '1px solid #E5E7EB', background: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <ChevronLeft size={16} color="#64748B" />
+                </button>
+                {[...Array(Math.min(3, totalPages))].map((_, i) => (
+                  <button key={i} onClick={() => setCurrentPage(i + 1)} style={{ width: 32, height: 32, borderRadius: 8, border: '1px solid #E5E7EB', background: currentPage === i + 1 ? '#6366F1' : 'white', color: currentPage === i + 1 ? 'white' : '#64748B', cursor: 'pointer', fontSize: 14, fontWeight: 500 }}>
+                    {i + 1}
+                  </button>
+                ))}
+                {totalPages > 3 && <span style={{ padding: '0 8px', color: '#64748B' }}>...</span>}
+                {totalPages > 3 && (
+                  <button style={{ width: 32, height: 32, borderRadius: 8, border: '1px solid #E5E7EB', background: 'white', color: '#64748B', cursor: 'pointer', fontSize: 14 }}>
+                    {totalPages}
+                  </button>
+                )}
+                <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages} style={{ width: 32, height: 32, borderRadius: 8, border: '1px solid #E5E7EB', background: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <ChevronRight size={16} color="#64748B" />
+                </button>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ color: '#64748B', fontSize: 14 }}>{itemsPerPage} / page</span>
+                <ChevronDown size={16} color="#64748B" />
+              </div>
+            </div>
+          </div>
         </div>
-      )}
-      <style>{`@keyframes fadeIn{from{opacity:0}to{opacity:1}} @keyframes spin{to{transform:rotate(360deg)}}`}</style>
+      </div>
     </div>
   );
 }

@@ -11,14 +11,14 @@ import {
 /* ─── NAV ─────────────────────────────── */
 const NAV = [
   { href: '/librarian/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-  { href: '/librarian/books',     icon: BookOpen,        label: 'Books Management', chevron: true },
-  { href: '/librarian/members',   icon: Users,           label: 'Members' },
-  { href: '/librarian/returns',   icon: ArrowLeftRight,  label: 'Issue / Return' },
-  { href: '/librarian/requests',  icon: ClipboardList,   label: 'Requests' },
-  { href: '/librarian/fines',     icon: CreditCard,      label: 'Fines & Payments' },
-  { href: '/librarian/reports',   icon: BarChart2,       label: 'Reports' },
-  { href: '/librarian/notifications', icon: Bell,        label: 'Notifications' },
-  { href: '/librarian/settings',  icon: Settings,        label: 'Settings' },
+  { href: '/librarian/books', icon: BookOpen, label: 'Books Management' },
+  { href: '/librarian/members', icon: Users, label: 'Members' },
+  { href: '/librarian/returns', icon: ArrowLeftRight, label: 'Issue / Return' },
+  { href: '/librarian/requests', icon: ClipboardList, label: 'Requests' },
+  { href: '/librarian/fines', icon: CreditCard, label: 'Fines & Payments' },
+  { href: '/librarian/reports', icon: BarChart2, label: 'Reports' },
+  { href: '/librarian/notifications', icon: Bell, label: 'Notifications', badge: 6 },
+  { href: '/librarian/settings', icon: Settings, label: 'Settings' },
 ];
 
 /* ─── CHART DATA ──────────────────────── */
@@ -51,11 +51,11 @@ function LineChart() {
       {CHART_DATA.map((d, i) => (
         <text key={i} x={xs[i]} y={H - 4} fontSize="11" fill="#9CA3AF" textAnchor="middle">{d.day}</text>
       ))}
-      <path d={path('issued')} fill="none" stroke="#9333EA" strokeWidth="2" strokeLinejoin="round" />
+      <path d={path('issued')} fill="none" stroke="#6C5CE7" strokeWidth="2" strokeLinejoin="round" />
       <path d={path('returned')} fill="none" stroke="#22C55E" strokeWidth="2" strokeLinejoin="round" />
       {CHART_DATA.map((d, i) => (
         <g key={i}>
-          <circle cx={xs[i]} cy={yOf(d.issued)} r="4" fill="#9333EA" />
+          <circle cx={xs[i]} cy={yOf(d.issued)} r="4" fill="#6C5CE7" />
           <circle cx={xs[i]} cy={yOf(d.returned)} r="4" fill="#22C55E" />
         </g>
       ))}
@@ -88,7 +88,7 @@ const NOTIFS = [
 
 const QUICK = [
   { icon: <Plus size={16} color="#2563EB" />, label: 'Add New Book' },
-  { icon: <UserPlus size={16} color="#9333EA" />, label: 'Add New Member' },
+  { icon: <UserPlus size={16} color="#6C5CE7" />, label: 'Add New Member' },
   { icon: <ArrowLeftRight size={16} color="#2563EB" />, label: 'Issue Book' },
   { icon: <RotateCcw size={16} color="#2563EB" />, label: 'Return Book' },
   { icon: <FileText size={16} color="#4B5563" />, label: 'View All Requests' },
@@ -97,7 +97,7 @@ const QUICK = [
 
 /* ─── STAT CARDS ──────────────────────── */
 const STATS = [
-  { icon: <BookOpen size={20} color="#9333EA" />, iconBg: '#F3E8FF', value: '2,456', label: 'Total Books' },
+  { icon: <BookOpen size={20} color="#6C5CE7" />, iconBg: '#F3E8FF', value: '2,456', label: 'Total Books' },
   { icon: <Users size={20} color="#16A34A" />, iconBg: '#DCFCE7', value: '342', label: 'Total Members' },
   { icon: <ArrowLeftRight size={20} color="#CA8A04" />, iconBg: '#FEF9C3', value: '58', label: 'Books Issued' },
   { icon: <ClipboardList size={20} color="#DC2626" />, iconBg: '#FEE2E2', value: '12', label: 'Overdue Books' },
@@ -118,45 +118,33 @@ export default function LibrarianDashboard() {
       `}</style>
 
       {/* ── SIDEBAR ── */}
-      <div style={{ width: 220, background: 'white', borderRight: '1px solid #E5E7EB', display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
-        {/* Logo */}
-        <div style={{ padding: 24 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <div style={{ width: 40, height: 40, background: '#9333EA', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <BookOpen size={22} color="white" />
+      <div style={{ width: 220, background: 'white', borderRight: '1px solid #E5E7EB', display: 'flex', flexDirection: 'column', flexShrink: 0, height: '100vh' }}>
+        {/* LibraSys Logo */}
+        <div style={{ padding: '20px 16px 16px', borderBottom: '1px solid #E5E7EB' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{ width: 36, height: 36, background: '#6C5CE7', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <BookOpen size={20} color="white" />
             </div>
             <div>
-              <div style={{ fontSize: 18, fontWeight: 700, color: '#111827' }}>LibraSys</div>
-              <div style={{ fontSize: 12, color: '#6B7280' }}>Library Management</div>
+              <div style={{ fontSize: 16, fontWeight: 700, color: '#111827', lineHeight: '20px' }}>LibraSys</div>
+              <div style={{ fontSize: 11, color: '#6B7280' }}>Library Management</div>
             </div>
-          </div>
-        </div>
-
-        {/* User */}
-        <div style={{ padding: '0 24px 24px' }}>
-          <div style={{ background: '#F9FAFB', borderRadius: 8, padding: 12, display: 'flex', alignItems: 'center', gap: 12 }}>
-            <div style={{ width: 40, height: 40, borderRadius: '50%', background: '#9333EA', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 700, fontSize: 16, flexShrink: 0 }}>A</div>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 14, fontWeight: 600, color: '#111827' }}>Anita Sharma</div>
-              <div style={{ fontSize: 12, color: '#6B7280' }}>Librarian</div>
-            </div>
-            <ChevronDown size={14} color="#9CA3AF" />
           </div>
         </div>
 
         {/* Nav */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '0 12px' }}>
+        <div style={{ flex: 1, overflowY: 'auto', paddingTop: 8, paddingBottom: 8 }}>
           {NAV.map(item => {
             const active = pathname === item.href;
             return (
-              <Link key={item.href} href={item.href} style={{ textDecoration: 'none', display: 'block', marginBottom: 2 }}>
+              <Link key={item.href} href={item.href} style={{ textDecoration: 'none', display: 'block' }}>
                 <div className={active ? '' : 'nav-item'} style={{
-                  display: 'flex', alignItems: 'center', gap: 10, padding: '9px 16px', borderRadius: 8,
-                  background: active ? '#9333EA' : 'transparent', cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', gap: 10, padding: '9px 16px',
+                  background: active ? '#6C5CE7' : 'transparent', cursor: 'pointer',
                 }}>
-                  <item.icon size={18} color={active ? 'white' : '#374151'} />
-                  <span style={{ flex: 1, fontSize: 14, fontWeight: 500, color: active ? 'white' : '#374151' }}>{item.label}</span>
-                  {item.chevron && <ChevronRight size={14} color={active ? 'white' : '#374151'} />}
+                  <item.icon size={17} color={active ? 'white' : '#374151'} />
+                  <span style={{ flex: 1, fontSize: 13, fontWeight: 500, color: active ? 'white' : '#374151', lineHeight: '20px' }}>{item.label}</span>
+                  {item.badge && <div style={{ width: 20, height: 20, background: '#2563EB', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: 'white' }}>{item.badge}</div>}
                 </div>
               </Link>
             );
@@ -164,64 +152,92 @@ export default function LibrarianDashboard() {
         </div>
 
         {/* Help box */}
-        <div style={{ padding: 24 }}>
-          <div style={{ background: '#FAF5FF', borderRadius: 8, padding: 16, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-            <div style={{ width: 64, height: 64, borderRadius: 8, background: '#E9D5FF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Users size={32} color="#9333EA" />
+        <div style={{ padding: 12 }}>
+          <div style={{ background: '#FAF5FF', borderRadius: 12, padding: 12, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+            <div style={{ width: 70, height: 44, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ width: 28, height: 36, background: '#E9D5FF', position: 'absolute', left: 16 }} />
+              <div style={{ width: 28, height: 36, background: '#C084FC', position: 'absolute', left: 26 }} />
             </div>
-            <div style={{ fontSize: 14, fontWeight: 600, color: '#111827', paddingTop: 8 }}>Need Help?</div>
-            <div style={{ fontSize: 12, color: '#4B5563', textAlign: 'center', paddingBottom: 8 }}>If you need any assistance,<br />we're here to help you.</div>
-            <button style={{ alignSelf: 'stretch', padding: '8px 16px', borderRadius: 8, border: '2px solid #9333EA', background: 'transparent', color: '#9333EA', fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>Contact Support</button>
+            <div style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>Need Help?</div>
+            <div style={{ fontSize: 11, color: '#4B5563', textAlign: 'center' }}>If you need any assistance,{' '}we're here to help you.</div>
+            <button style={{ width: '100%', padding: '7px 12px', borderRadius: 8, border: '1px solid #6C5CE7', background: 'transparent', color: '#6C5CE7', fontSize: 12, fontWeight: 500, cursor: 'pointer', marginTop: 4 }}>Contact Support</button>
           </div>
         </div>
       </div>
 
       {/* ── MAIN AREA ── */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <div style={{
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        height: 'calc(100vh - 0px)',
+        minHeight: 0,
+        overflow: 'hidden'
+      }}>
         {/* Topbar */}
-        <div style={{ background: 'white', borderBottom: '1px solid #E5E7EB', padding: '16px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
+        <div style={{ background: 'white', borderBottom: '1px solid #E5E7EB', padding: '0 32px', height: 72, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
           <div>
-            <div style={{ fontSize: 24, fontWeight: 700, color: '#111827' }}>Dashboard</div>
-            <div style={{ fontSize: 14, color: '#6B7280' }}>Welcome back, Anita Sharma!</div>
+            <div style={{ fontSize: 22, fontWeight: 700, color: '#111827' }}>Dashboard</div>
+            <div style={{ fontSize: 13, color: '#6B7280' }}>Welcome back, Anita Sharma!</div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-            {/* Search */}
-            <div style={{ position: 'relative', width: 320 }}>
-              <Search size={16} color="#9CA3AF" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
-              <input placeholder="Search books, members, ISBN..." style={{ width: '100%', padding: '9px 16px 9px 40px', border: '1px solid #E5E7EB', borderRadius: 8, fontSize: 14, color: '#111827', outline: 'none', fontFamily: 'Inter' }} />
-            </div>
-            {/* Bell */}
             <div style={{ position: 'relative' }}>
-              <Bell size={22} color="#4B5563" />
-              <div style={{ position: 'absolute', top: -6, right: -6, width: 18, height: 18, background: '#2563EB', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, color: 'white' }}>3</div>
+              <Search size={16} color="#9CA3AF" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
+              <input placeholder="Search books, members, ISBN..." style={{ width: 300, padding: '8px 16px 8px 38px', border: '1px solid #E5E7EB', borderRadius: 8, fontSize: 13, color: '#111827', outline: 'none', fontFamily: 'Inter', background: '#F9FAFB' }} />
             </div>
-            {/* Avatar */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div style={{ width: 40, height: 40, borderRadius: '50%', background: '#9333EA', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 700 }}>A</div>
+            <div style={{ position: 'relative', cursor: 'pointer' }}>
+              <Bell size={22} color="#4B5563" />
+              <div style={{ position: 'absolute', top: -5, right: -5, width: 17, height: 17, background: '#2563EB', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: 'white' }}>3</div>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}>
+              <div style={{ width: 38, height: 38, borderRadius: '50%', background: '#6C5CE7', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 700, fontSize: 15 }}>A</div>
               <div>
-                <div style={{ fontSize: 14, fontWeight: 600, color: '#111827' }}>Anita Sharma</div>
-                <div style={{ fontSize: 12, color: '#6B7280' }}>Librarian</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>Anita Sharma</div>
+                <div style={{ fontSize: 11, color: '#6B7280' }}>Librarian</div>
               </div>
               <ChevronDown size={14} color="#9CA3AF" />
             </div>
           </div>
         </div>
 
-        {/* Scrollable content */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: 32 }}>
-          <div style={{ display: 'flex', gap: 24 }}>
+        {/* Scrollable content — calc height guarantees scroll works */}
+        <div style={{
+          height: 'calc(100vh - 72px)',
+          overflowY: 'scroll',
+          overflowX: 'hidden',
+          padding: 28,
+          boxSizing: 'border-box'
+        }}>
+          <div style={{
+            display: 'flex',
+            gap: 24,
+            alignItems: 'flex-start',
+            minHeight: 'max-content',
+            height: 'auto'
+          }}>
             {/* ── LEFT COLUMN ── */}
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 24, minWidth: 0 }}>
+            <div style={{
+              flex: 1,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 24,
+              minWidth: 0,
+
+            }}>
               {/* Stats row */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 24 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 20 }}>
                 {STATS.map((s, i) => (
-                  <div key={i} style={{ background: 'white', borderRadius: 8, padding: 24, boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
-                    <div style={{ width: 48, height: 48, background: s.iconBg, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{s.icon}</div>
-                    <div style={{ fontSize: 24, fontWeight: 700, color: '#111827', marginTop: 12 }}>{s.value}</div>
-                    <div style={{ fontSize: 14, color: '#4B5563', marginTop: 4 }}>{s.label}</div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 8 }}>
-                      <span style={{ fontSize: 14, fontWeight: 500, color: '#9333EA', cursor: 'pointer' }}>View all</span>
-                      <ChevronRight size={14} color="#9333EA" />
+                  <div key={i} style={{ background: 'white', borderRadius: 12, padding: 20, border: '1px solid #F3F4F6' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                      <div style={{ width: 44, height: 44, background: s.iconBg, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{s.icon}</div>
+                      <div>
+                        <div style={{ fontSize: 22, fontWeight: 700, color: '#111827' }}>{s.value}</div>
+                        <div style={{ fontSize: 12, color: '#6B7280' }}>{s.label}</div>
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 12 }}>
+                      <span style={{ fontSize: 13, fontWeight: 500, color: '#6C5CE7', cursor: 'pointer' }}>View all</span>
+                      <ChevronRight size={13} color="#6C5CE7" />
                     </div>
                   </div>
                 ))}
@@ -234,7 +250,7 @@ export default function LibrarianDashboard() {
                   <div style={{ padding: '8px 20px', background: '#EFEFEF', border: '1px solid #E5E7EB', borderRadius: 8, fontSize: 14, color: '#4B5563' }}>Last 7 Days</div>
                 </div>
                 <div style={{ display: 'flex', gap: 24, marginBottom: 16 }}>
-                  {[['#9333EA', 'Issued'], ['#22C55E', 'Returned']].map(([c, l]) => (
+                  {[['#6C5CE7', 'Issued'], ['#22C55E', 'Returned']].map(([c, l]) => (
                     <div key={l} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       <div style={{ width: 12, height: 12, borderRadius: '50%', background: c }} />
                       <span style={{ fontSize: 14, color: '#4B5563' }}>{l}</span>
@@ -245,36 +261,42 @@ export default function LibrarianDashboard() {
               </div>
 
               {/* Overdue table */}
-              <div style={{ background: 'white', borderRadius: 8, padding: 24, boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-                  <div style={{ fontSize: 18, fontWeight: 600, color: '#111827' }}>Overdue Books</div>
-                  <span style={{ fontSize: 14, fontWeight: 500, color: '#9333EA', cursor: 'pointer' }}>View All</span>
+              <div style={{ background: 'white', borderRadius: 12, border: '1px solid #E5E7EB', overflow: 'hidden' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 24px 16px' }}>
+                  <div style={{ fontSize: 16, fontWeight: 600, color: '#383838ff' }}>Overdue Books</div>
+                  <span style={{ fontSize: 13, fontWeight: 500, color: '#6C5CE7', cursor: 'pointer' }}>View All</span>
                 </div>
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                   <thead>
-                    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
+                    <tr style={{ background: '#F9FAFB' }}>
                       {['Book Title', 'Member Name', 'Due Date', 'Overdue Days', 'Action'].map(h => (
-                        <th key={h} style={{ padding: '12px 16px', fontSize: 14, fontWeight: 600, color: '#4B5563', textAlign: 'left' }}>{h}</th>
+                        <th key={h} style={{ padding: '10px 16px', fontSize: 11, fontWeight: 600, color: '#6B7280', textAlign: 'left', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{h}</th>
                       ))}
                     </tr>
                   </thead>
                   <tbody>
                     {OVERDUE.map((row, i) => (
-                      <tr key={i} style={{ borderBottom: '1px solid #F3F4F6' }}>
-                        <td style={{ padding: '12px 16px' }}>
+                      <tr key={i}>
+                        <td style={{ padding: '14px 16px', borderTop: i === 0 ? 'none' : '1px solid #F3F4F6' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                            <div style={{ width: 40, height: 56, background: '#E5E7EB', borderRadius: 4, flexShrink: 0 }} />
+                            <div style={{ width: 38, height: 52, background: `hsl(${i * 60 + 10},55%,65%)`, borderRadius: 6, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                              <BookOpen size={16} color="white" />
+                            </div>
                             <div>
-                              <div style={{ fontSize: 14, fontWeight: 600, color: '#111827' }}>{row.title}</div>
+                              <div style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>{row.title}</div>
                               <div style={{ fontSize: 12, color: '#6B7280' }}>{row.author}</div>
                             </div>
                           </div>
                         </td>
-                        <td style={{ padding: '12px 16px', fontSize: 14, color: '#111827' }}>{row.member}</td>
-                        <td style={{ padding: '12px 16px', fontSize: 14, color: '#DC2626' }}>{row.due}</td>
-                        <td style={{ padding: '12px 16px', fontSize: 14, fontWeight: 600, color: '#DC2626' }}>{row.days} days</td>
-                        <td style={{ padding: '12px 16px' }}>
-                          <button className="send-btn" style={{ padding: '8px 16px', borderRadius: 8, border: '1px solid #9333EA', background: 'transparent', color: '#9333EA', fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>Send Reminder</button>
+                        <td style={{ padding: '14px 16px', fontSize: 13, color: '#6B7280', borderTop: i === 0 ? 'none' : '1px solid #F3F4F6' }}>{row.member}</td>
+                        <td style={{ padding: '14px 16px', fontSize: 13, color: '#DC2626', borderTop: i === 0 ? 'none' : '1px solid #F3F4F6' }}>{row.due}</td>
+                        <td style={{ padding: '14px 16px', borderTop: i === 0 ? 'none' : '1px solid #F3F4F6' }}>
+                          <span style={{ display: 'inline-flex', alignItems: 'center', padding: '3px 10px', background: '#FEE2E2', color: '#DC2626', borderRadius: 9999, fontSize: 12, fontWeight: 600 }}>
+                            {row.days} days
+                          </span>
+                        </td>
+                        <td style={{ padding: '14px 16px', borderTop: i === 0 ? 'none' : '1px solid #F3F4F6' }}>
+                          <button className="send-btn" style={{ padding: '7px 14px', borderRadius: 8, border: '1px solid #6C5CE7', background: 'transparent', color: '#6C5CE7', fontSize: 13, fontWeight: 500, cursor: 'pointer', whiteSpace: 'nowrap' }}>Send Reminder</button>
                         </td>
                       </tr>
                     ))}
@@ -289,7 +311,7 @@ export default function LibrarianDashboard() {
               <div style={{ background: 'white', borderRadius: 8, padding: 24, boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
                   <div style={{ fontSize: 18, fontWeight: 600, color: '#111827' }}>Recent Activities</div>
-                  <span style={{ fontSize: 14, fontWeight: 500, color: '#9333EA', cursor: 'pointer' }}>View All</span>
+                  <span style={{ fontSize: 14, fontWeight: 500, color: '#6C5CE7', cursor: 'pointer' }}>View All</span>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                   {ACTIVITIES.map((a, i) => (
@@ -298,8 +320,8 @@ export default function LibrarianDashboard() {
                         <BookOpen size={18} color={a.color} />
                       </div>
                       <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: 14, fontWeight: 600, color: '#111827' }}>{a.title}</div>
-                        <div style={{ fontSize: 12, color: '#4B5563' }}>{a.sub}</div>
+                        <div style={{ fontSize: 14, fontWeight: 600, color: '#374151' }}>{a.title}</div>
+                        <div style={{ fontSize: 12, color: '#6B7280' }}>{a.sub}</div>
                       </div>
                       <div style={{ fontSize: 12, color: '#6B7280', flexShrink: 0 }}>{a.time}</div>
                     </div>
@@ -314,53 +336,30 @@ export default function LibrarianDashboard() {
                   {QUICK.map((q, i) => (
                     <div key={i} className="qa-row" style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', cursor: 'pointer' }}>
                       {q.icon}
-                      <span style={{ fontSize: 14, fontWeight: 500, color: '#111827' }}>{q.label}</span>
+                      <span style={{ fontSize: 14, fontWeight: 500, color: '#374151' }}>{q.label}</span>
                     </div>
                   ))}
                 </div>
               </div>
 
-              {/* Notifications */}
-              <div style={{ background: 'white', borderRadius: 8, padding: 24, boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                  <div style={{ fontSize: 18, fontWeight: 600, color: '#111827' }}>Notifications</div>
-                  <span style={{ fontSize: 14, fontWeight: 500, color: '#9333EA', cursor: 'pointer' }}>View All</span>
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                  {NOTIFS.map((n, i) => (
-                    <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-                      <div style={{ width: 40, height: 40, background: n.bg, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                        <Bell size={18} color={n.color} />
-                      </div>
-                      <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: 14, color: '#111827', lineHeight: '20px' }}>{n.text}</div>
-                      </div>
-                      <div style={{ fontSize: 12, color: '#6B7280', flexShrink: 0 }}>{n.time}</div>
-                    </div>
-                  ))}
-                </div>
-                <div style={{ textAlign: 'center', marginTop: 16 }}>
-                  <span style={{ fontSize: 14, fontWeight: 500, color: '#9333EA', cursor: 'pointer' }}>View all notifications</span>
-                </div>
-              </div>
 
               {/* Library Timings */}
               <div style={{ background: 'white', borderRadius: 8, padding: 24, boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-                  <Clock size={18} color="#9333EA" />
+                  <Clock size={18} color="#6C5CE7" />
                   <div style={{ fontSize: 18, fontWeight: 600, color: '#111827' }}>Library Timings</div>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <span style={{ fontSize: 14, color: '#4B5563' }}>Monday - Saturday</span>
-                    <span style={{ fontSize: 14, fontWeight: 600, color: '#111827' }}>9:00 AM - 7:00 PM</span>
+                    <span style={{ fontSize: 14, fontWeight: 600, color: '#374151' }}>9:00 AM - 7:00 PM</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <span style={{ fontSize: 14, color: '#4B5563' }}>Sunday</span>
-                    <span style={{ fontSize: 14, fontWeight: 600, color: '#111827' }}>Closed</span>
+                    <span style={{ fontSize: 14, fontWeight: 600, color: '#374151' }}>Closed</span>
                   </div>
                 </div>
-                <div style={{ fontSize: 12, color: '#9333EA', marginTop: 12 }}>Open on public holidays (10:00 AM - 4:00 PM)</div>
+                <div style={{ fontSize: 12, color: '#6C5CE7', marginTop: 12 }}>Open on public holidays (10:00 AM - 4:00 PM)</div>
               </div>
             </div>
           </div>
@@ -369,3 +368,4 @@ export default function LibrarianDashboard() {
     </div>
   );
 }
+

@@ -117,17 +117,55 @@ async function seed() {
   }
 
   // ── 4. Demo Student ─────────────────────────────────────────────────────────
-  const stuEmail = 'student@apexcollege.edu';
-  const stuPass = 'Student@1234';
-  const existingStu = await User.findOne({ email: stuEmail, collegeId: college._id });
-  if (!existingStu) {
-    const passwordHash = await bcrypt.hash(stuPass, 12);
-    await User.create({ collegeId: college._id, name: 'Vansh Patel', email: stuEmail, passwordHash, role: 'student', studentId: 'STU2024001', rollNumber: 'CS-101', department: 'Computer Science', isActive: true });
-    console.log(`✅ Student created`);
-    console.log(`   Email   : ${stuEmail}`);
-    console.log(`   Password: ${stuPass}`);
-  } else {
-    console.log(`ℹ️  Student already exists`);
+  const students = [
+    { name: 'Rahul Verma', email: 'rahul.verma@apexcollege.edu', studentId: 'STU2024001', rollNumber: 'CS-101', department: 'Computer Science', phone: '9876543210' },
+    { name: 'Priya Singh', email: 'priya.singh@apexcollege.edu', studentId: 'STU2024002', rollNumber: 'CS-102', department: 'Computer Science', phone: '9876543211' },
+    { name: 'Arjun Mehta', email: 'arjun.mehta@apexcollege.edu', studentId: 'STU2024003', rollNumber: 'CS-103', department: 'Computer Science', phone: '9876543212' },
+    { name: 'Neha Gupta', email: 'neha.gupta@apexcollege.edu', studentId: 'STU2024004', rollNumber: 'EC-201', department: 'Electronics', phone: '9876543213' },
+    { name: 'Vikram Patel', email: 'vikram.patel@apexcollege.edu', studentId: 'STU2024005', rollNumber: 'ME-301', department: 'Mechanical', phone: '9876543214' },
+  ];
+
+  console.log('\n👨‍🎓 Creating students...');
+  for (const studentData of students) {
+    const existing = await User.findOne({ email: studentData.email, collegeId: college._id });
+    if (!existing) {
+      const passwordHash = await bcrypt.hash('Student@1234', 12);
+      await User.create({ 
+        collegeId: college._id, 
+        ...studentData,
+        passwordHash, 
+        role: 'student', 
+        isActive: true 
+      });
+      console.log(`   ✅ ${studentData.name}`);
+    } else {
+      console.log(`   ℹ️  ${studentData.name} already exists`);
+    }
+  }
+
+  // ── 5. Demo Teachers ────────────────────────────────────────────────────────
+  const teachers = [
+    { name: 'Dr. Sneha Iyer', email: 'sneha.iyer@apexcollege.edu', department: 'Computer Science', phone: '9876543215' },
+    { name: 'Dr. Amit Joshi', email: 'amit.joshi@apexcollege.edu', department: 'Electronics', phone: '9876543216' },
+    { name: 'Prof. Ritika Sharma', email: 'ritika.sharma@apexcollege.edu', department: 'Mathematics', phone: '9876543217' },
+  ];
+
+  console.log('\n👨‍🏫 Creating teachers...');
+  for (const teacherData of teachers) {
+    const existing = await User.findOne({ email: teacherData.email, collegeId: college._id });
+    if (!existing) {
+      const passwordHash = await bcrypt.hash('Teacher@1234', 12);
+      await User.create({ 
+        collegeId: college._id, 
+        ...teacherData,
+        passwordHash, 
+        role: 'teacher', 
+        isActive: true 
+      });
+      console.log(`   ✅ ${teacherData.name}`);
+    } else {
+      console.log(`   ℹ️  ${teacherData.name} already exists`);
+    }
   }
 
   // ── 5. Sample Books ─────────────────────────────────────────────────────────

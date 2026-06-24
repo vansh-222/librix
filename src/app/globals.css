@@ -25,13 +25,32 @@ html {
   scroll-behavior: smooth;
 }
 
+/*
+  FIX: html and body must be locked to the viewport (height: 100%,
+  overflow: hidden) — NOT just min-height: 100vh.
+
+  min-height: 100vh means "at least 100vh, grow taller if content needs it."
+  That lets body grow past the viewport whenever a page's content is tall,
+  which defeats any inner `overflow-y: auto` panel: the inner panel never
+  gets a bounded box to scroll *within*, because its ancestor (body) just
+  expands to fit it instead of clipping it.
+
+  By setting height: 100% (tied to html's 100vh) and overflow: hidden on
+  both html and body, the only element allowed to scroll is whichever
+  inner container explicitly sets overflow-y: auto — which is exactly
+  what full-height dashboard layouts (sidebar + scrollable content) need.
+*/
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+
 body {
   background-color: var(--bg);
   color: var(--text);
   font-family: 'Inter', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  min-height: 100vh;
 }
 
 /* Scrollbar */
@@ -246,13 +265,16 @@ tbody tr:hover { background: rgba(99,102,241,0.04); }
 /* Main layout */
 .main-layout {
   display: flex;
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
 }
 .main-content {
   flex: 1;
   margin-left: 260px;
   padding: 32px;
-  min-height: 100vh;
+  height: 100vh;
+  min-height: 0;
+  overflow: hidden;
   background: var(--bg);
 }
 
