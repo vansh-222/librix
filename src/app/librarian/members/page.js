@@ -76,9 +76,9 @@ export default function LibrarianMembersPage() {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
                 {[
                   { label: 'Total Members', value: totalMembers, iconBg: '#EDE9FE', icon: <Users size={22} color="#6C5CE7" /> },
-                  { label: 'Active Members', value: activeMembers, iconBg: '#DCFCE7', icon: <UserCheck size={22} color="#16A34A" /> },
-                  { label: 'New This Month', value: newThisMonth, iconBg: '#FFEDD5', icon: <UserPlus size={22} color="#EA580C" /> },
-                  { label: 'Inactive Members', value: inactiveMembers, iconBg: '#FEE2E2', icon: <UserX size={22} color="#DC2626" /> }
+                  { label: 'Active ', value: activeMembers, iconBg: '#DCFCE7', icon: <UserCheck size={22} color="#16A34A" /> },
+                  { label: 'New ', value: newThisMonth, iconBg: '#FFEDD5', icon: <UserPlus size={22} color="#EA580C" /> },
+                  { label: 'Inactive ', value: inactiveMembers, iconBg: '#FEE2E2', icon: <UserX size={22} color="#DC2626" /> }
                 ].map((s, i) => (
                   <div key={i} style={{ background: 'white', border: '1px solid #E5E7EB', borderRadius: 12, padding: '18px 20px' }}>
                     <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
