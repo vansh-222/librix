@@ -1,26 +1,6 @@
 'use client';
-import { useState } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { signOut } from 'next-auth/react';
-import {
-  LayoutDashboard, BookOpen, Users, ArrowLeftRight, ClipboardList,
-  CreditCard, BarChart2, Bell, Settings, ChevronRight, ChevronDown,
-  Search, Clock, Plus, UserPlus, RotateCcw, FileText, LogOut,
-} from 'lucide-react';
-
-/* ─── NAV ─────────────────────────────── */
-const NAV = [
-  { href: '/librarian/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-  { href: '/librarian/books', icon: BookOpen, label: 'Books Management' },
-  { href: '/librarian/members', icon: Users, label: 'Members' },
-  { href: '/librarian/returns', icon: ArrowLeftRight, label: 'Issue / Return' },
-  { href: '/librarian/requests', icon: ClipboardList, label: 'Requests' },
-  { href: '/librarian/fines', icon: CreditCard, label: 'Fines & Payments' },
-  { href: '/librarian/reports', icon: BarChart2, label: 'Reports' },
-  { href: '/librarian/notifications', icon: Bell, label: 'Notifications', badge: 6 },
-  { href: '/librarian/settings', icon: Settings, label: 'Settings' },
-];
+import LibrarianLayout from '@/components/librarian/LibrarianLayout';
+import { ChevronRight, Plus, UserPlus, RotateCcw, FileText, BarChart2, BookOpen, Users, ArrowLeftRight, ClipboardList, Clock } from 'lucide-react';
 
 /* ─── CHART DATA ──────────────────────── */
 const CHART_DATA = [
@@ -105,203 +85,20 @@ const STATS = [
 ];
 
 export default function LibrarianDashboard() {
-  const pathname = usePathname();
-  const [showUserMenu, setShowUserMenu] = useState(false);
-
   return (
-    <div style={{ display: 'flex', height: '100vh', background: '#F8F9FA', fontFamily: 'Inter,sans-serif', overflow: 'hidden' }}>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-thumb { background: #E5E7EB; border-radius: 4px; }
-        .qa-row:hover { background: #F9FAFB; border-radius: 8px; }
-        .nav-item:hover { background: #F9FAFB; border-radius: 8px; }
-        .send-btn:hover { background: #F3E8FF; }
-      `}</style>
-
-      {/* ── SIDEBAR ── */}
-      <div style={{
-        width: 200,
-        background: 'white',
-        borderRight: '1px solid #E5E7EB',
-        display: 'flex',
-        flexDirection: 'column',
-        flexShrink: 0,
-        height: '100vh',
-        overflowY: 'auto',
-      }}>
-        {/* Logo */}
-        <div style={{ padding: '18px 16px 14px', borderBottom: '1px solid #F3F4F6' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-            <div style={{ width: 34, height: 34, background: '#6C5CE7', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <BookOpen size={18} color="white" />
-            </div>
-            <div>
-              <div style={{ fontSize: 15, fontWeight: 700, color: '#111827', lineHeight: '19px' }}>LibraSys</div>
-              <div style={{ fontSize: 10, color: '#9CA3AF', lineHeight: '14px' }}>Library Management</div>
-            </div>
-          </div>
-        </div>
-
-        {/* Nav items */}
-        <div style={{ flex: 1, overflowY: 'auto', paddingTop: 8, paddingBottom: 8 }}>
-          {NAV.map(item => {
-            const active = pathname === item.href;
-            return (
-              <Link key={item.href} href={item.href} style={{ textDecoration: 'none', display: 'block', padding: '2px 8px' }}>
-                <div className={active ? '' : 'nav-item'} style={{
-                  display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px',
-                  background: active ? '#6C5CE7' : 'transparent',
-                  borderRadius: 8, cursor: 'pointer',
-                }}>
-                  <item.icon size={16} color={active ? 'white' : '#6B7280'} />
-                  <span style={{ flex: 1, fontSize: 13, fontWeight: active ? 600 : 400, color: active ? 'white' : '#374151', lineHeight: '18px' }}>{item.label}</span>
-                  {item.badge && (
-                    <div style={{ minWidth: 18, height: 18, background: active ? 'rgba(255,255,255,0.25)' : '#2563EB', borderRadius: 9, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: 'white', padding: '0 4px' }}>
-                      {item.badge}
-                    </div>
-                  )}
-                </div>
-              </Link>
-            );
-          })}
-        </div>
-
-        {/* Help box */}
-        <div style={{ padding: '12px 12px 16px' }}>
-          <div style={{ background: '#FAF5FF', borderRadius: 12, padding: '14px 12px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, border: '1px solid #EDE9FE' }}>
-            {/* Book stack illustration */}
-            <div style={{ width: 72, height: 48, position: 'relative', marginBottom: 2 }}>
-              <div style={{ width: 24, height: 38, background: '#C4B5FD', position: 'absolute', left: 10, bottom: 0, borderRadius: '2px 2px 0 0' }} />
-              <div style={{ width: 24, height: 44, background: '#8B5CF6', position: 'absolute', left: 26, bottom: 0, borderRadius: '2px 2px 0 0' }} />
-              <div style={{ width: 20, height: 32, background: '#DDD6FE', position: 'absolute', left: 44, bottom: 0, borderRadius: '2px 2px 0 0' }} />
-            </div>
-            <div style={{ fontSize: 12, fontWeight: 600, color: '#111827' }}>Need Help?</div>
-            <div style={{ fontSize: 10, color: '#6B7280', textAlign: 'center', lineHeight: '14px' }}>If you need assistance, we're here to help.</div>
-            <button type="button" style={{ width: '100%', padding: '6px 10px', borderRadius: 8, border: '1px solid #6C5CE7', background: 'transparent', color: '#6C5CE7', fontSize: 12, fontWeight: 500, cursor: 'pointer', marginTop: 2 }}>
-              Contact Support
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* ── MAIN AREA ── */}
-      <div style={{
-        flex: 1,
-        display: 'flex',
-        flexDirection: 'column',
-        height: 'calc(100vh - 0px)',
-        minHeight: 0,
-        overflow: 'hidden'
-      }}>
-        {/* Topbar */}
+    <LibrarianLayout 
+      title="Dashboard" 
+      subtitle="Welcome back, Anita Sharma!"
+      searchPlaceholder="Search books, members, ISBN..."
+    >
+      <div style={{ padding: 28 }}>
         <div style={{
-          background: 'white',
-          borderBottom: '1px solid #E5E7EB',
-          padding: '0 28px',
-          height: 68,
           display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexShrink: 0,
-          gap: 20,
+          gap: 24,
+          alignItems: 'flex-start',
+          minHeight: 'max-content',
+          height: 'auto'
         }}>
-          <div style={{ flexShrink: 0 }}>
-            <div style={{ fontSize: 20, fontWeight: 700, color: '#111827', lineHeight: '26px' }}>Dashboard</div>
-            <div style={{ fontSize: 12, color: '#9CA3AF', marginTop: 1 }}>Welcome back, Anita Sharma!</div>
-          </div>
-
-          <div style={{ flex: 1, maxWidth: 380 }}>
-            <div style={{ position: 'relative' }}>
-              <Search size={15} color="#9CA3AF" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
-              <input 
-                placeholder="Search books, members, ISBN..." 
-                style={{ width: '100%', padding: '9px 16px 9px 38px', border: '1px solid #E5E7EB', borderRadius: 8, fontSize: 13, color: '#111827', outline: 'none', background: '#F9FAFB', fontFamily: 'Inter' }} 
-              />
-            </div>
-          </div>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexShrink: 0 }}>
-            <div style={{ position: 'relative', cursor: 'pointer' }}>
-              <Bell size={20} color="#374151" />
-              <div style={{ position: 'absolute', top: -5, right: -5, width: 16, height: 16, background: '#2563EB', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: 'white' }}>3</div>
-            </div>
-            <div style={{ position: 'relative' }}>
-              <div 
-                onClick={() => setShowUserMenu(!showUserMenu)}
-                style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}
-              >
-                <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#6C5CE7', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 700, fontSize: 14 }}>A</div>
-                <div>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>Anita Sharma</div>
-                  <div style={{ fontSize: 11, color: '#9CA3AF' }}>Librarian</div>
-                </div>
-                <ChevronDown size={13} color="#9CA3AF" />
-              </div>
-
-              {/* Dropdown Menu */}
-              {showUserMenu && (
-                <div style={{
-                  position: 'absolute',
-                  top: '100%',
-                  right: 0,
-                  marginTop: 8,
-                  width: 200,
-                  background: 'white',
-                  border: '1px solid #E5E7EB',
-                  borderRadius: 8,
-                  boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06)',
-                  zIndex: 50,
-                  overflow: 'hidden'
-                }}>
-                  <div style={{ padding: '12px 16px', borderBottom: '1px solid #F3F4F6' }}>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>Anita Sharma</div>
-                    <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 2 }}>librarian@apexcollege.edu</div>
-                  </div>
-                  <button
-                    onClick={() => signOut({ callbackUrl: '/login' })}
-                    style={{
-                      width: '100%',
-                      padding: '10px 16px',
-                      border: 'none',
-                      background: 'transparent',
-                      textAlign: 'left',
-                      fontSize: 13,
-                      color: '#DC2626',
-                      fontWeight: 500,
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 8,
-                      fontFamily: 'Inter'
-                    }}
-                    onMouseEnter={(e) => e.target.style.background = '#FEE2E2'}
-                    onMouseLeave={(e) => e.target.style.background = 'transparent'}
-                  >
-                    <LogOut size={16} />
-                    Logout
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Scrollable content — calc height guarantees scroll works */}
-        <div style={{
-          height: 'calc(100vh - 72px)',
-          overflowY: 'scroll',
-          overflowX: 'hidden',
-          padding: 28,
-          boxSizing: 'border-box'
-        }}>
-          <div style={{
-            display: 'flex',
-            gap: 24,
-            alignItems: 'flex-start',
-            minHeight: 'max-content',
-            height: 'auto'
-          }}>
             {/* ── LEFT COLUMN ── */}
             <div style={{
               flex: 1,
@@ -451,7 +248,6 @@ export default function LibrarianDashboard() {
             </div>
           </div>
         </div>
-      </div>
-    </div>
+    </LibrarianLayout>
   );
 }

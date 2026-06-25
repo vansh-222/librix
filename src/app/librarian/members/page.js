@@ -1,31 +1,12 @@
 'use client';
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { signOut } from 'next-auth/react';
+import LibrarianLayout from '@/components/librarian/LibrarianLayout';
 import {
-  LayoutDashboard, BookOpen, Users, ArrowLeftRight, ClipboardList,
-  CreditCard, BarChart2, Bell, Settings, ChevronRight, ChevronDown,
-  Search, Plus, Eye, Edit, Trash2, Filter, UserCheck, UserPlus, UserX,
-  Upload, LayoutGrid, LogOut
+  Users, ChevronRight, ChevronDown, Search, Plus, Eye, Edit, Trash2, Filter, UserCheck, UserPlus, UserX, Upload, LayoutGrid
 } from 'lucide-react';
 
-const NAV = [
-  { href: '/librarian/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-  { href: '/librarian/books', icon: BookOpen, label: 'Books Management' },
-  { href: '/librarian/members', icon: Users, label: 'Members' },
-  { href: '/librarian/returns', icon: ArrowLeftRight, label: 'Issue / Return' },
-  { href: '/librarian/requests', icon: ClipboardList, label: 'Requests' },
-  { href: '/librarian/fines', icon: CreditCard, label: 'Fines & Payments' },
-  { href: '/librarian/reports', icon: BarChart2, label: 'Reports' },
-  { href: '/librarian/notifications', icon: Bell, label: 'Notifications', badge: 6 },
-  { href: '/librarian/settings', icon: Settings, label: 'Settings' },
-];
-
 export default function LibrarianMembersPage() {
-  const pathname = usePathname();
   const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
@@ -35,7 +16,6 @@ export default function LibrarianMembersPage() {
   }, []);
 
   const fetchUsers = async () => {
-    setLoading(true);
     try {
       const res = await fetch('/api/users');
       const data = await res.json();
@@ -44,8 +24,6 @@ export default function LibrarianMembersPage() {
       setUsers(data.users || []);
     } catch (error) {
       console.error('Failed to fetch users:', error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -82,149 +60,25 @@ export default function LibrarianMembersPage() {
   };
 
   return (
-    <div style={{ display: 'flex', height: '100vh', background: '#F9FAFB', fontFamily: 'Inter,sans-serif', overflow: 'hidden', minHeight: 0 }}>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        html, body, #__next { height: 100%; }
-        /* Hide scrollbars but keep functionality */
-        ::-webkit-scrollbar { width: 0px; height: 0px; }
-        ::-webkit-scrollbar-thumb { background: transparent; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        * { scrollbar-width: none; -ms-overflow-style: none; }
-        .nav-link:hover { background: #F3F4F6 !important; }
-        .act-btn:hover { background: #F3F4F6 !important; border-radius: 6px; }
-        .tr-hover:hover td { background: #FAFAFA; }
-      `}</style>
-
-      {/* ── SIDEBAR ── */}
-      <div style={{
-        width: 200,
-        background: 'white',
-        borderRight: '1px solid #E5E7EB',
-        display: 'flex',
-        flexDirection: 'column',
-        flexShrink: 0,
-        height: '100vh',
-        overflowY: 'auto',
-      }}>
-        {/* Logo */}
-        <div style={{ padding: '18px 16px 14px', borderBottom: '1px solid #F3F4F6' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-            <div style={{ width: 34, height: 34, background: '#6C5CE7', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <BookOpen size={18} color="white" />
-            </div>
-            <div>
-              <div style={{ fontSize: 15, fontWeight: 700, color: '#111827', lineHeight: '19px' }}>LibraSys</div>
-              <div style={{ fontSize: 10, color: '#9CA3AF', lineHeight: '14px' }}>Library Management</div>
-            </div>
-          </div>
-        </div>
-
-        {/* Nav items */}
-        <div style={{ flex: 1, overflowY: 'auto', paddingTop: 8, paddingBottom: 8 }}>
-          {NAV.map(item => {
-            const active = pathname === item.href;
-            return (
-              <Link key={item.href} href={item.href} style={{ textDecoration: 'none', display: 'block', padding: '2px 8px' }}>
-                <div className={active ? '' : 'nav-link'} style={{
-                  display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px',
-                  background: active ? '#6C5CE7' : 'transparent',
-                  borderRadius: 8, cursor: 'pointer',
-                }}>
-                  <item.icon size={16} color={active ? 'white' : '#6B7280'} />
-                  <span style={{ flex: 1, fontSize: 13, fontWeight: active ? 600 : 400, color: active ? 'white' : '#374151', lineHeight: '18px' }}>{item.label}</span>
-                  {item.badge && (
-                    <div style={{ minWidth: 18, height: 18, background: active ? 'rgba(255,255,255,0.25)' : '#2563EB', borderRadius: 9, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: 'white', padding: '0 4px' }}>
-                      {item.badge}
-                    </div>
-                  )}
-                </div>
-              </Link>
-            );
-          })}
-        </div>
-
-        {/* Help box */}
-        <div style={{ padding: '12px 12px 16px' }}>
-          <div style={{ background: '#FAF5FF', borderRadius: 12, padding: '14px 12px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, border: '1px solid #EDE9FE' }}>
-            {/* Book stack illustration */}
-            <div style={{ width: 72, height: 48, position: 'relative', marginBottom: 2 }}>
-              <div style={{ width: 24, height: 38, background: '#C4B5FD', position: 'absolute', left: 10, bottom: 0, borderRadius: '2px 2px 0 0' }} />
-              <div style={{ width: 24, height: 44, background: '#8B5CF6', position: 'absolute', left: 26, bottom: 0, borderRadius: '2px 2px 0 0' }} />
-              <div style={{ width: 20, height: 32, background: '#DDD6FE', position: 'absolute', left: 44, bottom: 0, borderRadius: '2px 2px 0 0' }} />
-            </div>
-            <div style={{ fontSize: 12, fontWeight: 600, color: '#111827' }}>Need Help?</div>
-            <div style={{ fontSize: 10, color: '#6B7280', textAlign: 'center', lineHeight: '14px' }}>If you need assistance, we're here to help.</div>
-            <button type="button" style={{ width: '100%', padding: '6px 10px', borderRadius: 8, border: '1px solid #6C5CE7', background: 'transparent', color: '#6C5CE7', fontSize: 12, fontWeight: 500, cursor: 'pointer', marginTop: 2 }}>
-              Contact Support
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* ── MAIN AREA ── */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', minWidth: 0, minHeight: 0 }}>
-
-        {/* Topbar */}
-        <div style={{
-          background: 'white',
-          borderBottom: '1px solid #E5E7EB',
-          padding: '0 28px',
-          height: 68,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexShrink: 0,
-          gap: 20,
-        }}>
-          <div style={{ flexShrink: 0 }}>
-            <div style={{ fontSize: 20, fontWeight: 700, color: '#111827', lineHeight: '26px' }}>Members</div>
-            <div style={{ fontSize: 12, color: '#9CA3AF', marginTop: 1 }}>Manage and view all library members</div>
-          </div>
-
-          <div style={{ flex: 1, maxWidth: 380 }}>
-            <div style={{ position: 'relative' }}>
-              <Search size={15} color="#9CA3AF" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
-              <input
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                placeholder="Search members by name, email, phone..."
-                style={{ width: '100%', padding: '9px 16px 9px 38px', border: '1px solid #E5E7EB', borderRadius: 8, fontSize: 13, color: '#111827', outline: 'none', background: '#F9FAFB', fontFamily: 'Inter' }}
-              />
-            </div>
-          </div>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexShrink: 0 }}>
-            <div style={{ position: 'relative', cursor: 'pointer' }}>
-              <Bell size={20} color="#374151" />
-              <div style={{ position: 'absolute', top: -5, right: -5, width: 16, height: 16, background: '#2563EB', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: 'white' }}>8</div>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}>
-              <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#6C5CE7', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 700, fontSize: 14 }}>A</div>
-              <div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>Anita Sharma</div>
-                <div style={{ fontSize: 11, color: '#9CA3AF' }}>Librarian</div>
-              </div>
-              <ChevronDown size={13} color="#9CA3AF" />
-            </div>
-          </div>
-        </div>
-
-        {/* Content row */}
-        <div style={{ display: 'flex', flex: 1, overflow: 'hidden', minHeight: 0 }}>
-
-          {/* Center scrollable */}
-          <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', padding: '24px 24px 32px', minWidth: 0, minHeight: 0 }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-
-              {/* Stat cards */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
+    <LibrarianLayout 
+      title="Members" 
+      subtitle="Manage and view all library members"
+      searchPlaceholder="Search members by name, email, phone..."
+    >
+      <div style={{ padding: '24px 24px 32px' }}>
+        {/* Two column layout: Left content and Right sidebar */}
+        <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start' }}>
+          
+          {/* Left column - Stats, Filters, and Table */}
+          <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 20 }}>
+            
+            {/* Stat cards */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
                 {[
                   { label: 'Total Members', value: totalMembers, iconBg: '#EDE9FE', icon: <Users size={22} color="#6C5CE7" /> },
                   { label: 'Active Members', value: activeMembers, iconBg: '#DCFCE7', icon: <UserCheck size={22} color="#16A34A" /> },
                   { label: 'New This Month', value: newThisMonth, iconBg: '#FFEDD5', icon: <UserPlus size={22} color="#EA580C" /> },
-                  { label: 'Inactive ', value: inactiveMembers, iconBg: '#FEE2E2', icon: <UserX size={22} color="#DC2626" /> }
+                  { label: 'Inactive Members', value: inactiveMembers, iconBg: '#FEE2E2', icon: <UserX size={22} color="#DC2626" /> }
                 ].map((s, i) => (
                   <div key={i} style={{ background: 'white', border: '1px solid #E5E7EB', borderRadius: 12, padding: '18px 20px' }}>
                     <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
@@ -244,8 +98,8 @@ export default function LibrarianMembersPage() {
                 ))}
               </div>
 
-              {/* Filters */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+            {/* Filters */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
                 <div style={{ position: 'relative', minWidth: 160 }}>
                   <Search size={14} color="#9CA3AF" style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)' }} />
                   <input
@@ -271,8 +125,8 @@ export default function LibrarianMembersPage() {
                 </button>
               </div>
 
-              {/* Members table */}
-              <div style={{ background: 'white', border: '1px solid #E5E7EB', borderRadius: 12, overflow: 'hidden' }}>
+            {/* Members table */}
+            <div style={{ background: 'white', border: '1px solid #E5E7EB', borderRadius: 12, overflow: 'hidden' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
                   <thead>
                     <tr>
@@ -386,24 +240,21 @@ export default function LibrarianMembersPage() {
                     <ChevronDown size={12} color="#6B7280" style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
+                  </div>
+                </div>
 
-          {/* ── RIGHT PANEL ── */}
-          <div style={{
-            width: 280,
-            background: 'white',
-            borderLeft: '1px solid #E5E7EB',
-            padding: '20px 16px',
-            overflowY: 'auto',
-            overflowX: 'hidden',
-            flexShrink: 0,
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 20,
-            minHeight: 0,
-          }}>
+                {/* ── RIGHT PANEL ── */}
+                <div style={{
+                  width: 280,
+                  background: 'white',
+                  border: '1px solid #E5E7EB',
+                  borderRadius: 12,
+                  padding: '20px 16px',
+                  flexShrink: 0,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 20,
+                }}>
 
             {/* Membership Overview - Donut Chart */}
             <div>
@@ -528,7 +379,6 @@ export default function LibrarianMembersPage() {
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {[
-                  { icon: <Plus size={15} color="#6C5CE7" />, label: 'Add New Member' },
                   { icon: <Upload size={15} color="#6C5CE7" />, label: 'Import Members' },
                   { icon: <Upload size={15} color="#6C5CE7" />, label: 'Export Members' },
                   { icon: <LayoutGrid size={15} color="#6C5CE7" />, label: 'Member Categories' },
@@ -553,10 +403,9 @@ export default function LibrarianMembersPage() {
                 ))}
               </div>
             </div>
-
           </div>
         </div>
       </div>
-    </div>
+    </LibrarianLayout>
   );
 }
