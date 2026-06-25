@@ -224,7 +224,7 @@ export default function LibrarianMembersPage() {
                   { label: 'Total Members', value: totalMembers, iconBg: '#EDE9FE', icon: <Users size={22} color="#6C5CE7" /> },
                   { label: 'Active Members', value: activeMembers, iconBg: '#DCFCE7', icon: <UserCheck size={22} color="#16A34A" /> },
                   { label: 'New This Month', value: newThisMonth, iconBg: '#FFEDD5', icon: <UserPlus size={22} color="#EA580C" /> },
-                  { label: 'Inactive Members', value: inactiveMembers, iconBg: '#FEE2E2', icon: <UserX size={22} color="#DC2626" /> }
+                  { label: 'Inactive ', value: inactiveMembers, iconBg: '#FEE2E2', icon: <UserX size={22} color="#DC2626" /> }
                 ].map((s, i) => (
                   <div key={i} style={{ background: 'white', border: '1px solid #E5E7EB', borderRadius: 12, padding: '18px 20px' }}>
                     <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
@@ -276,14 +276,13 @@ export default function LibrarianMembersPage() {
                 <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
                   <thead>
                     <tr>
-                      <th style={{ padding: '12px 16px', fontSize: 11, fontWeight: 600, color: '#6B7280', textTransform: 'uppercase', textAlign: 'left', letterSpacing: '0.06em', background: '#F9FAFB', borderBottom: '1px solid #E5E7EB', width: '18%' }}>MEMBER</th>
-                      <th style={{ padding: '12px 16px', fontSize: 11, fontWeight: 600, color: '#6B7280', textTransform: 'uppercase', textAlign: 'left', letterSpacing: '0.06em', background: '#F9FAFB', borderBottom: '1px solid #E5E7EB', width: '12%' }}>MEMBER ID</th>
+                      <th style={{ padding: '12px 16px', fontSize: 11, fontWeight: 600, color: '#6B7280', textTransform: 'uppercase', textAlign: 'left', letterSpacing: '0.06em', background: '#F9FAFB', borderBottom: '1px solid #E5E7EB', width: '22%' }}>MEMBER</th>
                       <th style={{ padding: '12px 16px', fontSize: 11, fontWeight: 600, color: '#6B7280', textTransform: 'uppercase', textAlign: 'left', letterSpacing: '0.06em', background: '#F9FAFB', borderBottom: '1px solid #E5E7EB', width: '12%' }}>TYPE</th>
-                      <th style={{ padding: '12px 16px', fontSize: 11, fontWeight: 600, color: '#6B7280', textTransform: 'uppercase', textAlign: 'left', letterSpacing: '0.06em', background: '#F9FAFB', borderBottom: '1px solid #E5E7EB', width: '20%' }}>EMAIL</th>
+                      <th style={{ padding: '12px 16px', fontSize: 11, fontWeight: 600, color: '#6B7280', textTransform: 'uppercase', textAlign: 'left', letterSpacing: '0.06em', background: '#F9FAFB', borderBottom: '1px solid #E5E7EB', width: '22%' }}>EMAIL</th>
                       <th style={{ padding: '12px 16px', fontSize: 11, fontWeight: 600, color: '#6B7280', textTransform: 'uppercase', textAlign: 'center', letterSpacing: '0.06em', background: '#F9FAFB', borderBottom: '1px solid #E5E7EB', width: '10%' }}>BORROWED</th>
                       <th style={{ padding: '12px 16px', fontSize: 11, fontWeight: 600, color: '#6B7280', textTransform: 'uppercase', textAlign: 'left', letterSpacing: '0.06em', background: '#F9FAFB', borderBottom: '1px solid #E5E7EB', width: '12%' }}>JOIN DATE</th>
                       <th style={{ padding: '12px 16px', fontSize: 11, fontWeight: 600, color: '#6B7280', textTransform: 'uppercase', textAlign: 'left', letterSpacing: '0.06em', background: '#F9FAFB', borderBottom: '1px solid #E5E7EB', width: '10%' }}>STATUS</th>
-                      <th style={{ padding: '12px 16px', fontSize: 11, fontWeight: 600, color: '#6B7280', textTransform: 'uppercase', textAlign: 'center', letterSpacing: '0.06em', background: '#F9FAFB', borderBottom: '1px solid #E5E7EB', width: '6%' }}>ACTION</th>
+                      <th style={{ padding: '12px 16px', fontSize: 11, fontWeight: 600, color: '#6B7280', textTransform: 'uppercase', textAlign: 'center', letterSpacing: '0.06em', background: '#F9FAFB', borderBottom: '1px solid #E5E7EB', width: '12%' }}>ACTION</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -309,12 +308,11 @@ export default function LibrarianMembersPage() {
                               </div>
                               <div style={{ minWidth: 0, flex: 1 }}>
                                 <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{member.name}</div>
-                                <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 2 }}>{member.phone || '—'}</div>
+                                <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 2 }}>
+                                  ID: {member.studentId || member.teacherId || 'MEM' + String(1001 + idx).padStart(4, '0')}
+                                </div>
                               </div>
                             </div>
-                          </td>
-                          <td style={{ padding: '0 16px', fontSize: 13, color: '#374151', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                            {member.studentId || member.teacherId || 'MEM' + String(1001 + idx).padStart(4, '0')}
                           </td>
                           <td style={{ padding: '0 16px', fontSize: 13, color: '#374151' }}>
                             <span style={{ padding: '3px 10px', background: memberType.bg, color: memberType.color, borderRadius: 9999, fontSize: 11, fontWeight: 500, display: 'inline-block' }}>
@@ -338,7 +336,7 @@ export default function LibrarianMembersPage() {
                             </span>
                           </td>
                           <td style={{ padding: '10px 16px' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 2, justifyContent: 'center' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 4, justifyContent: 'center' }}>
                               <button type="button" className="act-btn" style={{ padding: '6px', border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex' }}>
                                 <Eye size={16} color="#6C5CE7" />
                               </button>
