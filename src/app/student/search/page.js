@@ -1,173 +1,521 @@
 'use client';
-import { useState, useEffect, useCallback } from 'react';
-import TopBar from '@/components/shared/TopBar';
-import { Search, Filter, BookOpen, X } from 'lucide-react';
-import Link from 'next/link';
+import { useState } from 'react';
+import { Search, Grid, List, ChevronRight, ChevronLeft } from 'lucide-react';
 
-const CATEGORIES = ['General', 'Fiction', 'Non-Fiction', 'Science', 'Technology', 'History', 'Mathematics', 'Arts', 'Medicine', 'Law', 'Business', 'Philosophy', 'Literature'];
+export default function SearchBooksPage() {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortBy, setSortBy] = useState('Relevance');
+  const [viewMode, setViewMode] = useState('grid');
+  const [currentPage, setCurrentPage] = useState(1);
+  
+  // Filters state
+  const [availability, setAvailability] = useState('all');
+  const [selectedCategory, setSelectedCategory] = useState('All Categories');
+  const [selectedAuthor, setSelectedAuthor] = useState('All Authors');
+  const [selectedLanguage, setSelectedLanguage] = useState('All Languages');
+  const [fromYear, setFromYear] = useState('');
+  const [toYear, setToYear] = useState('');
 
-export default function SearchPage() {
-  const [books, setBooks] = useState([]);
-  const [total, setTotal] = useState(0);
-  const [totalPages, setTotalPages] = useState(1);
-  const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(1);
-  const [filters, setFilters] = useState({ search: '', category: '', language: '', available: '' });
-  const [showFilters, setShowFilters] = useState(false);
+  const books = [
+    { id: 1, title: 'Atomic Habits', author: 'James Clear', isbn: '978-0735211292', pages: 320, published: 2018, category: 'Self Help', categoryColor: '#6366F1', available: true, copies: 3, cover: 'https://images-na.ssl-images-amazon.com/images/I/81YkqyaFVEL.jpg' },
+    { id: 2, title: 'Clean Code', author: 'Robert C. Martin', isbn: '978-0132350884', pages: 464, published: 2008, category: 'Programming', categoryColor: '#8B5CF6', available: true, copies: 2, cover: 'https://m.media-amazon.com/images/I/51E2055ZGUL.jpg' },
+    { id: 3, title: 'The 5 AM Club', author: 'Robin Sharma', isbn: '978-9387944404', pages: 256, published: 2018, category: 'Self Help', categoryColor: '#F59E0B', available: false, copies: 0, cover: 'https://m.media-amazon.com/images/I/71zytzrg6lL.jpg' },
+    { id: 4, title: 'Deep Work', author: 'Cal Newport', isbn: '978-1455586691', pages: 296, published: 2016, category: 'Productivity', categoryColor: '#EAB308', available: true, copies: 4, cover: 'https://m.media-amazon.com/images/I/71VStT787lL.jpg' },
+    { id: 5, title: 'The Psychology of Money', author: 'Morgan Housel', isbn: '978-0857197689', pages: 256, published: 2020, category: 'Finance', categoryColor: '#10B981', available: true, copies: 1, cover: 'https://m.media-amazon.com/images/I/71g2ednj0JL.jpg' },
+    { id: 6, title: 'Rich Dad Poor Dad', author: 'Robert T. Kiyosaki', isbn: '978-1612680194', pages: 336, published: 2000, category: 'Finance', categoryColor: '#EC4899', available: true, copies: 2, cover: 'https://m.media-amazon.com/images/I/81bsw6fnUiL.jpg' },
+  ];
 
-  const fetchBooks = useCallback(async () => {
-    setLoading(true);
-    const params = new URLSearchParams({ page, limit: 16, ...Object.fromEntries(Object.entries(filters).filter(([,v]) => v)) });
-    const res = await fetch(`/api/books?${params}`);
-    const data = await res.json();
-    setBooks(data.books || []);
-    setTotal(data.total || 0);
-    setTotalPages(data.totalPages || 1);
-    setLoading(false);
-  }, [filters, page]);
+  const categories = [
+    { name: 'Fiction', count: 32 },
+    { name: 'Programming', count: 28 },
+    { name: 'Self Help', count: 24 },
+    { name: 'Science', count: 16 },
+    { name: 'Finance', count: 14 },
+  ];
 
-  useEffect(() => { fetchBooks(); }, [fetchBooks]);
-
-  const setFilter = (k, v) => { setFilters(f => ({ ...f, [k]: v })); setPage(1); };
-  const clearFilters = () => { setFilters({ search: '', category: '', language: '', available: '' }); setPage(1); };
-  const activeFilterCount = Object.values(filters).filter(Boolean).length;
+  const totalResults = 628;
+  const showing = `1-6 of ${totalResults}`;
 
   return (
-    <div style={{ animation: 'fadeIn 0.3s ease' }}>
-      <TopBar title="Search Books" subtitle={`${total} books in your library`} />
+    <div style={{ padding: '12px 24px', width: '100%', boxSizing: 'border-box' }}>
+      {/* Main Grid - starts immediately */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: 20, width: '100%', alignItems: 'start' }}>
+        {/* Left Column - Search and Books */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, minWidth: 0 }}>
+          {/* Search Bar and Controls */}
+          <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+            {/* Search Input */}
+            <div style={{ flex: 1, position: 'relative', maxWidth: 400 }}>
+              <Search size={16} color="#9CA3AF" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
+              <input
+              type="text"
+              placeholder="Search by title, author, ISBN or keyword..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '10px 12px 10px 40px',
+                border: '1px solid #E5E7EB',
+                borderRadius: 8,
+                fontSize: 13,
+                outline: 'none',
+                fontFamily: 'Inter',
+              }}
+            />
+          </div>
 
-      {/* Search + Filter bar */}
-      <div style={{ display: 'flex', gap: 12, marginBottom: 24, flexWrap: 'wrap' }}>
-        <div className="search-wrapper" style={{ flex: 1, minWidth: 240 }}>
-          <Search size={16} className="search-icon" />
-          <input
-            className="input search-input"
-            placeholder="Search by title, author, or ISBN..."
-            value={filters.search}
-            onChange={e => setFilter('search', e.target.value)}
-          />
-          {filters.search && (
-            <button onClick={() => setFilter('search', '')}
-              style={{ position: 'absolute', right: 10, background: 'none', border: 'none', cursor: 'pointer', color: 'var(--muted)' }}>
-              <X size={14} />
-            </button>
-          )}
+          {/* Sort Dropdown */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ fontSize: 13, color: '#6B7280', fontWeight: 500 }}>Sort by:</span>
+            <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            style={{
+              padding: '8px 32px 8px 12px',
+              border: '1px solid #E5E7EB',
+              borderRadius: 6,
+              fontSize: 13,
+              outline: 'none',
+              fontFamily: 'Inter',
+              fontWeight: 500,
+              cursor: 'pointer',
+              color: '#374151',
+            }}
+          >
+            <option>Relevance</option>
+            <option>Title A-Z</option>
+            <option>Title Z-A</option>
+            <option>Author</option>
+            <option>Newest</option>
+          </select>
         </div>
 
-        <button onClick={() => setShowFilters(s => !s)}
-          className={`btn ${showFilters ? 'btn-primary' : 'btn-secondary'}`}
-          style={{ gap: 8 }}>
-          <Filter size={15} />
-          Filters {activeFilterCount > 0 && `(${activeFilterCount})`}
-        </button>
-
-        {activeFilterCount > 0 && (
-          <button onClick={clearFilters} className="btn btn-ghost" style={{ gap: 6 }}>
-            <X size={14} /> Clear
+        {/* View Mode Toggle */}
+        <div style={{ display: 'flex', gap: 4, border: '1px solid #E5E7EB', borderRadius: 6, padding: 4 }}>
+          <button
+            onClick={() => setViewMode('grid')}
+            style={{
+              padding: '6px 10px',
+              background: viewMode === 'grid' ? '#6366F1' : 'transparent',
+              border: 'none',
+              borderRadius: 4,
+              cursor: 'pointer',
+            }}
+          >
+            <Grid size={16} color={viewMode === 'grid' ? 'white' : '#6B7280'} />
           </button>
-        )}
+          <button
+            onClick={() => setViewMode('list')}
+            style={{
+              padding: '6px 10px',
+              background: viewMode === 'list' ? '#6366F1' : 'transparent',
+              border: 'none',
+              borderRadius: 4,
+              cursor: 'pointer',
+            }}
+          >
+            <List size={16} color={viewMode === 'list' ? 'white' : '#6B7280'} />
+          </button>
+        </div>
       </div>
-
-      {/* Filter panel */}
-      {showFilters && (
-        <div className="card" style={{ marginBottom: 24, padding: 20 }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 16 }}>
-            <div>
-              <label className="label">Category</label>
-              <select className="input" value={filters.category} onChange={e => setFilter('category', e.target.value)}>
-                <option value="">All Categories</option>
-                {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className="label">Language</label>
-              <select className="input" value={filters.language} onChange={e => setFilter('language', e.target.value)}>
-                <option value="">All Languages</option>
-                <option value="English">English</option>
-                <option value="Hindi">Hindi</option>
-                <option value="Marathi">Marathi</option>
-                <option value="Tamil">Tamil</option>
-              </select>
-            </div>
-            <div>
-              <label className="label">Availability</label>
-              <select className="input" value={filters.available} onChange={e => setFilter('available', e.target.value)}>
-                <option value="">All Books</option>
-                <option value="true">Available Now</option>
-              </select>
-            </div>
+          {/* Results Count */}
+          <div style={{ fontSize: 13, color: '#6B7280' }}>
+            Showing <strong>{showing}</strong> results
           </div>
-        </div>
-      )}
 
-      {/* Results */}
-      {loading ? (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 20 }}>
-          {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 12, height: 260, animation: 'pulse 1.5s ease infinite' }} />
+          {/* Books */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {books.map(book => (
+            <div key={book.id} style={{
+              background: 'white',
+              border: '1px solid #E5E7EB',
+              borderRadius: 10,
+              padding: '16px',
+              display: 'flex',
+              gap: 16,
+              alignItems: 'flex-start',
+            }}>
+              {/* Book Cover */}
+              <div style={{
+                width: 70,
+                height: 100,
+                borderRadius: 6,
+                overflow: 'hidden',
+                flexShrink: 0,
+                boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+              }}>
+                <img
+                  src={book.cover}
+                  alt={book.title}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    e.target.parentElement.style.background = 'linear-gradient(135deg, #6366F1, #8B5CF6)';
+                  }}
+                />
+              </div>
+
+              {/* Book Info */}
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <h3 style={{ fontSize: 16, fontWeight: 600, color: '#111827', marginBottom: 4 }}>{book.title}</h3>
+                <div style={{ fontSize: 13, color: '#6B7280', marginBottom: 8 }}>{book.author}</div>
+                <span style={{
+                  display: 'inline-block',
+                  padding: '3px 10px',
+                  borderRadius: 6,
+                  fontSize: 11,
+                  fontWeight: 600,
+                  background: `${book.categoryColor}15`,
+                  color: book.categoryColor,
+                  marginBottom: 12,
+                }}>
+                  {book.category}
+                </span>
+                <div style={{ display: 'flex', gap: 16, fontSize: 12, color: '#6B7280', marginBottom: 8 }}>
+                  <div><strong>ISBN:</strong> {book.isbn}</div>
+                  <div><strong>Pages:</strong> {book.pages}</div>
+                  <div><strong>Published:</strong> {book.published}</div>
+                </div>
+              </div>
+
+              {/* Availability and Action */}
+              <div style={{ textAlign: 'right', minWidth: 100, flexShrink: 0 }}>
+                <div style={{
+                  padding: '6px 12px',
+                  borderRadius: 6,
+                  fontSize: 12,
+                  fontWeight: 600,
+                  background: book.available ? '#D1FAE5' : '#FEE2E2',
+                  color: book.available ? '#059669' : '#DC2626',
+                  marginBottom: 8,
+                }}>
+                  {book.available ? 'Available' : 'Issued'}
+                </div>
+                <div style={{ fontSize: 11, color: '#6B7280', marginBottom: 12 }}>
+                  {book.available ? `${book.copies} Copies` : `${book.copies} Copies`}
+                </div>
+                <button style={{
+                  width: '100%',
+                  padding: '8px 16px',
+                  background: 'white',
+                  border: '1px solid #6366F1',
+                  borderRadius: 6,
+                  fontSize: 12,
+                  fontWeight: 600,
+                  color: '#6366F1',
+                  cursor: 'pointer',
+                  fontFamily: 'Inter',
+                  transition: 'all 0.15s',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#6366F1'; e.currentTarget.style.color = 'white'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'white'; e.currentTarget.style.color = '#6366F1'; }}
+                >
+                  {book.available ? 'View Details' : 'Join Waitlist'}
+                </button>
+              </div>
+            </div>
           ))}
-        </div>
-      ) : books.length === 0 ? (
-        <div className="empty-state">
-          <div className="empty-state-icon">📚</div>
-          <p style={{ fontSize: 16, fontWeight: 600, marginBottom: 8 }}>No books found</p>
-          <p style={{ fontSize: 13 }}>Try adjusting your search or filters</p>
-          {activeFilterCount > 0 && (
-            <button onClick={clearFilters} className="btn btn-secondary btn-sm" style={{ marginTop: 16 }}>Clear Filters</button>
-          )}
-        </div>
-      ) : (
-        <>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 20 }}>
-            {books.map((book) => {
-              const inv = book.inventory;
-              const isAvailable = inv && inv.available > 0;
-              return (
-                <Link key={book._id} href={`/student/book/${book._id}`} style={{ textDecoration: 'none' }}>
-                  <div className="card" style={{ padding: 0, overflow: 'hidden', cursor: 'pointer', transition: 'all 0.2s' }}
-                    onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.borderColor = 'var(--brand)'; }}
-                    onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.borderColor = 'var(--border)'; }}
-                  >
-                    {/* Cover */}
-                    <div style={{ height: 140, background: 'linear-gradient(135deg, #6366F1, #8B5CF6)', position: 'relative', overflow: 'hidden' }}>
-                      {book.cover
-                        ? <img src={book.cover} alt={book.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                        : <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}><BookOpen size={36} color="rgba(255,255,255,0.3)" /></div>
-                      }
-                      <div style={{ position: 'absolute', top: 8, right: 8 }}>
-                        <span className={`badge ${isAvailable ? 'badge-success' : 'badge-danger'}`} style={{ fontSize: 10 }}>
-                          {isAvailable ? `${inv.available} avail.` : 'Unavailable'}
-                        </span>
-                      </div>
-                    </div>
-                    {/* Info */}
-                    <div style={{ padding: '12px 14px' }}>
-                      <div style={{ fontSize: 13, fontWeight: 700, lineHeight: 1.3, marginBottom: 4, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
-                        {book.title}
-                      </div>
-                      <div style={{ fontSize: 12, color: 'var(--muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{book.author}</div>
-                      {book.category && (
-                        <span className="badge badge-brand" style={{ marginTop: 8, fontSize: 10 }}>{book.category}</span>
-                      )}
-                    </div>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
 
           {/* Pagination */}
-          {totalPages > 1 && (
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8, marginTop: 32 }}>
-              <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="btn btn-secondary btn-sm">← Prev</button>
-              <span style={{ fontSize: 13, color: 'var(--muted)' }}>Page {page} of {totalPages}</span>
-              <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="btn btn-secondary btn-sm">Next →</button>
-            </div>
-          )}
-        </>
-      )}
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8, marginTop: 16 }}>
+            <button style={{
+              padding: '8px 12px',
+              background: 'white',
+              border: '1px solid #E5E7EB',
+              borderRadius: 6,
+              fontSize: 12,
+              color: '#6B7280',
+              cursor: 'pointer',
+              fontFamily: 'Inter',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 4,
+            }}>
+              <ChevronLeft size={14} />
+              Previous
+            </button>
+            
+            {[1, 2, 3, 4, 5].map(num => (
+              <button key={num} style={{
+                padding: '8px 12px',
+                background: num === 1 ? '#6366F1' : 'white',
+                border: '1px solid #E5E7EB',
+                borderRadius: 6,
+                fontSize: 12,
+                color: num === 1 ? 'white' : '#6B7280',
+                cursor: 'pointer',
+                fontFamily: 'Inter',
+                fontWeight: 600,
+                minWidth: 36,
+              }}>
+                {num}
+              </button>
+            ))}
+            
+            <span style={{ fontSize: 12, color: '#9CA3AF' }}>...</span>
+            
+            <button style={{
+              padding: '8px 12px',
+              background: 'white',
+              border: '1px solid #E5E7EB',
+              borderRadius: 6,
+              fontSize: 12,
+              color: '#6B7280',
+              cursor: 'pointer',
+              fontFamily: 'Inter',
+              minWidth: 36,
+            }}>
+              22
+            </button>
+            
+            <button style={{
+              padding: '8px 12px',
+              background: 'white',
+              border: '1px solid #E5E7EB',
+              borderRadius: 6,
+              fontSize: 12,
+              color: '#6B7280',
+              cursor: 'pointer',
+              fontFamily: 'Inter',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 4,
+            }}>
+              Next
+              <ChevronRight size={14} />
+            </button>
+          </div>
+          </div>
+        </div>
 
-      <style>{`@keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } } @keyframes pulse { 0%, 100% { opacity: 0.6 } 50% { opacity: 0.3 } }`}</style>
+        {/* Right Sidebar - Filters */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 20, minWidth: 0 }}>
+          {/* Filters Card */}
+          <div style={{ background: 'white', padding: '20px', borderRadius: 12, border: '1px solid #E5E7EB' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+              <h3 style={{ fontSize: 16, fontWeight: 700, color: '#111827' }}>Filters</h3>
+              <button style={{ fontSize: 12, color: '#DC2626', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600, fontFamily: 'Inter' }}>
+                Clear All
+              </button>
+            </div>
+
+            {/* Availability */}
+            <div style={{ marginBottom: 20 }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', marginBottom: 10 }}>Availability</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {['All', 'Available', 'Issued'].map(option => (
+                  <label key={option} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+                    <input
+                      type="checkbox"
+                      checked={option === 'All'}
+                      onChange={() => setAvailability(option.toLowerCase())}
+                      style={{ width: 16, height: 16, cursor: 'pointer' }}
+                    />
+                    <span style={{ fontSize: 13, color: '#6B7280' }}>{option}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* Category */}
+            <div style={{ marginBottom: 20 }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', marginBottom: 10 }}>Category</div>
+              <select 
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '8px 12px',
+                  border: '1px solid #E5E7EB',
+                  borderRadius: 6,
+                  fontSize: 13,
+                  outline: 'none',
+                  fontFamily: 'Inter',
+                  color: '#374151',
+                }}
+              >
+                <option>All Categories</option>
+                <option>Fiction</option>
+                <option>Programming</option>
+                <option>Self Help</option>
+              </select>
+            </div>
+
+            {/* Author */}
+            <div style={{ marginBottom: 20 }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', marginBottom: 10 }}>Author</div>
+              <select 
+                value={selectedAuthor}
+                onChange={(e) => setSelectedAuthor(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '8px 12px',
+                  border: '1px solid #E5E7EB',
+                  borderRadius: 6,
+                  fontSize: 13,
+                  outline: 'none',
+                  fontFamily: 'Inter',
+                  color: '#374151',
+                }}
+              >
+                <option>All Authors</option>
+              </select>
+            </div>
+
+            {/* Publication Year */}
+            <div style={{ marginBottom: 20 }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', marginBottom: 10 }}>Publication Year</div>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <input 
+                  placeholder="From Year" 
+                  value={fromYear}
+                  onChange={(e) => setFromYear(e.target.value)}
+                  style={{
+                    flex: 1,
+                    padding: '8px 12px',
+                    border: '1px solid #E5E7EB',
+                    borderRadius: 6,
+                    fontSize: 13,
+                    outline: 'none',
+                    fontFamily: 'Inter',
+                  }} 
+                />
+                <input 
+                  placeholder="To Year" 
+                  value={toYear}
+                  onChange={(e) => setToYear(e.target.value)}
+                  style={{
+                    flex: 1,
+                    padding: '8px 12px',
+                    border: '1px solid #E5E7EB',
+                    borderRadius: 6,
+                    fontSize: 13,
+                    outline: 'none',
+                    fontFamily: 'Inter',
+                  }} 
+                />
+              </div>
+            </div>
+
+            {/* Language */}
+            <div style={{ marginBottom: 20 }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', marginBottom: 10 }}>Language</div>
+              <select 
+                value={selectedLanguage}
+                onChange={(e) => setSelectedLanguage(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '8px 12px',
+                  border: '1px solid #E5E7EB',
+                  borderRadius: 6,
+                  fontSize: 13,
+                  outline: 'none',
+                  fontFamily: 'Inter',
+                  color: '#374151',
+                }}
+              >
+                <option>All Languages</option>
+              </select>
+            </div>
+
+            {/* Apply Filters Button */}
+            <button style={{
+              width: '100%',
+              padding: '10px',
+              background: '#6366F1',
+              border: 'none',
+              borderRadius: 8,
+              fontSize: 13,
+              fontWeight: 600,
+              color: 'white',
+              cursor: 'pointer',
+              fontFamily: 'Inter',
+            }}>
+              Apply Filters
+            </button>
+          </div>
+
+          {/* Categories Card */}
+          <div style={{ background: 'white', padding: '20px', borderRadius: 12, border: '1px solid #E5E7EB' }}>
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: '#111827', marginBottom: 16 }}>Categories</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {categories.map(cat => (
+                <div key={cat.name} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
+                  onMouseEnter={e => e.currentTarget.style.color = '#6366F1'}
+                  onMouseLeave={e => e.currentTarget.style.color = '#111827'}
+                >
+                  <span style={{ fontSize: 13, color: '#111827', fontWeight: 500 }}>{cat.name}</span>
+                  <span style={{ fontSize: 12, color: '#9CA3AF', fontWeight: 600 }}>{cat.count}</span>
+                </div>
+              ))}
+              <button style={{
+                marginTop: 8,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 4,
+                background: 'none',
+                border: 'none',
+                color: '#6366F1',
+                fontSize: 13,
+                fontWeight: 600,
+                cursor: 'pointer',
+                fontFamily: 'Inter',
+              }}>
+                View All Categories
+                <ChevronRight size={14} />
+              </button>
+            </div>
+          </div>
+
+          {/* Quote Card */}
+          <div style={{
+            background: 'linear-gradient(135deg, #6366F1, #8B5CF6)',
+            padding: '24px 20px',
+            borderRadius: 12,
+            textAlign: 'center',
+            color: 'white',
+            position: 'relative',
+            overflow: 'hidden',
+          }}>
+            <div style={{ position: 'relative', zIndex: 1 }}>
+              <div style={{ fontSize: 14, fontStyle: 'italic', marginBottom: 12, lineHeight: 1.6, fontWeight: 500 }}>
+                "A library is a gateway to knowledge."
+              </div>
+              <div style={{ fontSize: 12, opacity: 0.9 }}>- Roger Ebert</div>
+            </div>
+            {/* Illustration */}
+            <div style={{
+              marginTop: 16,
+              fontSize: 60,
+              opacity: 0.9,
+            }}>
+              📚
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <style>{`
+        input::placeholder,
+        input::-webkit-input-placeholder {
+          color: #6B7280 !important;
+          opacity: 1 !important;
+        }
+        input::-moz-placeholder {
+          color: #6B7280 !important;
+          opacity: 1 !important;
+        }
+        input:-ms-input-placeholder {
+          color: #6B7280 !important;
+          opacity: 1 !important;
+        }
+        select {
+          color: #374151 !important;
+        }
+        select option {
+          color: #374151 !important;
+        }
+      `}</style>
     </div>
   );
 }

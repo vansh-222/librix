@@ -29,7 +29,7 @@ export async function POST(req) {
     const passwordHash = await User.hashPassword(password);
 
     await User.create({
-      collegeId: collegeId || 'default',
+      collegeId: collegeId || null,
       name:      name.trim(),
       email:     email.toLowerCase().trim(),
       passwordHash,

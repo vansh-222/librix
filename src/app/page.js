@@ -70,10 +70,12 @@ export default function LandingPage() {
   const T = (s, extra = {}) => ({ fontFamily: 'Inter', wordWrap: 'break-word', ...extra, ...s });
 
   return (
-    <div style={{ fontFamily: 'Inter,sans-serif', background: 'white', color: 'black', overflowX: 'hidden' }}>
+    <div style={{ fontFamily: 'Inter,sans-serif', background: 'white', color: 'black', overflowX: 'hidden', minHeight: '100vh' }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        *{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}a{text-decoration:none}
+        *{box-sizing:border-box;margin:0;padding:0}
+        html,body{height:auto!important;overflow:visible!important;min-height:100vh}
+        html{scroll-behavior:smooth}a{text-decoration:none}
         .nl:hover{color:#1A73E8!important}.hl:hover{opacity:.85}
       `}</style>
 
