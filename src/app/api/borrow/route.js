@@ -42,7 +42,7 @@ export async function PATCH(req) {
     const session = await auth();
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const { recordId, action, condition, extensionDays } = await req.json();
+    const { recordId, action, condition, extensionDays, rating, reviewNote } = await req.json();
     if (!recordId || !action) return NextResponse.json({ error: 'Missing fields' }, { status: 400 });
 
     await connectDB();
@@ -167,7 +167,6 @@ export async function PATCH(req) {
       if (record.extensionsUsed >= maxExt) {
         return NextResponse.json({ error: `Maximum ${maxExt} extensions already used` }, { status: 400 });
       }
-      // For MVP, auto-extend by maxBorrowDays (librarian can reject separately)
       const days = extensionDays || settings.maxBorrowDays || 14;
       const newDue = new Date(record.dueDate);
       newDue.setDate(newDue.getDate() + days);
@@ -183,6 +182,58 @@ export async function PATCH(req) {
         type: 'extension_approved',
         link: '/student/my-books',
       });
+
+    } else if (action === 'pay_fine') {
+      // Student or librarian marks fine as paid
+      const isOwner = record.userId._id.toString() === session.user.id;
+      const isLibrarian = session.user.role === 'librarian';
+      if (!isOwner && !isLibrarian) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+      }
+      if (record.fineStatus !== 'pending') {
+        return NextResponse.json({ error: 'No pending fine to pay' }, { status: 400 });
+      }
+      record.fineStatus = 'paid';
+      await record.save();
+
+      await createNotification({
+        userId: record.userId._id,
+        collegeId: record.collegeId,
+        title: 'Fine Paid',
+        message: `Your fine of ${settings.currencySymbol || '₹'}${record.fine} for "${record.bookId.title}" has been marked as paid.`,
+        type: 'general',
+        link: '/student/fines',
+      });
+
+    } else if (action === 'waive_fine') {
+      // Librarian waives fine
+      if (session.user.role !== 'librarian') {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+      }
+      record.fineStatus = 'waived';
+      await record.save();
+
+      await createNotification({
+        userId: record.userId._id,
+        collegeId: record.collegeId,
+        title: 'Fine Waived',
+        message: `Your fine of ${settings.currencySymbol || '₹'}${record.fine} for "${record.bookId.title}" has been waived by the librarian.`,
+        type: 'general',
+        link: '/student/fines',
+      });
+
+    } else if (action === 'rate') {
+      // Student rates a returned book
+      if (record.userId._id.toString() !== session.user.id) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+      }
+      if (record.status !== 'returned') {
+        return NextResponse.json({ error: 'Can only rate returned books' }, { status: 400 });
+      }
+      const ratingVal = Math.min(5, Math.max(1, parseInt(rating) || 1));
+      record.rating = ratingVal;
+      if (reviewNote) record.reviewNote = reviewNote;
+      await record.save();
     }
 
     return NextResponse.json({ success: true, record });

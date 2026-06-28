@@ -1,27 +1,21 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import LibrarianLayout from '@/components/librarian/LibrarianLayout';
 import {
   BookOpen, ClipboardList, CheckCircle, XCircle, Filter, Plus, Clock, X, Check
 } from 'lucide-react';
 
-// Sample data
-const SAMPLE_REQUESTS = [
-  { id: 1, bookTitle: 'Atomic Habits', author: 'James Clear', isbn: '978-1847941831', memberName: 'Rahul Verma', memberId: 'MEM001', requestDate: 'May 16, 2026', requestTime: '10:30 AM', status: 'pending', cover: '#E05252' },
-  { id: 2, bookTitle: 'Deep Work', author: 'Cal Newport', isbn: '978-0349414114', memberName: 'Arjun Mehta', memberId: 'MEM003', requestDate: 'May 15, 2026', requestTime: '02:45 PM', status: 'pending', cover: '#2B6CB0' },
-  { id: 3, bookTitle: 'Clean Code', author: 'Robert C. Martin', isbn: '978-0132350884', memberName: 'Neha Gupta', memberId: 'MEM004', requestDate: 'May 14, 2026', requestTime: '11:20 AM', status: 'approved', cover: '#9C27B0' },
-  { id: 4, bookTitle: 'The Psychology of Money', author: 'Morgan Housel', isbn: '978-0857197689', memberName: 'Sneha Iyer', memberId: 'MEM006', requestDate: 'May 14, 2026', requestTime: '09:10 AM', status: 'approved', cover: '#F5F5F5' },
-  { id: 5, bookTitle: 'The 5 AM Club', author: 'Robin Sharma', isbn: '978-1443456623', memberName: 'Vikram Patel', memberId: 'MEM005', requestDate: 'May 13, 2026', requestTime: '03:10 PM', status: 'rejected', cover: '#D4A017' },
-  { id: 6, bookTitle: 'Ikigai', author: 'Héctor García', isbn: '978-1786330895', memberName: 'Priya Singh', memberId: 'MEM002', requestDate: 'May 12, 2026', requestTime: '01:05 PM', status: 'pending', cover: '#26C6DA' },
-  { id: 7, bookTitle: 'Thinking, Fast and Slow', author: 'Daniel Kahneman', isbn: '978-0374275631', memberName: 'Aman Sharma', memberId: 'MEM007', requestDate: 'May 11, 2026', requestTime: '04:30 PM', status: 'rejected', cover: '#26C6DA' },
-];
+function fmtDate(d) {
+  if (!d) return '—';
+  return new Date(d).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+function fmtTime(d) {
+  if (!d) return '';
+  return new Date(d).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+}
 
-const STATS = [
-  { icon: <ClipboardList size={22} color="#6C5CE7" />, iconBg: '#EDE9FE', value: '48', label: 'Total Requests' },
-  { icon: <Clock size={22} color="#F59E0B" />, iconBg: '#FEF3C7', value: '22', label: 'Pending Requests' },
-  { icon: <CheckCircle size={22} color="#16A34A" />, iconBg: '#DCFCE7', value: '18', label: 'Approved Requests' },
-  { icon: <XCircle size={22} color="#DC2626" />, iconBg: '#FEE2E2', value: '8', label: 'Rejected Requests' },
-];
+const BOOK_COLORS = ['#E05252','#2B6CB0','#9C27B0','#F5F5F5','#D4A017','#26C6DA','#EA580C','#6C5CE7'];
+
 
 function BookCover({ color }) {
   return (
@@ -39,17 +33,60 @@ function BookCover({ color }) {
 
 export default function RequestsPage() {
   const [activeTab, setActiveTab] = useState('all');
+  const [requests, setRequests]   = useState([]);
+  const [acting, setActing]       = useState('');
+  const [toast, setToast]         = useState('');
 
-  const tabs = [
-    { id: 'all', label: 'All Requests' },
-    { id: 'pending', label: 'Pending' },
-    { id: 'approved', label: 'Approved' },
-    { id: 'rejected', label: 'Rejected' },
+  const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(''), 3000); };
+
+  const load = useCallback(async () => {
+    const res  = await fetch('/api/requests');
+    const data = await res.json();
+    setRequests(data.requests || []);
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  const total    = requests.length;
+  const pending  = requests.filter(r => r.status === 'requested').length;
+  const approved = requests.filter(r => r.status === 'approved' || r.status === 'issued').length;
+  const rejected = requests.filter(r => r.status === 'rejected').length;
+
+  const STATS = [
+    { icon: <ClipboardList size={22} color="#6C5CE7" />, iconBg: '#EDE9FE', value: total,    label: 'Total Requests'    },
+    { icon: <Clock size={22} color="#F59E0B" />,         iconBg: '#FEF3C7', value: pending,   label: 'Pending Requests'  },
+    { icon: <CheckCircle size={22} color="#16A34A" />,   iconBg: '#DCFCE7', value: approved,  label: 'Approved Requests' },
+    { icon: <XCircle size={22} color="#DC2626" />,       iconBg: '#FEE2E2', value: rejected,  label: 'Rejected Requests' },
   ];
 
-  const filteredRequests = activeTab === 'all' 
-    ? SAMPLE_REQUESTS 
-    : SAMPLE_REQUESTS.filter(r => r.status === activeTab);
+  const doAction = async (requestId, action) => {
+    setActing(requestId + action);
+    try {
+      const res = await fetch('/api/requests', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ requestId, action }),
+      });
+      const data = await res.json();
+      if (!res.ok) { showToast(data.error || 'Action failed.'); return; }
+      showToast(action === 'approve' ? 'Request approved! ✅' : action === 'issue' ? 'Book issued! 📚' : 'Request rejected.');
+      load();
+    } catch { showToast('Something went wrong.'); }
+    finally { setActing(''); }
+  };
+
+  const tabs = [
+    { id: 'all',       label: 'All Requests' },
+    { id: 'requested', label: 'Pending'      },
+    { id: 'approved',  label: 'Approved'     },
+    { id: 'rejected',  label: 'Rejected'     },
+  ];
+
+  const STATUS_MAP = { requested: 'pending', approved: 'approved', issued: 'approved', rejected: 'rejected', cancelled: 'rejected' };
+
+  const filteredRequests = activeTab === 'all'
+    ? requests
+    : requests.filter(r => (activeTab === 'requested' ? r.status === 'requested' : activeTab === 'approved' ? ['approved','issued'].includes(r.status) : r.status === activeTab));
 
   return (
     <LibrarianLayout
@@ -57,6 +94,7 @@ export default function RequestsPage() {
       subtitle="Manage book requests from members"
       searchPlaceholder="Search books, members, ISBN..."
     >
+      {toast && <div style={{ position: 'fixed', top: 20, right: 20, zIndex: 999, background: '#6C5CE7', color: '#fff', padding: '10px 20px', borderRadius: 10, fontSize: 14, fontWeight: 600, boxShadow: '0 4px 24px rgba(108,92,231,0.4)' }}>{toast}</div>}
       <div style={{ padding: '24px 24px 32px' }}>
         {/* Two column layout */}
         <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start' }}>
@@ -139,118 +177,77 @@ export default function RequestsPage() {
                 </thead>
                 <tbody>
                   {filteredRequests.map((req, i) => {
+                    const uiStatus = STATUS_MAP[req.status] || req.status;
                     const statusConfig = {
-                      pending: { label: 'Pending', bg: '#FEF3C7', color: '#D97706' },
+                      pending:  { label: 'Pending',  bg: '#FEF3C7', color: '#D97706' },
                       approved: { label: 'Approved', bg: '#DCFCE7', color: '#15803D' },
-                      rejected: { label: 'Rejected', bg: '#FEE2E2', color: '#DC2626' }
+                      rejected: { label: 'Rejected', bg: '#FEE2E2', color: '#DC2626' },
                     };
-                    const status = statusConfig[req.status];
-
+                    const status = statusConfig[uiStatus] || statusConfig.pending;
+                    const cover  = BOOK_COLORS[i % BOOK_COLORS.length];
                     return (
-                      <tr key={req.id} className="tr-hover" style={{ borderBottom: i < filteredRequests.length - 1 ? '1px solid #F3F4F6' : 'none' }}>
+                      <tr key={req._id} className="tr-hover" style={{ borderBottom: i < filteredRequests.length - 1 ? '1px solid #F3F4F6' : 'none' }}>
                         <td style={{ padding: '10px 16px' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                            <BookCover color={req.cover} />
+                            <BookCover color={cover} />
                             <div style={{ minWidth: 0, flex: 1 }}>
-                              <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{req.bookTitle}</div>
-                              <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 2 }}>{req.author}</div>
-                              <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 1 }}>ISBN: {req.isbn}</div>
+                              <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{req.bookId?.title}</div>
+                              <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 2 }}>{req.bookId?.author}</div>
+                              <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 1 }}>ISBN: {req.bookId?.isbn || '—'}</div>
                             </div>
                           </div>
                         </td>
                         <td style={{ padding: '10px 16px' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                             <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#6C5CE7', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: 12, fontWeight: 700 }}>
-                              {req.memberName.split(' ').map(n => n[0]).join('')}
+                              {(req.userId?.name || '?').split(' ').map(n => n[0]).join('')}
                             </div>
                             <div style={{ minWidth: 0 }}>
-                              <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{req.memberName}</div>
-                              <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 2 }}>{req.memberId}</div>
+                              <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{req.userId?.name}</div>
+                              <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 2 }}>{req.userId?.email}</div>
                             </div>
                           </div>
                         </td>
                         <td style={{ padding: '10px 16px' }}>
-                          <div style={{ fontSize: 13, fontWeight: 500, color: '#111827' }}>{req.requestDate}</div>
-                          <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 2 }}>{req.requestTime}</div>
+                          <div style={{ fontSize: 13, fontWeight: 500, color: '#111827' }}>{fmtDate(req.createdAt)}</div>
+                          <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 2 }}>{fmtTime(req.createdAt)}</div>
                         </td>
                         <td style={{ padding: '10px 16px' }}>
-                          <span style={{
-                            padding: '4px 12px',
-                            background: status.bg,
-                            color: status.color,
-                            borderRadius: 9999,
-                            fontSize: 11,
-                            fontWeight: 500,
-                            display: 'inline-block'
-                          }}>
+                          <span style={{ padding: '4px 12px', background: status.bg, color: status.color, borderRadius: 9999, fontSize: 11, fontWeight: 500, display: 'inline-block' }}>
                             {status.label}
                           </span>
                         </td>
                         <td style={{ padding: '10px 16px' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center' }}>
-                            {req.status === 'pending' ? (
+                            {req.status === 'requested' ? (
                               <>
-                                <button 
-                                  type="button"
-                                  title="Approve Request"
-                                  style={{ 
-                                    padding: '7px 14px', 
-                                    border: '1px solid #16A34A', 
-                                    background: 'white', 
-                                    color: '#16A34A',
-                                    borderRadius: 6, 
-                                    cursor: 'pointer', 
-                                    display: 'flex', 
-                                    alignItems: 'center', 
-                                    gap: 4,
-                                    fontSize: 12,
-                                    fontWeight: 500,
-                                    fontFamily: 'Inter',
-                                    transition: 'all 0.15s ease'
-                                  }}
-                                  onMouseEnter={(e) => {
-                                    e.currentTarget.style.background = '#16A34A';
-                                    e.currentTarget.style.color = 'white';
-                                  }}
-                                  onMouseLeave={(e) => {
-                                    e.currentTarget.style.background = 'white';
-                                    e.currentTarget.style.color = '#16A34A';
-                                  }}
+                                <button type="button" title="Approve Request"
+                                  disabled={acting === req._id + 'approve'}
+                                  onClick={() => doAction(req._id, 'approve')}
+                                  style={{ padding: '7px 14px', border: '1px solid #16A34A', background: 'white', color: '#16A34A', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 500, fontFamily: 'Inter', transition: 'all 0.15s ease' }}
+                                  onMouseEnter={e => { e.currentTarget.style.background = '#16A34A'; e.currentTarget.style.color = 'white'; }}
+                                  onMouseLeave={e => { e.currentTarget.style.background = 'white'; e.currentTarget.style.color = '#16A34A'; }}
                                 >
-                                  <Check size={14} />
-                                  Approve
+                                  <Check size={14} /> Approve
                                 </button>
-                                <button 
-                                  type="button"
-                                  title="Reject Request"
-                                  style={{ 
-                                    padding: '7px 14px', 
-                                    border: '1px solid #DC2626', 
-                                    background: 'white', 
-                                    color: '#DC2626',
-                                    borderRadius: 6, 
-                                    cursor: 'pointer', 
-                                    display: 'flex', 
-                                    alignItems: 'center', 
-                                    gap: 4,
-                                    fontSize: 12,
-                                    fontWeight: 500,
-                                    fontFamily: 'Inter',
-                                    transition: 'all 0.15s ease'
-                                  }}
-                                  onMouseEnter={(e) => {
-                                    e.currentTarget.style.background = '#DC2626';
-                                    e.currentTarget.style.color = 'white';
-                                  }}
-                                  onMouseLeave={(e) => {
-                                    e.currentTarget.style.background = 'white';
-                                    e.currentTarget.style.color = '#DC2626';
-                                  }}
+                                <button type="button" title="Reject Request"
+                                  disabled={acting === req._id + 'reject'}
+                                  onClick={() => doAction(req._id, 'reject')}
+                                  style={{ padding: '7px 14px', border: '1px solid #DC2626', background: 'white', color: '#DC2626', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 500, fontFamily: 'Inter', transition: 'all 0.15s ease' }}
+                                  onMouseEnter={e => { e.currentTarget.style.background = '#DC2626'; e.currentTarget.style.color = 'white'; }}
+                                  onMouseLeave={e => { e.currentTarget.style.background = 'white'; e.currentTarget.style.color = '#DC2626'; }}
                                 >
-                                  <X size={14} />
-                                  Reject
+                                  <X size={14} /> Reject
                                 </button>
                               </>
+                            ) : req.status === 'approved' ? (
+                              <button type="button"
+                                disabled={acting === req._id + 'issue'}
+                                onClick={() => doAction(req._id, 'issue')}
+                                style={{ padding: '7px 14px', border: '1px solid #6C5CE7', background: 'white', color: '#6C5CE7', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 500, fontFamily: 'Inter' }}
+                              >
+                                Issue Book
+                              </button>
                             ) : (
                               <span style={{ fontSize: 13, color: '#9CA3AF' }}>—</span>
                             )}

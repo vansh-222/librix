@@ -78,7 +78,7 @@ export async function POST(req) {
     });
 
     // Notify librarians — fetch librarian IDs
-    const { User } = await import('@/models/User');
+    const User = (await import('@/models/User')).default;
     const librarians = await User.find({ collegeId: session.user.collegeId, role: 'librarian' }).select('_id').lean();
     await Promise.all(librarians.map(l =>
       createNotification({
@@ -98,13 +98,11 @@ export async function POST(req) {
   }
 }
 
-// PATCH /api/requests — librarian approves/rejects
+// PATCH /api/requests — librarian approves/rejects/issues OR student cancels
 export async function PATCH(req) {
   try {
     const session = await auth();
-    if (!session || session.user.role !== 'librarian') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const { requestId, action, note } = await req.json();
     if (!requestId || !action) return NextResponse.json({ error: 'Missing fields' }, { status: 400 });
@@ -115,6 +113,24 @@ export async function PATCH(req) {
       .populate('userId', 'name email')
       .populate('bookId', 'title author');
     if (!request) return NextResponse.json({ error: 'Request not found' }, { status: 404 });
+
+    // Student can only cancel their own pending request
+    if (action === 'cancel') {
+      if (request.userId._id.toString() !== session.user.id) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+      }
+      if (request.status !== 'requested') {
+        return NextResponse.json({ error: 'Only pending requests can be cancelled' }, { status: 400 });
+      }
+      request.status = 'cancelled';
+      await request.save();
+      return NextResponse.json({ success: true });
+    }
+
+    // Everything below is librarian-only
+    if (session.user.role !== 'librarian') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
 
     if (action === 'approve') {
       // Check availability

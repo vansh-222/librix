@@ -49,3 +49,29 @@ export async function PATCH(req) {
     return NextResponse.json({ error: 'Failed to update notifications' }, { status: 500 });
   }
 }
+
+// DELETE /api/notifications — delete one or all notifications
+export async function DELETE(req) {
+  try {
+    const session = await auth();
+    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    const { searchParams } = new URL(req.url);
+    const notificationId = searchParams.get('id');
+    const deleteAll = searchParams.get('all') === 'true';
+
+    await connectDB();
+
+    if (deleteAll) {
+      await Notification.deleteMany({ userId: session.user.id });
+    } else if (notificationId) {
+      await Notification.findOneAndDelete({ _id: notificationId, userId: session.user.id });
+    } else {
+      return NextResponse.json({ error: 'Provide id or all=true' }, { status: 400 });
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    return NextResponse.json({ error: 'Failed to delete notification' }, { status: 500 });
+  }
+}

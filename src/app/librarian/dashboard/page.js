@@ -1,6 +1,8 @@
 'use client';
 import LibrarianLayout from '@/components/librarian/LibrarianLayout';
 import { ChevronRight, Plus, UserPlus, RotateCcw, FileText, BarChart2, BookOpen, Users, ArrowLeftRight, ClipboardList, Clock } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
 
 /* ─── CHART DATA ──────────────────────── */
 const CHART_DATA = [
@@ -44,51 +46,66 @@ function LineChart() {
   );
 }
 
-/* ─── OVERDUE DATA ────────────────────── */
-const OVERDUE = [
-  { title: 'Clean Code', author: 'Robert C. Martin', member: 'Vikram Patel', due: 'May 14, 2026', days: 2 },
-  { title: 'The Power of Habit', author: 'Charles Duhigg', member: 'Sneha Iyer', due: 'May 12, 2026', days: 4 },
-  { title: 'The Power of Habit', author: 'Charles Duhigg', member: 'Sneha Iyer', due: 'May 12, 2026', days: 4 },
-  { title: 'Rich Dad Poor Dad', author: 'Robert T. Kiyosaki', member: 'Aman Sharma', due: 'May 10, 2026', days: 6 },
-  { title: 'Rich Dad Poor Dad', author: 'Robert T. Kiyosaki', member: 'Aman Sharma', due: 'May 10, 2026', days: 6 },
-];
-
-const ACTIVITIES = [
-  { bg: '#FFEDD5', color: '#EA580C', title: 'Deep Work', sub: 'issued to Rahul Verma', time: '10:30 AM' },
-  { bg: '#DCFCE7', color: '#16A34A', title: 'Atomic Habits', sub: 'returned by Priya Singh', time: '09:15 AM' },
-  { bg: '#DBEAFE', color: '#2563EB', title: 'New member Arjun Mehta', sub: 'registered', time: 'Yesterday' },
-  { bg: '#FFEDD5', color: '#EA580C', title: 'The 5 AM Club', sub: 'issue request by Neha Gupta', time: 'Yesterday' },
-  { bg: '#FEE2E2', color: '#DC2626', title: 'Fine of ₹50 collected', sub: 'from Vikram Patel', time: 'May 15, 2026' },
-];
-
-const NOTIFS = [
-  { bg: '#FEE2E2', color: '#DC2626', text: '"Clean Code" is overdue by 2 days.', time: '10:30 AM' },
-  { bg: '#FEF9C3', color: '#CA8A04', text: '"The 5 AM Club" issue request by Neha Gupta.', time: '09:45 AM' },
-  { bg: '#DCFCE7', color: '#16A34A', text: 'New member registration by Arjun Mehta.', time: 'Yesterday' },
-];
+function fmtDate(d) {
+  if (!d) return '—';
+  return new Date(d).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+function daysLate(due) {
+  return Math.max(0, Math.ceil((new Date() - new Date(due)) / 86400000));
+}
+function timeAgo(d) {
+  const diff = Date.now() - new Date(d).getTime();
+  const hrs = Math.floor(diff / 3600000);
+  if (hrs < 1) return 'just now';
+  if (hrs < 24) return `${hrs}h ago`;
+  return Math.floor(hrs / 24) + 'd ago';
+}
 
 const QUICK = [
-  { icon: <Plus size={16} color="#2563EB" />, label: 'Add New Book' },
-  { icon: <UserPlus size={16} color="#6C5CE7" />, label: 'Add New Member' },
-  { icon: <ArrowLeftRight size={16} color="#2563EB" />, label: 'Issue Book' },
-  { icon: <RotateCcw size={16} color="#2563EB" />, label: 'Return Book' },
-  { icon: <FileText size={16} color="#4B5563" />, label: 'View All Requests' },
-  { icon: <BarChart2 size={16} color="#4B5563" />, label: 'Generate Reports' },
-];
-
-/* ─── STAT CARDS ──────────────────────── */
-const STATS = [
-  { icon: <BookOpen size={20} color="#6C5CE7" />, iconBg: '#F3E8FF', value: '2,456', label: 'Total Books' },
-  { icon: <Users size={20} color="#16A34A" />, iconBg: '#DCFCE7', value: '342', label: 'Total Members' },
-  { icon: <ArrowLeftRight size={20} color="#CA8A04" />, iconBg: '#FEF9C3', value: '58', label: 'Books Issued' },
-  { icon: <ClipboardList size={20} color="#DC2626" />, iconBg: '#FEE2E2', value: '12', label: 'Overdue Books' },
+  { icon: <Plus size={16} color="#2563EB" />, label: 'Add New Book',       href: '/librarian/books'    },
+  { icon: <UserPlus size={16} color="#6C5CE7" />, label: 'Add New Member', href: '/librarian/members'  },
+  { icon: <ArrowLeftRight size={16} color="#2563EB" />, label: 'Issue Book', href: '/librarian/requests' },
+  { icon: <RotateCcw size={16} color="#2563EB" />, label: 'Return Book',   href: '/librarian/returns'  },
+  { icon: <FileText size={16} color="#4B5563" />, label: 'View All Requests', href: '/librarian/requests' },
+  { icon: <BarChart2 size={16} color="#4B5563" />, label: 'Generate Reports', href: '/librarian/reports' },
 ];
 
 export default function LibrarianDashboard() {
+  const [statsData, setStatsData] = useState({ totalBooks: '…', totalMembers: '…', activeBorrows: '…', overdueCount: '…' });
+  const [overdueRecs, setOverdueRecs] = useState([]);
+  const [notifRecs, setNotifRecs] = useState([]);
+
+  useEffect(() => {
+    fetch('/api/stats').then(r => r.json()).then(d => {
+      setStatsData({
+        totalBooks:    d.totalBooks    ?? '—',
+        totalMembers:  d.totalMembers  ?? '—',
+        activeBorrows: d.activeBorrows ?? '—',
+        overdueCount:  d.overdueCount  ?? '—',
+      });
+    }).catch(() => {});
+
+    fetch('/api/borrow?status=issued').then(r => r.json()).then(d => {
+      const ov = (d.records || []).filter(r => new Date(r.dueDate) < new Date());
+      setOverdueRecs(ov.slice(0, 5));
+    }).catch(() => {});
+
+    fetch('/api/notifications?limit=3').then(r => r.json()).then(d => {
+      setNotifRecs(d.notifications || []);
+    }).catch(() => {});
+  }, []);
+
+  const STATS = [
+    { icon: <BookOpen size={20} color="#6C5CE7" />, iconBg: '#F3E8FF', value: statsData.totalBooks,    label: 'Total Books'    },
+    { icon: <Users size={20} color="#16A34A" />,    iconBg: '#DCFCE7', value: statsData.totalMembers,  label: 'Total Members'  },
+    { icon: <ArrowLeftRight size={20} color="#CA8A04" />, iconBg: '#FEF9C3', value: statsData.activeBorrows, label: 'Books Issued' },
+    { icon: <ClipboardList size={20} color="#DC2626" />, iconBg: '#FEE2E2', value: statsData.overdueCount,  label: 'Overdue Books' },
+  ];
+
   return (
-    <LibrarianLayout 
-      title="Dashboard" 
-      subtitle="Welcome back, Anita Sharma!"
+    <LibrarianLayout
+      title="Dashboard"
+      subtitle="Welcome back!"
       searchPlaceholder="Search books, members, ISBN..."
     >
       <div style={{ padding: 28 }}>
@@ -148,7 +165,7 @@ export default function LibrarianDashboard() {
               <div style={{ background: 'white', borderRadius: 12, border: '1px solid #E5E7EB', overflow: 'hidden' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 24px 16px' }}>
                   <div style={{ fontSize: 16, fontWeight: 600, color: '#383838ff' }}>Overdue Books</div>
-                  <span style={{ fontSize: 13, fontWeight: 500, color: '#6C5CE7', cursor: 'pointer' }}>View All</span>
+                  <Link href="/librarian/returns" style={{ fontSize: 13, fontWeight: 500, color: '#6C5CE7', cursor: 'pointer', textDecoration: 'none' }}>View All</Link>
                 </div>
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                   <thead>
@@ -159,24 +176,26 @@ export default function LibrarianDashboard() {
                     </tr>
                   </thead>
                   <tbody>
-                    {OVERDUE.map((row, i) => (
-                      <tr key={i}>
+                    {overdueRecs.length === 0 ? (
+                      <tr><td colSpan={5} style={{ textAlign: 'center', padding: 32, color: '#9CA3AF', fontSize: 14 }}>No overdue books! 🎉</td></tr>
+                    ) : overdueRecs.map((row, i) => (
+                      <tr key={row._id}>
                         <td style={{ padding: '14px 16px', borderTop: i === 0 ? 'none' : '1px solid #F3F4F6' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                             <div style={{ width: 38, height: 52, background: `hsl(${i * 60 + 10},55%,65%)`, borderRadius: 6, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                               <BookOpen size={16} color="white" />
                             </div>
                             <div>
-                              <div style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>{row.title}</div>
-                              <div style={{ fontSize: 12, color: '#6B7280' }}>{row.author}</div>
+                              <div style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>{row.bookId?.title}</div>
+                              <div style={{ fontSize: 12, color: '#6B7280' }}>{row.bookId?.author}</div>
                             </div>
                           </div>
                         </td>
-                        <td style={{ padding: '14px 16px', fontSize: 13, color: '#6B7280', borderTop: i === 0 ? 'none' : '1px solid #F3F4F6' }}>{row.member}</td>
-                        <td style={{ padding: '14px 16px', fontSize: 13, color: '#DC2626', borderTop: i === 0 ? 'none' : '1px solid #F3F4F6' }}>{row.due}</td>
+                        <td style={{ padding: '14px 16px', fontSize: 13, color: '#6B7280', borderTop: i === 0 ? 'none' : '1px solid #F3F4F6' }}>{row.userId?.name}</td>
+                        <td style={{ padding: '14px 16px', fontSize: 13, color: '#DC2626', borderTop: i === 0 ? 'none' : '1px solid #F3F4F6' }}>{fmtDate(row.dueDate)}</td>
                         <td style={{ padding: '14px 16px', borderTop: i === 0 ? 'none' : '1px solid #F3F4F6' }}>
                           <span style={{ display: 'inline-flex', alignItems: 'center', padding: '3px 10px', background: '#FEE2E2', color: '#DC2626', borderRadius: 9999, fontSize: 12, fontWeight: 600 }}>
-                            {row.days} days
+                            {daysLate(row.dueDate)} days
                           </span>
                         </td>
                         <td style={{ padding: '14px 16px', borderTop: i === 0 ? 'none' : '1px solid #F3F4F6' }}>
@@ -195,19 +214,21 @@ export default function LibrarianDashboard() {
               <div style={{ background: 'white', borderRadius: 8, padding: 24, boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
                   <div style={{ fontSize: 18, fontWeight: 600, color: '#111827' }}>Recent Activities</div>
-                  <span style={{ fontSize: 14, fontWeight: 500, color: '#6C5CE7', cursor: 'pointer' }}>View All</span>
+                  <Link href="/librarian/notifications" style={{ fontSize: 14, fontWeight: 500, color: '#6C5CE7', cursor: 'pointer', textDecoration: 'none' }}>View All</Link>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                  {ACTIVITIES.map((a, i) => (
-                    <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-                      <div style={{ width: 40, height: 40, background: a.bg, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                        <BookOpen size={18} color={a.color} />
+                  {notifRecs.length === 0 ? (
+                    <div style={{ textAlign: 'center', padding: '20px 0', color: '#9CA3AF', fontSize: 13 }}>No recent activity.</div>
+                  ) : notifRecs.map((a, i) => (
+                    <div key={a._id || i} style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+                      <div style={{ width: 40, height: 40, background: '#FFEDD5', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        <BookOpen size={18} color="#EA580C" />
                       </div>
                       <div style={{ flex: 1 }}>
                         <div style={{ fontSize: 14, fontWeight: 600, color: '#374151' }}>{a.title}</div>
-                        <div style={{ fontSize: 12, color: '#6B7280' }}>{a.sub}</div>
+                        <div style={{ fontSize: 12, color: '#6B7280' }}>{a.message}</div>
                       </div>
-                      <div style={{ fontSize: 12, color: '#6B7280', flexShrink: 0 }}>{a.time}</div>
+                      <div style={{ fontSize: 12, color: '#6B7280', flexShrink: 0 }}>{timeAgo(a.createdAt)}</div>
                     </div>
                   ))}
                 </div>
@@ -218,10 +239,10 @@ export default function LibrarianDashboard() {
                 <div style={{ fontSize: 18, fontWeight: 600, color: '#111827', marginBottom: 16 }}>Quick Actions</div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                   {QUICK.map((q, i) => (
-                    <div key={i} className="qa-row" style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', cursor: 'pointer' }}>
+                    <Link key={i} href={q.href} className="qa-row" style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', cursor: 'pointer', textDecoration: 'none' }}>
                       {q.icon}
                       <span style={{ fontSize: 14, fontWeight: 500, color: '#374151' }}>{q.label}</span>
-                    </div>
+                    </Link>
                   ))}
                 </div>
               </div>

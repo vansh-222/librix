@@ -41,7 +41,10 @@ export async function GET(req) {
     if (language) bookQuery.language = { $regex: language, $options: 'i' };
 
     const total = await Book.countDocuments(bookQuery);
+    const sortParam = searchParams.get('sort') || '';
+    const sortOrder = sortParam === 'title_asc' ? { title: 1 } : { createdAt: -1 };
     const books = await Book.find(bookQuery)
+      .sort(sortOrder)
       .skip((page - 1) * limit)
       .limit(limit)
       .lean();
@@ -124,6 +127,40 @@ export async function POST(req) {
   } catch (err) {
     console.error('[Books POST]', err);
     return NextResponse.json({ error: 'Failed to add book' }, { status: 500 });
+  }
+}
+
+// PATCH /api/books — librarian updates copies or shelf for a college book
+export async function PATCH(req) {
+  try {
+    const session = await auth();
+    if (!session || !['librarian', 'super_admin'].includes(session.user.role)) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { bookId, addCopies, removeCopies, shelf } = await req.json();
+    if (!bookId) return NextResponse.json({ error: 'bookId required' }, { status: 400 });
+
+    await connectDB();
+    const cb = await CollegeBook.findOne({ collegeId: session.user.collegeId, bookId });
+    if (!cb) return NextResponse.json({ error: 'Book not found in college inventory' }, { status: 404 });
+
+    if (addCopies && addCopies > 0) {
+      cb.total     += addCopies;
+      cb.available += addCopies;
+    }
+    if (removeCopies && removeCopies > 0) {
+      const canRemove = Math.min(removeCopies, cb.available);
+      cb.total     = Math.max(0, cb.total     - canRemove);
+      cb.available = Math.max(0, cb.available - canRemove);
+    }
+    if (shelf !== undefined) cb.shelf = shelf;
+
+    await cb.save();
+    return NextResponse.json({ success: true, collegeBook: cb });
+  } catch (err) {
+    console.error('[Books PATCH]', err);
+    return NextResponse.json({ error: 'Failed to update book' }, { status: 500 });
   }
 }
 

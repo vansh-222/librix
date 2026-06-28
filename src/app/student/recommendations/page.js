@@ -1,267 +1,311 @@
 'use client';
-import { useState } from 'react';
-import { BookOpen, Star, TrendingUp, ChevronRight, ChevronLeft } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { BookOpen, Star, TrendingUp, ChevronRight, ChevronLeft, Loader2 } from 'lucide-react';
 
-// ─── Book Data ────────────────────────────────────────────────────────────────
-const BECAUSE_PROGRAMMING = [
-  { id: 'p1', title: 'The Pragmatic Programmer', author: 'Andrew Hunt',    rating: 4.6, cover: 'https://covers.openlibrary.org/b/id/8739161-M.jpg' },
-  { id: 'p2', title: 'Code Complete',             author: 'Steve McConnell', rating: 4.5, cover: 'https://covers.openlibrary.org/b/id/8621101-M.jpg' },
-  { id: 'p3', title: 'Design Patterns',           author: 'Erich Gamma',    rating: 4.4, cover: 'https://covers.openlibrary.org/b/id/7923867-M.jpg' },
-  { id: 'p4', title: 'Refactoring',               author: 'Martin Fowler',  rating: 4.8, cover: 'https://covers.openlibrary.org/b/id/8356442-M.jpg' },
-  { id: 'p5', title: 'Clean Architecture',        author: 'Robert C. Martin', rating: 4.7, cover: 'https://covers.openlibrary.org/b/id/10387070-M.jpg' },
-  { id: 'p6', title: 'The Clean Coder',           author: 'Robert C. Martin', rating: 4.5, cover: 'https://covers.openlibrary.org/b/id/10519054-M.jpg' },
-];
-
-const YOU_MIGHT_ENJOY = [
-  { id: 'e1', title: 'Atomic Habits',         author: 'James Clear',     rating: 4.7, cover: 'https://covers.openlibrary.org/b/id/10519054-M.jpg' },
-  { id: 'e2', title: 'Deep Work',             author: 'Cal Newport',     rating: 4.6, cover: 'https://covers.openlibrary.org/b/id/8739161-M.jpg' },
-  { id: 'e3', title: 'The 5 AM Club',         author: 'Robin Sharma',    rating: 4.5, cover: 'https://covers.openlibrary.org/b/id/10387070-M.jpg' },
-  { id: 'e4', title: 'The Power of Habit',    author: 'Charles Duhigg',  rating: 4.6, cover: 'https://covers.openlibrary.org/b/id/8228691-M.jpg' },
-  { id: 'e5', title: 'Mindset',               author: 'Carol S. Dweck',  rating: 4.5, cover: 'https://covers.openlibrary.org/b/id/7687356-M.jpg' },
-  { id: 'e6', title: 'Grit',                  author: 'Angela Duckworth',rating: 4.4, cover: 'https://covers.openlibrary.org/b/id/8621101-M.jpg' },
-];
-
-const TRENDING = [
-  { id: 't1', title: 'Thinking, Fast and Slow',         author: 'Daniel Kahneman', rating: 4.6, cover: 'https://covers.openlibrary.org/b/id/7923867-M.jpg' },
-  { id: 't2', title: 'Sapiens',                          author: 'Yuval Noah Harari', rating: 4.6, cover: 'https://covers.openlibrary.org/b/id/8739150-M.jpg' },
-  { id: 't3', title: 'The Subtle Art of Not Giving a F*ck', author: 'Mark Manson', rating: 4.4, cover: 'https://covers.openlibrary.org/b/id/10789917-M.jpg' },
-  { id: 't4', title: 'How to Win Friends and Influence People', author: 'Dale Carnegie', rating: 4.5, cover: 'https://covers.openlibrary.org/b/id/8228691-M.jpg' },
-  { id: 't5', title: 'The Alchemist',                    author: 'Paulo Coelho',    rating: 4.3, cover: 'https://covers.openlibrary.org/b/id/8356442-M.jpg' },
-  { id: 't6', title: 'Rich Dad Poor Dad',                author: 'Robert Kiyosaki', rating: 4.4, cover: 'https://covers.openlibrary.org/b/id/8228691-M.jpg' },
-];
-
-const TOP_CATEGORIES = [
-  { label: 'Programming', pct: 65, color: '#6366F1' },
-  { label: 'Self Help',   pct: 60, color: '#6366F1' },
-  { label: 'Productivity',pct: 50, color: '#6366F1' },
-  { label: 'Psychology',  pct: 35, color: '#6366F1' },
-  { label: 'Science',     pct: 20, color: '#6366F1' },
-];
-
-const WHY_ITEMS = [
-  { icon: '📚', text: 'Based on your borrowed books and reading history' },
-  { icon: '❤️',  text: 'From categories you love: Programming, Self Help, Productivity' },
-  { icon: '📈', text: 'Popular and trending books in our library' },
-  { icon: '⭐', text: 'Highly rated by students like you' },
-];
-
-// ─── Book Card ────────────────────────────────────────────────────────────────
-function BookCard({ book, onRequest }) {
+function BookCover({ cover, title, size = 68 }) {
   const [err, setErr] = useState(false);
   return (
-    <div style={{
-      width: 140, flexShrink: 0,
-      display: 'flex', flexDirection: 'column',
-    }}>
-      {/* Cover */}
-      <div style={{ width: 140, height: 190, borderRadius: 10, overflow: 'hidden', marginBottom: 10, background: '#F3F4F6', flexShrink: 0 }}>
-        {book.cover && !err ? (
-          <img src={book.cover} alt={book.title} onError={() => setErr(true)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-        ) : (
-          <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg,#6366F1,#A78BFA)' }}>
-            <BookOpen size={32} color="white" />
+    <div style={{ width: size, height: Math.round(size * 1.45), borderRadius: 8, overflow: 'hidden', flexShrink: 0, background: '#F3F4F6' }}>
+      {cover && !err
+        ? <img src={cover} alt={title} onError={() => setErr(true)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        : <div style={{ width: '100%', height: '100%', background: 'linear-gradient(135deg,#6366F1,#A78BFA)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <BookOpen size={size * 0.28} color="white" />
           </div>
+      }
+    </div>
+  );
+}
+
+function StarRow({ rating }) {
+  return (
+    <div style={{ display: 'flex', gap: 2 }}>
+      {Array.from({ length: 5 }).map((_, i) => (
+        <Star key={i} size={12} fill={i < Math.round(rating) ? '#F59E0B' : 'none'} color={i < Math.round(rating) ? '#F59E0B' : '#D1D5DB'} />
+      ))}
+      <span style={{ fontSize: 11, color: '#9CA3AF', marginLeft: 3 }}>{rating?.toFixed(1) || '—'}</span>
+    </div>
+  );
+}
+
+function BookCard({ book, onRequest, isPending, isRequesting }) {
+  return (
+    <div style={{
+      background: 'white', borderRadius: 12, border: '1px solid #E5E7EB',
+      padding: 16, display: 'flex', flexDirection: 'column', gap: 10, transition: 'all 0.2s',
+    }}
+      onMouseEnter={e => e.currentTarget.style.boxShadow = '0 6px 20px rgba(0,0,0,0.09)'}
+      onMouseLeave={e => e.currentTarget.style.boxShadow = 'none'}
+    >
+      <div style={{ display: 'flex', gap: 12 }}>
+        <BookCover cover={book.cover} title={book.title} size={52} />
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: 13, fontWeight: 700, color: '#111827', lineHeight: 1.3, marginBottom: 3, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{book.title}</div>
+          <div style={{ fontSize: 11, color: '#6B7280', marginBottom: 6 }}>{book.author}</div>
+          <StarRow rating={book.avgRating || 0} />
+        </div>
+      </div>
+      {book.category && (
+        <span style={{ display: 'inline-block', padding: '3px 10px', borderRadius: 20, background: '#EEF2FF', color: '#6366F1', fontSize: 11, fontWeight: 600 }}>{book.category}</span>
+      )}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <span style={{ fontSize: 11, fontWeight: 600, color: (book.inventory?.available || 0) > 0 ? '#22C55E' : '#EF4444' }}>
+          {(book.inventory?.available || 0) > 0 ? `${book.inventory.available} Available` : 'Unavailable'}
+        </span>
+        {isPending ? (
+          <span style={{ fontSize: 12, color: '#6366F1', fontWeight: 600 }}>✓ Requested</span>
+        ) : (
+          <button onClick={() => onRequest(book._id, book.title)}
+            disabled={isRequesting || (book.inventory?.available || 0) < 1}
+            style={{
+              padding: '6px 14px', border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: (book.inventory?.available || 0) < 1 ? 'not-allowed' : 'pointer',
+              background: (book.inventory?.available || 0) < 1 ? '#F3F4F6' : 'linear-gradient(135deg,#6366F1,#8B5CF6)',
+              color: (book.inventory?.available || 0) < 1 ? '#9CA3AF' : 'white',
+              fontFamily: 'Inter',
+            }}>
+            {isRequesting ? '...' : 'Request'}
+          </button>
         )}
       </div>
-      {/* Info */}
-      <div style={{ fontSize: 13, fontWeight: 700, color: '#111827', marginBottom: 3, lineHeight: 1.3, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-        {book.title}
-      </div>
-      <div style={{ fontSize: 11, color: '#9CA3AF', marginBottom: 6 }}>{book.author}</div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 10 }}>
-        <Star size={12} color="#F59E0B" fill="#F59E0B" />
-        <span style={{ fontSize: 12, fontWeight: 600, color: '#374151' }}>{book.rating}</span>
-      </div>
-      <button
-        onClick={() => onRequest(book.title)}
-        style={{
-          width: '100%', padding: '7px 0', border: '1px solid #E5E7EB', borderRadius: 8,
-          background: 'white', fontSize: 12, fontWeight: 600, color: '#374151',
-          cursor: 'pointer', fontFamily: 'Inter', transition: 'all 0.2s',
-        }}
-        onMouseEnter={e => { e.currentTarget.style.borderColor = '#6366F1'; e.currentTarget.style.color = '#6366F1'; e.currentTarget.style.background = '#EEF2FF'; }}
-        onMouseLeave={e => { e.currentTarget.style.borderColor = '#E5E7EB'; e.currentTarget.style.color = '#374151'; e.currentTarget.style.background = 'white'; }}
-      >
-        View Details
-      </button>
     </div>
   );
 }
 
-// ─── Book Row Section ────────────────────────────────────────────────────────
-function BookSection({ title, books, onRequest }) {
-  const [offset, setOffset] = useState(0);
-  const visible = 5;
-  const canPrev = offset > 0;
-  const canNext = offset + visible < books.length;
-
+function HScrollList({ children }) {
+  const ref = useState(null);
   return (
-    <div style={{ marginBottom: 32 }}>
-      {/* Section header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-        <h2 style={{ fontSize: 15, fontWeight: 700, color: '#111827', margin: 0 }}>{title}</h2>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <button style={{ fontSize: 13, color: '#6366F1', fontWeight: 500, background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 2 }}>
-            View All <ChevronRight size={14} />
-          </button>
-          <button
-            onClick={() => setOffset(o => Math.max(0, o - 1))}
-            disabled={!canPrev}
-            style={{ width: 28, height: 28, borderRadius: '50%', border: '1px solid #E5E7EB', background: 'white', cursor: canPrev ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: canPrev ? 1 : 0.4 }}
-          >
-            <ChevronLeft size={14} color="#374151" />
-          </button>
-          <button
-            onClick={() => setOffset(o => Math.min(books.length - visible, o + 1))}
-            disabled={!canNext}
-            style={{ width: 28, height: 28, borderRadius: '50%', border: '1px solid #E5E7EB', background: 'white', cursor: canNext ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: canNext ? 1 : 0.4 }}
-          >
-            <ChevronRight size={14} color="#374151" />
-          </button>
-        </div>
-      </div>
-
-      {/* Cards row */}
-      <div style={{ display: 'flex', gap: 16, overflow: 'hidden' }}>
-        {books.slice(offset, offset + visible).map(book => (
-          <BookCard key={book.id} book={book} onRequest={onRequest} />
-        ))}
-      </div>
+    <div style={{ overflowX: 'auto', display: 'flex', gap: 14, paddingBottom: 8 }}>
+      {children}
     </div>
   );
 }
 
-// ─── Main ─────────────────────────────────────────────────────────────────────
-export default function Recommendations() {
-  const [toast, setToast] = useState('');
-  const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(''), 3000); };
+export default function RecommendationsPage() {
+  const [history, setHistory]         = useState([]);   // returned books
+  const [topGenres, setTopGenres]     = useState([]);   // top read genres
+  const [byGenre, setByGenre]         = useState([]);   // books in top genre
+  const [trending, setTrending]       = useState([]);   // most recently added books
+  const [youMightLike, setYouMightLike] = useState([]); // other genre picks
+  const [loading, setLoading]         = useState(true);
+  const [toast, setToast]             = useState('');
+  const [requesting, setRequesting]   = useState({});
+  const [pendingBookIds, setPendingBookIds] = useState(new Set());
+
+  const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(''), 3500); };
+
+  useEffect(() => {
+    Promise.all([
+      fetch('/api/borrow').then(r => r.json()),
+      fetch('/api/requests').then(r => r.json()),
+    ]).then(async ([borrowData, reqData]) => {
+      const returned = (borrowData.records || []).filter(r => r.status === 'returned');
+      setHistory(returned);
+
+      // Build genre map from reading history
+      const genreMap = {};
+      returned.forEach(r => {
+        const c = r.bookId?.category;
+        if (c) genreMap[c] = (genreMap[c] || 0) + 1;
+      });
+      const sorted = Object.entries(genreMap).sort((a, b) => b[1] - a[1]);
+      setTopGenres(sorted);
+
+      const alreadyReadIds = new Set(returned.map(r => r.bookId?._id?.toString()));
+      const pending = new Set(
+        (reqData.requests || []).filter(r => ['requested','approved','issued'].includes(r.status)).map(r => r.bookId?._id || r.bookId)
+      );
+      setPendingBookIds(pending);
+
+      // Fetch books by top genre for recommendations
+      const fetchByGenre = async (genre) => {
+        if (!genre) return [];
+        const res  = await fetch(`/api/books?category=${encodeURIComponent(genre)}&limit=6`);
+        const data = await res.json();
+        return (data.books || []).filter(b => !alreadyReadIds.has(b._id?.toString()));
+      };
+
+      // Fetch trending (newest books)
+      const fetchTrending = async () => {
+        const res  = await fetch('/api/books?limit=6&sort=newest');
+        const data = await res.json();
+        return (data.books || []).filter(b => !alreadyReadIds.has(b._id?.toString()));
+      };
+
+      const [genreBooks, secondGenreBooks, trendingBooks] = await Promise.all([
+        sorted[0] ? fetchByGenre(sorted[0][0]) : Promise.resolve([]),
+        sorted[1] ? fetchByGenre(sorted[1][0]) : fetchByGenre('Self Help'),
+        fetchTrending(),
+      ]);
+
+      setByGenre(genreBooks);
+      setYouMightLike(secondGenreBooks);
+      setTrending(trendingBooks);
+    }).catch(() => showToast('Failed to load recommendations.'))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const requestBook = async (bookId, title) => {
+    setRequesting(prev => ({ ...prev, [bookId]: true }));
+    try {
+      const res  = await fetch('/api/requests', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ bookId }) });
+      const data = await res.json();
+      if (!res.ok) { showToast(data.error || 'Request failed.'); return; }
+      showToast(`Request sent for "${title}"! 📚`);
+      setPendingBookIds(prev => new Set([...prev, bookId]));
+    } catch { showToast('Something went wrong.'); }
+    finally { setRequesting(prev => ({ ...prev, [bookId]: false })); }
+  };
+
+  const BookGrid = ({ books }) => (
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px,1fr))', gap: 14 }}>
+      {books.map(book => (
+        <BookCard key={book._id} book={book}
+          isPending={pendingBookIds.has(book._id?.toString())}
+          isRequesting={requesting[book._id]}
+          onRequest={requestBook}
+        />
+      ))}
+    </div>
+  );
+
+  // ── Reading Goals Card ──
+  const booksThisMonth = history.filter(r => {
+    const d = new Date(r.returnDate);
+    const now = new Date();
+    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+  }).length;
+  const goalTarget = 3;
+  const goalPct = Math.min(100, Math.round((booksThisMonth / goalTarget) * 100));
 
   return (
-    <div style={{ display: 'flex', height: '100%', fontFamily: 'Inter, sans-serif', background: '#F9FAFB', overflow: 'hidden' }}>
-
-      {/* Toast */}
+    <div style={{ display: 'flex', height: '100%', fontFamily: 'Inter,sans-serif', background: '#F9FAFB', overflow: 'hidden' }}>
       {toast && (
-        <div style={{
-          position: 'fixed', top: 20, right: 20, zIndex: 999,
-          background: '#6366F1', color: '#fff', padding: '10px 20px',
-          borderRadius: 10, fontSize: 14, fontWeight: 600,
-          boxShadow: '0 4px 24px rgba(99,102,241,0.4)',
-        }}>{toast}</div>
+        <div style={{ position: 'fixed', top: 20, right: 20, zIndex: 999, background: '#6366F1', color: '#fff', padding: '10px 20px', borderRadius: 10, fontSize: 14, fontWeight: 600, boxShadow: '0 4px 24px rgba(99,102,241,0.4)' }}>{toast}</div>
       )}
 
-      {/* ═══ MAIN CONTENT ═══ */}
+      {/* MAIN */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '28px 24px', minWidth: 0 }}>
-
-        {/* Personalized Banner */}
-        <div style={{
-          background: 'white', borderRadius: 12, border: '1px solid #E5E7EB',
-          padding: '18px 24px', marginBottom: 28,
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16,
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-            <div style={{ width: 48, height: 48, borderRadius: 12, background: '#EEF2FF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24, flexShrink: 0 }}>
-              🎯
-            </div>
-            <div>
-              <div style={{ fontSize: 16, fontWeight: 700, color: '#111827', marginBottom: 4 }}>
-                Personalized for You ✨
-              </div>
-              <div style={{ fontSize: 13, color: '#6B7280', lineHeight: 1.5 }}>
-                These recommendations are based on your reading history, favorite categories,<br />and books you've borrowed.
-              </div>
-            </div>
+        {loading ? (
+          <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 100 }}>
+            <Loader2 size={32} style={{ animation: 'spin 0.8s linear infinite', color: '#6366F1' }} />
           </div>
-          <button style={{
-            display: 'flex', alignItems: 'center', gap: 8, padding: '9px 18px',
-            border: '1px solid #E5E7EB', borderRadius: 8, background: 'white',
-            fontSize: 13, fontWeight: 600, color: '#374151', cursor: 'pointer',
-            whiteSpace: 'nowrap', transition: 'all 0.2s', flexShrink: 0,
-          }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = '#6366F1'; e.currentTarget.style.color = '#6366F1'; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = '#E5E7EB'; e.currentTarget.style.color = '#374151'; }}
-          >
-            ⓘ How it works
-          </button>
-        </div>
+        ) : (
+          <>
+            {/* Based on your history */}
+            {byGenre.length > 0 && topGenres[0] && (
+              <section style={{ marginBottom: 32 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+                  <div>
+                    <h2 style={{ fontSize: 16, fontWeight: 700, color: '#111827', margin: '0 0 3px' }}>
+                      Because you love "{topGenres[0][0]}"
+                    </h2>
+                    <p style={{ fontSize: 13, color: '#9CA3AF', margin: 0 }}>Based on your reading history</p>
+                  </div>
+                </div>
+                <BookGrid books={byGenre.slice(0, 6)} />
+              </section>
+            )}
 
-        {/* Book Sections */}
-        <BookSection
-          title="Because you read Programming"
-          books={BECAUSE_PROGRAMMING}
-          onRequest={(t) => showToast(`Requested: ${t}`)}
-        />
-        <BookSection
-          title="You might enjoy these"
-          books={YOU_MIGHT_ENJOY}
-          onRequest={(t) => showToast(`Requested: ${t}`)}
-        />
-        <BookSection
-          title="Trending in Library"
-          books={TRENDING}
-          onRequest={(t) => showToast(`Requested: ${t}`)}
-        />
+            {/* Trending Now */}
+            {trending.length > 0 && (
+              <section style={{ marginBottom: 32 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+                  <TrendingUp size={18} color="#6366F1" />
+                  <h2 style={{ fontSize: 16, fontWeight: 700, color: '#111827', margin: 0 }}>Trending Now</h2>
+                </div>
+                <BookGrid books={trending.slice(0, 6)} />
+              </section>
+            )}
+
+            {/* You Might Enjoy */}
+            {youMightLike.length > 0 && topGenres[1] && (
+              <section style={{ marginBottom: 32 }}>
+                <div style={{ marginBottom: 14 }}>
+                  <h2 style={{ fontSize: 16, fontWeight: 700, color: '#111827', margin: '0 0 3px' }}>You Might Enjoy</h2>
+                  <p style={{ fontSize: 13, color: '#9CA3AF', margin: 0 }}>More from "{topGenres[1][0]}"</p>
+                </div>
+                <BookGrid books={youMightLike.slice(0, 6)} />
+              </section>
+            )}
+
+            {/* No history fallback */}
+            {history.length === 0 && !loading && (
+              <div style={{ background: 'white', borderRadius: 12, border: '1px solid #E5E7EB', padding: 60, textAlign: 'center', marginBottom: 24 }}>
+                <BookOpen size={48} style={{ margin: '0 auto 16px', color: '#D1D5DB' }} />
+                <h3 style={{ fontSize: 16, color: '#374151', fontWeight: 600, margin: '0 0 8px' }}>No reading history yet</h3>
+                <p style={{ color: '#9CA3AF', fontSize: 14, marginBottom: 20 }}>
+                  Borrow and return some books to get personalised recommendations!
+                </p>
+                <a href="/student/search" style={{ display: 'inline-block', padding: '10px 24px', borderRadius: 8, background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white', fontSize: 14, fontWeight: 700, textDecoration: 'none' }}>
+                  Browse Library
+                </a>
+              </div>
+            )}
+          </>
+        )}
       </div>
 
-      {/* ═══ RIGHT PANEL ═══ */}
+      {/* RIGHT PANEL */}
       <div style={{ width: 268, flexShrink: 0, overflowY: 'auto', padding: '28px 20px 28px 0', display: 'flex', flexDirection: 'column', gap: 20 }}>
 
-        {/* Why these recommendations */}
-        <div style={{ background: 'white', borderRadius: 12, border: '1px solid #E5E7EB', padding: 16 }}>
-          <h3 style={{ fontSize: 14, fontWeight: 700, color: '#111827', marginBottom: 14 }}>Why these recommendations?</h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-            {WHY_ITEMS.map((item, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-                <div style={{ width: 32, height: 32, borderRadius: 8, background: '#EEF2FF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, flexShrink: 0 }}>
-                  {item.icon}
-                </div>
-                <p style={{ fontSize: 12, color: '#6B7280', lineHeight: 1.5, margin: 0 }}>{item.text}</p>
-              </div>
-            ))}
+        {/* Reading Goals */}
+        <div style={{ background: 'white', borderRadius: 12, border: '1px solid #E5E7EB', padding: 18 }}>
+          <h3 style={{ fontSize: 14, fontWeight: 700, color: '#111827', marginBottom: 14 }}>Reading Goals</h3>
+          <div style={{ marginBottom: 14 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+              <span style={{ fontSize: 13, color: '#374151', fontWeight: 500 }}>This Month</span>
+              <span style={{ fontSize: 13, fontWeight: 700, color: '#6366F1' }}>{booksThisMonth}/{goalTarget}</span>
+            </div>
+            <div style={{ height: 8, background: '#F3F4F6', borderRadius: 4, overflow: 'hidden' }}>
+              <div style={{ height: '100%', background: 'linear-gradient(90deg,#6366F1,#A78BFA)', width: `${goalPct}%`, borderRadius: 4, transition: 'width 0.5s' }} />
+            </div>
+            <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 4 }}>
+              {goalPct >= 100 ? '🎉 Goal reached!' : `${goalTarget - booksThisMonth} more to reach your goal`}
+            </div>
           </div>
+
+          {topGenres.slice(0, 4).map(([genre, count]) => (
+            <div key={genre} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+              <span style={{ fontSize: 12, color: '#6B7280' }}>{genre}</span>
+              <span style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>{count} book{count !== 1 ? 's' : ''}</span>
+            </div>
+          ))}
+          {topGenres.length === 0 && <p style={{ fontSize: 13, color: '#9CA3AF' }}>Start reading to see your top genres.</p>}
         </div>
 
-        {/* Top Categories For You */}
-        <div style={{ background: 'white', borderRadius: 12, border: '1px solid #E5E7EB', padding: 16 }}>
-          <h3 style={{ fontSize: 14, fontWeight: 700, color: '#111827', marginBottom: 16 }}>Top Categories for You</h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            {TOP_CATEGORIES.map((cat, i) => (
-              <div key={i}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 5 }}>
-                  <span style={{ fontSize: 13, color: '#374151', fontWeight: 500 }}>{cat.label}</span>
-                  <span style={{ fontSize: 12, color: '#9CA3AF', fontWeight: 600 }}>{cat.pct}%</span>
-                </div>
-                <div style={{ width: '100%', height: 7, background: '#F3F4F6', borderRadius: 4, overflow: 'hidden' }}>
-                  <div style={{ width: `${cat.pct}%`, height: '100%', background: 'linear-gradient(90deg,#6366F1,#A78BFA)', borderRadius: 4, transition: 'width 0.6s ease' }} />
-                </div>
+        {/* Reading Stats */}
+        <div style={{ background: 'white', borderRadius: 12, border: '1px solid #E5E7EB', padding: 18 }}>
+          <h3 style={{ fontSize: 14, fontWeight: 700, color: '#111827', marginBottom: 14 }}>Your Stats</h3>
+          {[
+            { label: 'Books Read',    value: history.length,                                        icon: '📖' },
+            { label: 'Genres Tried',  value: topGenres.length,                                      icon: '🎭' },
+            { label: 'Avg Rating',    value: history.filter(r => r.rating > 0).length ? (history.filter(r => r.rating > 0).reduce((s, r) => s + r.rating, 0) / history.filter(r => r.rating > 0).length).toFixed(1) + '⭐' : '—', icon: '⭐' },
+            { label: 'This Month',    value: booksThisMonth,                                        icon: '📅' },
+          ].map(s => (
+            <div key={s.label} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', background: '#F9FAFB', borderRadius: 8, marginBottom: 8 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 15 }}>{s.icon}</span>
+                <span style={{ fontSize: 12, color: '#6B7280' }}>{s.label}</span>
               </div>
-            ))}
-          </div>
-          <button style={{
-            width: '100%', marginTop: 16, padding: '9px', border: '1px solid #E5E7EB',
-            borderRadius: 8, background: 'white', fontSize: 13, fontWeight: 600,
-            color: '#374151', cursor: 'pointer', fontFamily: 'Inter',
-          }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = '#6366F1'; e.currentTarget.style.color = '#6366F1'; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = '#E5E7EB'; e.currentTarget.style.color = '#374151'; }}
-          >
-            See All Categories
-          </button>
+              <span style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>{s.value}</span>
+            </div>
+          ))}
         </div>
 
-        {/* Quote Card */}
-        <div style={{
-          background: 'white', borderRadius: 12, border: '1px solid #E5E7EB', padding: 16,
-          position: 'relative',
-        }}>
-          <div style={{ fontSize: 32, color: '#6366F1', lineHeight: 1, marginBottom: 10, opacity: 0.4 }}>"</div>
-          <p style={{ fontSize: 13, color: '#374151', lineHeight: 1.6, margin: 0, fontStyle: 'italic' }}>
-            A library is a place where you can lose your innocence without losing your virginity.
-          </p>
-          <div style={{ marginTop: 10, fontSize: 12, color: '#9CA3AF', fontWeight: 500 }}>— Germaine Greer</div>
+        {/* Explore Categories */}
+        <div style={{ background: 'white', borderRadius: 12, border: '1px solid #E5E7EB', padding: 18 }}>
+          <h3 style={{ fontSize: 14, fontWeight: 700, color: '#111827', marginBottom: 14 }}>Explore Categories</h3>
+          {['Programming', 'Self Help', 'Psychology', 'Finance', 'History', 'Fiction'].map(cat => (
+            <a key={cat} href={`/student/search?category=${encodeURIComponent(cat)}`}
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '9px 12px', borderRadius: 8, marginBottom: 6, textDecoration: 'none', color: '#374151', background: '#F9FAFB', transition: 'all 0.15s' }}
+              onMouseEnter={e => { e.currentTarget.style.background = '#EEF2FF'; e.currentTarget.style.color = '#6366F1'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#F9FAFB'; e.currentTarget.style.color = '#374151'; }}>
+              <span style={{ fontSize: 13, fontWeight: 500 }}>{cat}</span>
+              <ChevronRight size={14} color="#D1D5DB" />
+            </a>
+          ))}
         </div>
       </div>
-
-      <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </div>
   );
 }

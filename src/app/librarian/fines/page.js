@@ -1,27 +1,25 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import LibrarianLayout from '@/components/librarian/LibrarianLayout';
 import {
   DollarSign, Clock, AlertTriangle, Filter, Plus, Eye, Download, MoreHorizontal, Search, Calendar, ChevronDown, CheckCircle, XCircle
 } from 'lucide-react';
 
-// Sample data
-const FINES_DATA = [
-  { id: 1, memberName: 'Rahul Verma', memberId: 'MEM001', bookTitle: 'The 5 AM Club', isbn: '978-1443456623', fineAmount: 50, dueDate: 'May 20, 2026', daysOverdue: '4 days overdue', status: 'pending', paymentDate: null, cover: '#D4A017' },
-  { id: 2, memberName: 'Priya Singh', memberId: 'MEM002', bookTitle: 'Atomic Habits', isbn: '978-1847941831', fineAmount: 60, dueDate: 'May 21, 2026', daysOverdue: '5 days overdue', status: 'pending', paymentDate: null, cover: '#E05252' },
-  { id: 3, memberName: 'Arjun Mehta', memberId: 'MEM003', bookTitle: 'Deep Work', isbn: '978-0349414114', fineAmount: 60, dueDate: 'May 22, 2026', daysOverdue: '3 days overdue', status: 'paid', paymentDate: 'May 14, 2026', paymentTime: '10:20 AM', cover: '#2B6CB0' },
-  { id: 4, memberName: 'Neha Gupta', memberId: 'MEM004', bookTitle: 'Clean Code', isbn: '978-0132350884', fineAmount: 30, dueDate: 'May 16, 2026', daysOverdue: '2 days overdue', status: 'paid', paymentDate: 'May 15, 2026', paymentTime: '02:15 PM', cover: '#9C27B0' },
-  { id: 5, memberName: 'Vikram Patel', memberId: 'MEM005', bookTitle: 'The Power of Habit', isbn: '978-0812981605', fineAmount: 60, dueDate: 'May 17, 2026', daysOverdue: '1 day overdue', status: 'paid', paymentDate: 'May 14, 2026', paymentTime: '11:05 AM', cover: '#5B8CDB' },
-  { id: 6, memberName: 'Sneha Iyer', memberId: 'MEM006', bookTitle: 'Ikigai', isbn: '978-1786330895', fineAmount: 50, dueDate: 'May 19, 2026', daysOverdue: '3 days overdue', status: 'pending', paymentDate: null, cover: '#26C6DA' },
-  { id: 7, memberName: 'Dr. Amit Joshi', memberId: 'MEM007', bookTitle: 'Thinking, Fast and Slow', isbn: '978-0374275631', fineAmount: 40, dueDate: 'May 16, 2026', daysOverdue: 'Today', status: 'paid', paymentDate: 'May 16, 2026', paymentTime: '09:00 AM', cover: '#26C6DA' },
-  { id: 8, memberName: 'Ritika Sharma', memberId: 'MEM008', bookTitle: 'Rich Dad Poor Dad', isbn: '978-1612680194', fineAmount: 70, dueDate: 'May 15, 2026', daysOverdue: 'Yesterday', status: 'overdue', paymentDate: null, cover: '#4CAF50' },
-];
-
-const STATS = [
-  { icon: <DollarSign size={22} color="#6C5CE7" />, iconBg: '#EDE9FE', value: '₹12,450.00', label: 'Total Fine Collected', subtitle: 'This Month' },
-  { icon: <Clock size={22} color="#F59E0B" />, iconBg: '#FEF3C7', value: '₹1,250.00', label: "Today's Collection", subtitle: 'May 16, 2026' },
-  { icon: <AlertTriangle size={22} color="#DC2626" />, iconBg: '#FEE2E2', value: '₹2,180.00', label: 'Overdue Payments', subtitle: '7 Members' },
-];
+function fmtDate(d) {
+  if (!d) return '—';
+  return new Date(d).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+function fmtTime(d) {
+  if (!d) return '';
+  return new Date(d).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+}
+function daysInfo(due) {
+  const diff = Math.ceil((new Date(due) - new Date()) / 86400000);
+  if (diff < 0) return `${Math.abs(diff)} day${Math.abs(diff) !== 1 ? 's' : ''} overdue`;
+  if (diff === 0) return 'Today';
+  return `${diff} day${diff !== 1 ? 's' : ''} left`;
+}
+const BOOK_COLORS = ['#D4A017','#E05252','#2B6CB0','#9C27B0','#5B8CDB','#26C6DA','#4CAF50','#EA580C'];
 
 function BookCover({ color }) {
   return (
@@ -35,23 +33,66 @@ function BookCover({ color }) {
 }
 
 export default function FinesPaymentsPage() {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm]   = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
-  const [dateRange, setDateRange] = useState('May 10 - May 16, 2026');
+  const [dateRange, setDateRange]     = useState('May 10 - May 16, 2026');
+  const [finesData, setFinesData]     = useState([]);
+  const [acting, setActing]           = useState('');
+  const [toast, setToast]             = useState('');
 
-  const filteredFines = FINES_DATA.filter(fine => {
-    const matchesSearch = fine.memberName.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          fine.bookTitle.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || fine.status === statusFilter;
+  const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(''), 3000); };
+
+  const load = useCallback(async () => {
+    const res  = await fetch('/api/borrow');
+    const data = await res.json();
+    const withFines = (data.records || []).filter(r => (r.fineAmount || 0) > 0);
+    setFinesData(withFines);
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  const paidTotal   = finesData.filter(r => r.finePaid).reduce((s, r) => s + (r.fineAmount || 0), 0);
+  const pendingTotal = finesData.filter(r => !r.finePaid).reduce((s, r) => s + (r.fineAmount || 0), 0);
+
+  const STATS = [
+    { icon: <DollarSign size={22} color="#6C5CE7" />, iconBg: '#EDE9FE', value: `₹${paidTotal.toFixed(2)}`,   label: 'Total Fine Collected', subtitle: 'All time' },
+    { icon: <Clock size={22} color="#F59E0B" />,       iconBg: '#FEF3C7', value: `₹${pendingTotal.toFixed(2)}`, label: 'Pending Amount',       subtitle: `${finesData.filter(r => !r.finePaid).length} members` },
+    { icon: <AlertTriangle size={22} color="#DC2626" />, iconBg: '#FEE2E2', value: finesData.filter(r => !r.finePaid).length, label: 'Overdue Payments', subtitle: 'Unpaid fines' },
+  ];
+
+  const markPaid = async (recordId) => {
+    setActing(recordId);
+    try {
+      const res = await fetch('/api/borrow', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ recordId, action: 'pay_fine' }),
+      });
+      const data = await res.json();
+      if (!res.ok) { showToast(data.error || 'Failed.'); return; }
+      showToast('Fine marked as paid! ✅');
+      load();
+    } catch { showToast('Something went wrong.'); }
+    finally { setActing(''); }
+  };
+
+  const filteredFines = finesData.filter(fine => {
+    const name  = fine.userId?.name || '';
+    const title = fine.bookId?.title || '';
+    const matchesSearch = name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          title.toLowerCase().includes(searchTerm.toLowerCase());
+    const uiStatus = fine.finePaid ? 'paid' : 'pending';
+    const matchesStatus = statusFilter === 'all' || uiStatus === statusFilter;
     return matchesSearch && matchesStatus;
   });
 
   return (
     <LibrarianLayout
       title="Fines & Payments"
-      subtitle="Manage fines, payments and generate receipts"
-      searchPlaceholder="Search members, books, receipts..."
+      subtitle="Manage member fines and payment records"
+      searchPlaceholder="Search by member or book..."
     >
+      {toast && <div style={{ position: 'fixed', top: 20, right: 20, zIndex: 999, background: '#6C5CE7', color: '#fff', padding: '10px 20px', borderRadius: 10, fontSize: 14, fontWeight: 600, boxShadow: '0 4px 24px rgba(108,92,231,0.4)' }}>{toast}</div>}
       <div style={{ padding: '24px 24px 32px' }}>
         {/* Two column layout */}
         <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start' }}>
@@ -148,42 +189,44 @@ export default function FinesPaymentsPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredFines.map((fine, i) => {
+                   {filteredFines.length === 0 ? (
+                    <tr><td colSpan={7} style={{ textAlign: 'center', padding: 32, color: '#9CA3AF' }}>No fines found.</td></tr>
+                  ) : filteredFines.map((fine, i) => {
+                    const uiStatus = fine.finePaid ? 'paid' : 'pending';
                     const statusConfig = {
                       pending: { label: 'Pending', bg: '#FEF3C7', color: '#D97706' },
-                      paid: { label: 'Paid', bg: '#DCFCE7', color: '#15803D' },
-                      overdue: { label: 'Overdue', bg: '#FEE2E2', color: '#DC2626' }
+                      paid:    { label: 'Paid',    bg: '#DCFCE7', color: '#15803D' },
                     };
-                    const status = statusConfig[fine.status];
-
+                    const status = statusConfig[uiStatus] || statusConfig.pending;
+                    const cover  = BOOK_COLORS[i % BOOK_COLORS.length];
                     return (
-                      <tr key={fine.id} className="tr-hover" style={{ borderBottom: i < filteredFines.length - 1 ? '1px solid #F3F4F6' : 'none' }}>
+                      <tr key={fine._id} className="tr-hover" style={{ borderBottom: i < filteredFines.length - 1 ? '1px solid #F3F4F6' : 'none' }}>
                         <td style={{ padding: '10px 16px' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                             <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#6C5CE7', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: 12, fontWeight: 700 }}>
-                              {fine.memberName.split(' ').map(n => n[0]).join('')}
+                              {(fine.userId?.name || '?').split(' ').map(n => n[0]).join('')}
                             </div>
                             <div style={{ minWidth: 0 }}>
-                              <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{fine.memberName}</div>
-                              <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 2 }}>{fine.memberId}</div>
+                              <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{fine.userId?.name}</div>
+                              <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 2 }}>{fine.userId?.email}</div>
                             </div>
                           </div>
                         </td>
                         <td style={{ padding: '10px 16px' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                            <BookCover color={fine.cover} />
+                            <BookCover color={cover} />
                             <div style={{ minWidth: 0 }}>
-                              <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{fine.bookTitle}</div>
-                              <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 2 }}>ISBN: {fine.isbn}</div>
+                              <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{fine.bookId?.title}</div>
+                              <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 2 }}>ISBN: {fine.bookId?.isbn || '—'}</div>
                             </div>
                           </div>
                         </td>
                         <td style={{ padding: '10px 16px' }}>
-                          <div style={{ fontSize: 14, fontWeight: 600, color: '#DC2626' }}>₹{fine.fineAmount}.00</div>
+                          <div style={{ fontSize: 14, fontWeight: 600, color: '#DC2626' }}>₹{(fine.fineAmount || 0).toFixed(2)}</div>
                         </td>
                         <td style={{ padding: '10px 16px' }}>
-                          <div style={{ fontSize: 13, fontWeight: 500, color: '#111827' }}>{fine.dueDate}</div>
-                          <div style={{ fontSize: 11, color: '#DC2626', marginTop: 2, fontWeight: 500 }}>{fine.daysOverdue}</div>
+                          <div style={{ fontSize: 13, fontWeight: 500, color: '#111827' }}>{fmtDate(fine.dueDate)}</div>
+                          <div style={{ fontSize: 11, color: '#DC2626', marginTop: 2, fontWeight: 500 }}>{daysInfo(fine.dueDate)}</div>
                         </td>
                         <td style={{ padding: '10px 16px' }}>
                           <span style={{
@@ -199,10 +242,10 @@ export default function FinesPaymentsPage() {
                           </span>
                         </td>
                         <td style={{ padding: '10px 16px' }}>
-                          {fine.paymentDate ? (
+                          {fine.finePaid ? (
                             <>
-                              <div style={{ fontSize: 13, fontWeight: 500, color: '#111827' }}>{fine.paymentDate}</div>
-                              <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 2 }}>{fine.paymentTime}</div>
+                              <div style={{ fontSize: 13, fontWeight: 500, color: '#111827' }}>{fmtDate(fine.updatedAt)}</div>
+                              <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 2 }}>{fmtTime(fine.updatedAt)}</div>
                             </>
                           ) : (
                             <span style={{ fontSize: 13, color: '#9CA3AF' }}>—</span>
@@ -227,23 +270,15 @@ export default function FinesPaymentsPage() {
                             >
                               <Eye size={15} color="#6C5CE7" />
                             </button>
-                            {fine.status === 'paid' && (
-                              <button 
-                                type="button"
-                                title="Download Receipt"
-                                style={{ 
-                                  padding: '7px',
-                                  border: '1px solid #E5E7EB',
-                                  background: 'white',
-                                  borderRadius: 6,
-                                  cursor: 'pointer',
-                                  display: 'flex',
-                                  transition: 'all 0.15s ease'
-                                }}
-                                onMouseEnter={(e) => e.currentTarget.style.background = '#F9FAFB'}
-                                onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                            {!fine.finePaid && (
+                              <button type="button" title="Mark as Paid"
+                                onClick={() => markPaid(fine._id)}
+                                disabled={acting === fine._id}
+                                style={{ padding: '7px 12px', border: '1px solid #16A34A', background: 'white', color: '#16A34A', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 500, transition: 'all 0.15s ease' }}
+                                onMouseEnter={e => { e.currentTarget.style.background = '#16A34A'; e.currentTarget.style.color = 'white'; }}
+                                onMouseLeave={e => { e.currentTarget.style.background = 'white'; e.currentTarget.style.color = '#16A34A'; }}
                               >
-                                <Download size={15} color="#16A34A" />
+                                <CheckCircle size={13} /> Mark Paid
                               </button>
                             )}
                             <button 

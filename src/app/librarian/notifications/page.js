@@ -1,40 +1,104 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import LibrarianLayout from '@/components/librarian/LibrarianLayout';
 import {
   Bell, CheckCircle, AlertTriangle, Bookmark, Eye, Trash2, Check, Settings, Mail, ChevronDown
 } from 'lucide-react';
 
-// Sample data
-const STATS = [
-  { icon: <Bell size={22} color="#6C5CE7" />, iconBg: '#EDE9FE', value: '56', label: 'Total Notifications', link: 'View all →' },
-  { icon: <CheckCircle size={22} color="#16A34A" />, iconBg: '#DCFCE7', value: '18', label: 'Unread Notifications', link: 'View all →' },
-  { icon: <Bell size={22} color="#F59E0B" />, iconBg: '#FEF3C7', value: '28', label: 'System Notifications', link: 'View all →' },
-  { icon: <AlertTriangle size={22} color="#DC2626" />, iconBg: '#FEE2E2', value: '10', label: 'Important Alerts', link: 'View all →' },
-];
+function timeAgo(d) {
+  if (!d) return '—';
+  const diff = Date.now() - new Date(d).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return 'just now';
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  const days = Math.floor(hrs / 24);
+  return new Date(d).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' });
+}
 
-const NOTIFICATIONS = [
-  { id: 1, icon: '📗', iconBg: '#DCFCE7', title: 'Book Due Reminder', message: 'The book "Atomic Habits" is due tomorrow.', type: 'Reminder', typeBg: '#DCFCE7', typeColor: '#15803D', relatedTo: 'Atomic Habits', member: 'Rahul Verma', date: 'May 16, 2026', time: '09:00 AM', status: 'Unread' },
-  { id: 2, icon: '👤', iconBg: '#DBEAFE', title: 'New Member Registration', message: 'Arjun Mehta has registered as a new member.', type: 'System', typeBg: '#DBEAFE', typeColor: '#1D4ED8', relatedTo: 'Arjun Mehta', member: 'MEM003', date: 'May 15, 2026', time: '04:36 PM', status: 'Unread' },
-  { id: 3, icon: '📋', iconBg: '#FEF3C7', title: 'Request Approved', message: 'Your request for "Deep Work" has been approved.', type: 'Request', typeBg: '#FEF3C7', typeColor: '#D97706', relatedTo: 'Deep Work', member: 'Arjun Mehta', date: 'May 15, 2026', time: '02:48 PM', status: 'Read' },
-  { id: 4, icon: '💰', iconBg: '#FEE2E2', title: 'Fine Payment Received', message: 'Payment of ₹50.00 received from Neha Gupta.', type: 'Payment', typeBg: '#FEE2E2', typeColor: '#DC2626', relatedTo: 'Clean Code', member: 'Neha Gupta', date: 'May 15, 2026', time: '11:07 AM', status: 'Read' },
-  { id: 5, icon: '⚠️', iconBg: '#FEF3C7', title: 'Overdue Alert', message: 'The book "The 5 AM Club" is overdue by 2 days.', type: 'Alert', typeBg: '#FEF3C7', typeColor: '#D97706', relatedTo: 'The 5 AM Club', member: 'Vikram Patel', date: 'May 14, 2026', time: '10:10 AM', status: 'Unread' },
-  { id: 6, icon: '📗', iconBg: '#DBEAFE', title: 'Book Returned', message: 'Priya Singh has returned "The Power of Habit".', type: 'System', typeBg: '#DBEAFE', typeColor: '#1D4ED8', relatedTo: 'The Power of Habit', member: 'Priya Singh', date: 'May 14, 2026', time: '09:15 AM', status: 'Read' },
-  { id: 7, icon: '➕', iconBg: '#DBEAFE', title: 'New Book Added', message: '"Ikigai" has been added to the library.', type: 'System', typeBg: '#DBEAFE', typeColor: '#1D4ED8', relatedTo: 'Ikigai', member: 'By Hector Garcia', date: 'May 13, 2026', time: '05:01 PM', status: 'Read' },
-  { id: 8, icon: '⏰', iconBg: '#DCFCE7', title: 'Fine Reminder', message: 'You have an unpaid fine of ₹80.00.', type: 'Reminder', typeBg: '#DCFCE7', typeColor: '#15803D', relatedTo: 'Multiple Books', member: 'Vikram Patel', date: 'May 12, 2026', time: '03:30 PM', status: 'Unread' },
-];
+const TYPE_ICON = {
+  return_reminder: '📗', request_approved: '✅', request_rejected: '❌',
+  book_issued: '📚', fine_added: '💰', overdue_alert: '⚠️',
+  new_member: '👤', reservation_available: '🔖', general: '🔔',
+};
+const TYPE_BG = {
+  return_reminder: '#DCFCE7', request_approved: '#DCFCE7', book_issued: '#DBEAFE',
+  fine_added: '#FEE2E2', overdue_alert: '#FEF3C7', new_member: '#DBEAFE',
+  request_rejected: '#FEE2E2', reservation_available: '#DBEAFE', general: '#EDE9FE',
+};
+const TYPE_COLOR = {
+  return_reminder: '#15803D', request_approved: '#15803D', book_issued: '#1D4ED8',
+  fine_added: '#DC2626', overdue_alert: '#D97706', new_member: '#1D4ED8',
+  request_rejected: '#DC2626', reservation_available: '#1D4ED8', general: '#6C5CE7',
+};
+const TYPE_LABEL = {
+  return_reminder: 'Reminder', request_approved: 'Request', book_issued: 'System',
+  fine_added: 'Payment', overdue_alert: 'Alert', new_member: 'System',
+  request_rejected: 'Request', reservation_available: 'System', general: 'System',
+};
 
 export default function NotificationsPage() {
   const [activeTab, setActiveTab] = useState('all');
   const [selectedNotifications, setSelectedNotifications] = useState([]);
+  const [notifications, setNotifications] = useState([]);
+
+  const load = useCallback(async () => {
+    const res  = await fetch('/api/notifications');
+    const data = await res.json();
+    setNotifications(data.notifications || []);
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  const markRead = async (id) => {
+    await fetch('/api/notifications', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ notificationId: id }) });
+    setNotifications(prev => prev.map(n => n._id === id ? { ...n, read: true } : n));
+  };
+
+  const deleteOne = async (id) => {
+    await fetch(`/api/notifications?id=${id}`, { method: 'DELETE' });
+    setNotifications(prev => prev.filter(n => n._id !== id));
+  };
+
+  const total    = notifications.length;
+  const unread   = notifications.filter(n => !n.read).length;
+  const system   = notifications.filter(n => ['book_issued','new_member','reservation_available'].includes(n.type)).length;
+  const alerts   = notifications.filter(n => ['overdue_alert','fine_added'].includes(n.type)).length;
+
+  const STATS = [
+    { icon: <Bell size={22} color="#6C5CE7" />, iconBg: '#EDE9FE', value: total,  label: 'Total Notifications',  link: 'View all →' },
+    { icon: <CheckCircle size={22} color="#16A34A" />, iconBg: '#DCFCE7', value: unread, label: 'Unread Notifications', link: 'View all →' },
+    { icon: <Bell size={22} color="#F59E0B" />, iconBg: '#FEF3C7', value: system, label: 'System Notifications',  link: 'View all →' },
+    { icon: <AlertTriangle size={22} color="#DC2626" />, iconBg: '#FEE2E2', value: alerts, label: 'Important Alerts',     link: 'View all →' },
+  ];
 
   const tabs = [
-    { id: 'all', label: 'All' },
-    { id: 'unread', label: 'Unread' },
-    { id: 'system', label: 'System' },
+    { id: 'all',       label: 'All'       },
+    { id: 'unread',    label: 'Unread'    },
+    { id: 'system',    label: 'System'    },
     { id: 'reminders', label: 'Reminders' },
-    { id: 'alerts', label: 'Alerts' },
+    { id: 'alerts',    label: 'Alerts'    },
   ];
+
+  const NOTIFICATIONS = notifications.map(n => ({
+    id:        n._id,
+    icon:      TYPE_ICON[n.type] || '🔔',
+    iconBg:    TYPE_BG[n.type]   || '#EDE9FE',
+    title:     n.title,
+    message:   n.message,
+    type:      TYPE_LABEL[n.type] || 'System',
+    typeBg:    TYPE_BG[n.type]   || '#EDE9FE',
+    typeColor: TYPE_COLOR[n.type] || '#6C5CE7',
+    relatedTo: '',
+    member:    '',
+    date:      new Date(n.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }),
+    time:      timeAgo(n.createdAt),
+    status:    n.read ? 'Read' : 'Unread',
+    _id:       n._id,
+    _read:     n.read,
+    _type:     n.type,
+  }));
 
   const filteredNotifications = NOTIFICATIONS.filter(notif => {
     if (activeTab === 'all') return true;

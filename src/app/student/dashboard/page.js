@@ -1,464 +1,225 @@
 'use client';
-import { BookOpen, Clock, AlertTriangle, DollarSign, Calendar, Bell, ChevronRight } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { BookOpen, Clock, AlertTriangle, Loader2, Star, BookMarked, Bell, Search } from 'lucide-react';
+import Link from 'next/link';
+
+function timeAgo(d) {
+  const diff = Date.now() - new Date(d).getTime();
+  const hrs = Math.floor(diff / 3600000);
+  if (hrs < 1)  return 'just now';
+  if (hrs < 24) return `${hrs}h ago`;
+  return Math.floor(hrs / 24) + 'd ago';
+}
+
+function fmtDate(d) {
+  if (!d) return '—';
+  return new Date(d).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+
+function daysUntil(d) {
+  const diff = new Date(d) - new Date();
+  return Math.ceil(diff / 86400000);
+}
 
 export default function StudentDashboard() {
-  const stats = [
-    { 
-      label: 'Books Borrowed', 
-      value: '5', 
-      subtitle: 'Currently Issued', 
-      icon: BookOpen, 
-      iconBg: '#EEF2FF',
-      iconColor: '#6366F1'
-    },
-    { 
-      label: 'Due Soon', 
-      value: '2', 
-      subtitle: 'Books to return', 
-      icon: Clock, 
-      iconBg: '#FEF3C7',
-      iconColor: '#F59E0B'
-    },
-    { 
-      label: 'Overdue', 
-      value: '1', 
-      subtitle: 'Return overdue', 
-      icon: AlertTriangle, 
-      iconBg: '#FEE2E2',
-      iconColor: '#DC2626'
-    },
-    { 
-      label: 'Total Fine', 
-      value: '₹50', 
-      subtitle: 'Pending amount', 
-      icon: DollarSign, 
-      iconBg: '#D1FAE5',
-      iconColor: '#10B981'
-    },
+  const { data: session } = useSession();
+  const [stats, setStats]               = useState(null);
+  const [activeBooks, setActiveBooks]   = useState([]);
+  const [notifications, setNotifications] = useState([]);
+  const [loading, setLoading]           = useState(true);
+
+  useEffect(() => {
+    Promise.all([
+      fetch('/api/stats').then(r => r.json()),
+      fetch('/api/borrow').then(r => r.json()),
+      fetch('/api/notifications?limit=5').then(r => r.json()),
+    ]).then(([statsData, borrowData, notifData]) => {
+      setStats(statsData);
+      setActiveBooks((borrowData.records || []).filter(r => ['issued','return_pending'].includes(r.status)).slice(0, 4));
+      setNotifications((notifData.notifications || []).slice(0, 5));
+    }).catch(() => {}).finally(() => setLoading(false));
+  }, []);
+
+  const STAT_CARDS = [
+    { icon: BookOpen,       label: 'Books Borrowed',   value: stats?.activeBorrows ?? '—', bg: '#EEF2FF', color: '#6366F1', sub: 'Currently active' },
+    { icon: Clock,          label: 'Overdue',           value: stats?.overdueBorrows ?? '—', bg: '#FEF2F2', color: '#EF4444', sub: 'Past due date' },
+    { icon: BookMarked,     label: 'Books Completed',  value: stats?.completedBooks ?? '—', bg: '#F0FDF4', color: '#22C55E', sub: 'Returned books' },
+    { icon: AlertTriangle,  label: 'Outstanding Fine', value: stats?.pendingFineTotal !== undefined ? `₹${stats.pendingFineTotal}` : '—', bg: '#FFFBEB', color: '#F59E0B', sub: 'Total pending' },
   ];
 
-  const borrowedBooks = [
-    { 
-      id: 1, 
-      title: 'Atomic Habits', 
-      author: 'James Clear', 
-      issued: '01 Jun 2026', 
-      due: '20 Jun 2026', 
-      daysLeft: 2,
-      category: 'Self Help',
-      categoryColor: '#6366F1',
-      cover: 'https://images-na.ssl-images-amazon.com/images/I/81YkqyaFVEL.jpg'
-    },
-    { 
-      id: 2, 
-      title: 'Clean Code', 
-      author: 'Robert C. Martin', 
-      issued: '05 Jun 2026', 
-      due: '20 Jun 2026', 
-      daysLeft: 5,
-      category: 'Programming',
-      categoryColor: '#8B5CF6',
-      cover: 'https://m.media-amazon.com/images/I/51E2055ZGUL.jpg'
-    },
-    { 
-      id: 3, 
-      title: 'The 5 AM Club', 
-      author: 'Robin Sharma', 
-      issued: '01 Jun 2026', 
-      due: '15 Jun 2026', 
-      returned: true,
-      category: 'Self Help',
-      categoryColor: '#10B981',
-      cover: 'https://m.media-amazon.com/images/I/71zytzrg6lL.jpg'
-    },
+  const QUICK_LINKS = [
+    { href: '/student/search',        icon: Search,     label: 'Search Books'    },
+    { href: '/student/requests',      icon: BookMarked, label: 'My Requests'     },
+    { href: '/student/fines',         icon: AlertTriangle, label: 'Fines'        },
+    { href: '/student/notifications', icon: Bell,       label: 'Notifications'   },
   ];
 
-  const dueSoonReminders = [
-    { title: 'Atomic Habits', dueDate: '20 Jun 2026', daysLeft: 2 },
-    { title: 'Clean Code', dueDate: '20 Jun 2026', daysLeft: 5 },
-  ];
+  const name = session?.user?.name?.split(' ')[0] || 'Student';
 
-  const recentlyReturned = [
-    { title: 'Think Like a Monk', author: 'Jay Shetty', returned: '05 Jun 2026', status: 'On Time' },
-    { title: 'The Power of Habit', author: 'Charles Duhigg', returned: '28 May 2026', status: 'On Time' },
-    { title: 'Think Like a Monk', author: 'Jay Shetty', returned: '05 Jun 2026', status: 'On Time' },
-    { title: 'The Power of Habit', author: 'Charles Duhigg', returned: '28 May 2026', status: 'On Time' },
-
-
-  ];
-
-  const recommended = [
-    { title: 'Deep Work', author: 'Cal Newport', rating: 4.6, cover: 'https://m.media-amazon.com/images/I/71VStT787lL.jpg' },
-    { title: 'The Psychology of Money', author: 'Morgan Housel', rating: 4.7, cover: 'https://m.media-amazon.com/images/I/71g2ednj0JL.jpg' },
-    { title: 'Rich Dad Poor Dad', author: 'Robert Kiyosaki', rating: 4.5, cover: 'https://m.media-amazon.com/images/I/81bsw6fnUiL.jpg' },
-  ];
+  const getGreeting = () => {
+    const h = new Date().getHours();
+    if (h < 12) return 'Good Morning';
+    if (h < 17) return 'Good Afternoon';
+    return 'Good Evening';
+  };
 
   return (
-    <div style={{ padding: '16px 20px', width: '100%', boxSizing: 'border-box' }}>
+    <div style={{ padding: '28px', fontFamily: 'Inter,sans-serif', background: '#F9FAFB', minHeight: '100%' }}>
+      {loading && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(255,255,255,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 99 }}>
+          <Loader2 size={32} style={{ animation: 'spin 0.8s linear infinite', color: '#6366F1' }} />
+        </div>
+      )}
+
+      {/* Welcome Banner */}
+      <div style={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', borderRadius: 16, padding: '28px 32px', marginBottom: 24, color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div>
+          <div style={{ fontSize: 13, opacity: 0.85, marginBottom: 6 }}>{getGreeting()},</div>
+          <div style={{ fontSize: 26, fontWeight: 800, marginBottom: 8 }}>{name} 👋</div>
+          <div style={{ fontSize: 13, opacity: 0.8 }}>
+            {stats?.activeBorrows > 0
+              ? `You have ${stats.activeBorrows} active borrow${stats.activeBorrows > 1 ? 's' : ''}. Keep reading!`
+              : 'Welcome to your library dashboard. Start exploring books!'}
+          </div>
+        </div>
+        <div style={{ fontSize: 72, opacity: 0.25 }}>📚</div>
+      </div>
+
       {/* Stat Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 16 }}>
-        {stats.map((stat, idx) => (
-          <div key={idx} style={{
-            background: 'white',
-            padding: '14px',
-            borderRadius: 10,
-            border: '1px solid #E5E7EB',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 10,
-          }}>
-            <div style={{ 
-              width: 40, 
-              height: 40, 
-              borderRadius: 8, 
-              background: stat.iconBg, 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center',
-              flexShrink: 0,
-            }}>
-              <stat.icon size={20} color={stat.iconColor} />
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 16, marginBottom: 24 }}>
+        {STAT_CARDS.map((s, i) => {
+          const Icon = s.icon;
+          return (
+            <div key={i} style={{ background: 'white', borderRadius: 12, border: '1px solid #E5E7EB', padding: '20px', display: 'flex', alignItems: 'center', gap: 16 }}
+              onMouseEnter={e => e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.08)'}
+              onMouseLeave={e => e.currentTarget.style.boxShadow = 'none'}
+            >
+              <div style={{ width: 48, height: 48, borderRadius: 12, background: s.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <Icon size={22} color={s.color} />
+              </div>
+              <div>
+                <div style={{ fontSize: 24, fontWeight: 800, color: '#111827', lineHeight: 1 }}>{s.value}</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: '#374151', marginTop: 4 }}>{s.label}</div>
+                <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 2 }}>{s.sub}</div>
+              </div>
             </div>
-            <div style={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
-              <div style={{ fontSize: 22, fontWeight: 700, color: '#111827', lineHeight: 1, marginBottom: 3 }}>{stat.value}</div>
-              <div style={{ fontSize: 11, fontWeight: 600, color: '#111827', marginBottom: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{stat.label}</div>
-              <div style={{ fontSize: 9, color: '#9CA3AF', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{stat.subtitle}</div>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
-      {/* Main Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 260px', gap: 12, width: '100%' }}>
-        {/* Left Column */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, minWidth: 0, overflow: 'hidden' }}>
-          {/* Currently Borrowed Books */}
-          <div style={{ background: 'white', padding: '20px', borderRadius: 12, border: '1px solid #E5E7EB' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-              <h2 style={{ fontSize: 15, fontWeight: 700, color: '#111827' }}>Currently Borrowed Books</h2>
-              <button style={{ 
-                fontSize: 13, 
-                color: '#6366F1', 
-                background: 'none', 
-                border: 'none', 
-                cursor: 'pointer', 
-                fontWeight: 600, 
-                fontFamily: 'Inter',
-              }}>
-                View All
-              </button>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 20 }}>
+        {/* Active Books */}
+        <div>
+          <div style={{ background: 'white', borderRadius: 12, border: '1px solid #E5E7EB', padding: '20px 24px', marginBottom: 16 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
+              <h2 style={{ fontSize: 16, fontWeight: 700, color: '#111827', margin: 0 }}>Currently Borrowed</h2>
+              <Link href="/student/my-books" style={{ fontSize: 13, color: '#6366F1', fontWeight: 600, textDecoration: 'none' }}>View All →</Link>
             </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              {borrowedBooks.map(book => (
-                <div key={book.id} style={{
-                  display: 'flex',
-                  gap: 12,
-                  padding: '12px',
-                  border: '1px solid #E5E7EB',
-                  borderRadius: 10,
-                  alignItems: 'center',
-                }}>
-                  {/* Book Cover */}
-                  <div style={{
-                    width: 60,
-                    height: 85,
-                    borderRadius: 6,
-                    overflow: 'hidden',
-                    flexShrink: 0,
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                  }}>
-                    <img 
-                      src={book.cover} 
-                      alt={book.title}
-                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                      onError={(e) => {
-                        e.target.style.display = 'none';
-                        e.target.parentElement.style.background = 'linear-gradient(135deg, #6366F1, #8B5CF6)';
-                        e.target.parentElement.innerHTML = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:white;font-size:20px;">📖</div>';
-                      }}
-                    />
+            {activeBooks.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '32px 0' }}>
+                <BookOpen size={36} style={{ margin: '0 auto 10px', color: '#D1D5DB' }} />
+                <p style={{ color: '#9CA3AF', fontSize: 14, margin: 0 }}>No active borrows. <Link href="/student/search" style={{ color: '#6366F1', textDecoration: 'none' }}>Search books</Link></p>
+              </div>
+            ) : activeBooks.map(rec => {
+              const days = daysUntil(rec.dueDate);
+              return (
+                <div key={rec._id} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '12px 0', borderBottom: '1px solid #F3F4F6' }}>
+                  <div style={{ width: 40, height: 54, borderRadius: 6, overflow: 'hidden', flexShrink: 0, background: '#F3F4F6' }}>
+                    {rec.bookId?.cover
+                      ? <img src={rec.bookId.cover} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      : <div style={{ width: '100%', height: '100%', background: 'linear-gradient(135deg,#6366F1,#A78BFA)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><BookOpen size={14} color="white" /></div>
+                    }
                   </div>
-
-                  {/* Book Details */}
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 15, fontWeight: 600, color: '#111827', marginBottom: 4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{book.title}</div>
-                    <div style={{ fontSize: 13, color: '#6B7280', marginBottom: 8, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{book.author}</div>
-                    <span style={{
-                      display: 'inline-block',
-                      padding: '3px 10px',
-                      borderRadius: 6,
-                      fontSize: 11,
-                      fontWeight: 600,
-                      background: `${book.categoryColor}15`,
-                      color: book.categoryColor,
-                    }}>
-                      {book.category}
-                    </span>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{rec.bookId?.title}</div>
+                    <div style={{ fontSize: 12, color: '#9CA3AF' }}>Due: {fmtDate(rec.dueDate)}</div>
                   </div>
-
-                  {/* Issued/Due Date */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8, minWidth: 120, flexShrink: 0 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <Calendar size={14} color="#9CA3AF" />
-                      <div>
-                        <div style={{ fontSize: 10, color: '#9CA3AF' }}>Issued on</div>
-                        <div style={{ fontSize: 11, fontWeight: 600, color: '#111827' }}>{book.issued}</div>
-                      </div>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <Clock size={14} color={book.returned ? '#10B981' : '#F59E0B'} />
-                      <div>
-                        <div style={{ fontSize: 10, color: '#9CA3AF' }}>Due on</div>
-                        <div style={{ fontSize: 11, fontWeight: 600, color: book.returned ? '#10B981' : '#111827' }}>
-                          {book.due}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Status/Action */}
-                  {book.returned ? (
-                    <div style={{
-                      padding: '8px 16px',
-                      borderRadius: 8,
-                      fontSize: 13,
-                      fontWeight: 600,
-                      background: '#D1FAE5',
-                      color: '#059669',
-                      flexShrink: 0,
-                    }}>
-                      Returned
-                    </div>
-                  ) : book.daysLeft <= 3 && (
-                    <div style={{ textAlign: 'right', minWidth: 90, flexShrink: 0 }}>
-                      <div style={{
-                        padding: '4px 12px',
-                        borderRadius: 6,
-                        fontSize: 11,
-                        fontWeight: 700,
-                        background: '#FEF3C7',
-                        color: '#F59E0B',
-                        marginBottom: 8,
-                      }}>
-                        Due in {book.daysLeft} days
-                      </div>
-                      <button style={{
-                        padding: '8px 16px',
-                        background: 'white',
-                        border: '1px solid #6366F1',
-                        borderRadius: 6,
-                        fontSize: 12,
-                        fontWeight: 600,
-                        color: '#6366F1',
-                        cursor: 'pointer',
-                        fontFamily: 'Inter',
-                      }}>
-                        View Details
-                      </button>
-                    </div>
-                  )}
-                  {!book.returned && book.daysLeft > 3 && (
-                    <button style={{
-                      padding: '8px 16px',
-                      background: 'white',
-                      border: '1px solid #6366F1',
-                      borderRadius: 6,
-                      fontSize: 12,
-                      fontWeight: 600,
-                      color: '#6366F1',
-                      cursor: 'pointer',
-                      fontFamily: 'Inter',
-                      flexShrink: 0,
-                      whiteSpace: 'nowrap',
-                    }}>
-                      View Details
-                    </button>
-                  )}
+                  <span style={{ padding: '3px 10px', borderRadius: 20, fontSize: 11, fontWeight: 700,
+                    background: days < 0 ? '#FEF2F2' : days <= 3 ? '#FFFBEB' : '#F0FDF4',
+                    color: days < 0 ? '#EF4444' : days <= 3 ? '#F59E0B' : '#22C55E',
+                    border: `1px solid ${days < 0 ? '#FECACA' : days <= 3 ? '#FDE68A' : '#BBF7D0'}`,
+                    flexShrink: 0 }}>
+                    {days < 0 ? `${Math.abs(days)}d Overdue` : `${days}d left`}
+                  </span>
                 </div>
-              ))}
-            </div>
+              );
+            })}
           </div>
 
-          {/* Recently Returned */}
-          <div style={{ background: 'white', padding: '24px', borderRadius: 12, border: '1px solid #E5E7EB' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
-              <h2 style={{ fontSize: 16, fontWeight: 700, color: '#111827' }}>Recently Returned</h2>
-              <button style={{ fontSize: 13, color: '#6366F1', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600, fontFamily: 'Inter' }}>
-                View All
-              </button>
+          {/* Quick Links */}
+          <div style={{ background: 'white', borderRadius: 12, border: '1px solid #E5E7EB', padding: '20px 24px' }}>
+            <h2 style={{ fontSize: 16, fontWeight: 700, color: '#111827', margin: '0 0 16px' }}>Quick Actions</h2>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 12 }}>
+              {QUICK_LINKS.map(ql => {
+                const Icon = ql.icon;
+                return (
+                  <Link key={ql.href} href={ql.href}
+                    style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, padding: '16px 10px', borderRadius: 10, background: '#F9FAFB', border: '1px solid #E5E7EB', textDecoration: 'none', transition: 'all 0.2s' }}
+                    onMouseEnter={e => { e.currentTarget.style.background = '#EEF2FF'; e.currentTarget.style.borderColor = '#C7D2FE'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = '#F9FAFB'; e.currentTarget.style.borderColor = '#E5E7EB'; }}
+                  >
+                    <div style={{ width: 40, height: 40, borderRadius: 10, background: '#EEF2FF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Icon size={18} color="#6366F1" />
+                    </div>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: '#374151', textAlign: 'center' }}>{ql.label}</span>
+                  </Link>
+                );
+              })}
             </div>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead>
-                <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
-                  <th style={{ fontSize: 12, fontWeight: 600, color: '#6B7280', textAlign: 'left', padding: '12px 16px' }}>Book Title</th>
-                  <th style={{ fontSize: 12, fontWeight: 600, color: '#6B7280', textAlign: 'left', padding: '12px 16px' }}>Author</th>
-                  <th style={{ fontSize: 12, fontWeight: 600, color: '#6B7280', textAlign: 'left', padding: '12px 16px' }}>Returned On</th>
-                  <th style={{ fontSize: 12, fontWeight: 600, color: '#6B7280', textAlign: 'left', padding: '12px 16px' }}>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {recentlyReturned.map((item, idx) => (
-                  <tr key={idx} style={{ borderBottom: '1px solid #F3F4F6' }}>
-                    <td style={{ padding: '16px', fontSize: 13, color: '#111827', fontWeight: 500 }}>{item.title}</td>
-                    <td style={{ padding: '16px', fontSize: 13, color: '#6B7280' }}>{item.author}</td>
-                    <td style={{ padding: '16px', fontSize: 13, color: '#6B7280' }}>{item.returned}</td>
-                    <td style={{ padding: '16px' }}>
-                      <span style={{
-                        padding: '4px 12px',
-                        borderRadius: 6,
-                        fontSize: 11,
-                        fontWeight: 600,
-                        background: '#D1FAE5',
-                        color: '#059669',
-                      }}>
-                        {item.status}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
           </div>
         </div>
 
-        {/* Right Sidebar */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, minWidth: 0, width: 260 }}>
-          {/* Due Soon Reminders */}
-          <div style={{ background: 'white', padding: '20px', borderRadius: 12, border: '1px solid #E5E7EB' }}>
+        {/* Recent Notifications */}
+        <div>
+          <div style={{ background: 'white', borderRadius: 12, border: '1px solid #E5E7EB', padding: '20px 20px', marginBottom: 16 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-              <h3 style={{ fontSize: 14, fontWeight: 700, color: '#111827' }}>Due Soon Reminders</h3>
-              <button style={{ fontSize: 12, color: '#6366F1', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600, fontFamily: 'Inter' }}>
-                View All
-              </button>
+              <h2 style={{ fontSize: 16, fontWeight: 700, color: '#111827', margin: 0 }}>Notifications</h2>
+              <Link href="/student/notifications" style={{ fontSize: 13, color: '#6366F1', fontWeight: 600, textDecoration: 'none' }}>See All →</Link>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              {dueSoonReminders.map((item, idx) => (
-                <div key={idx} style={{
-                  display: 'flex',
-                  gap: 12,
-                  padding: '12px',
-                  background: '#FEFCE8',
-                  borderRadius: 8,
-                  border: '1px solid #FDE68A',
-                  alignItems: 'center',
-                }}>
-                  <Bell size={16} color="#F59E0B" />
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: '#92400E', marginBottom: 2 }}>{item.title}</div>
-                    <div style={{ fontSize: 11, color: '#78350F' }}>{item.dueDate}</div>
-                  </div>
-                  <div style={{
-                    padding: '4px 10px',
-                    borderRadius: 6,
-                    fontSize: 11,
-                    fontWeight: 700,
-                    background: '#FED7AA',
-                    color: '#EA580C',
-                  }}>
-                    Due in {item.daysLeft} days
-                  </div>
+            {notifications.length === 0 ? (
+              <p style={{ color: '#9CA3AF', fontSize: 13, textAlign: 'center', padding: '20px 0' }}>No notifications yet.</p>
+            ) : notifications.map(n => (
+              <div key={n._id} style={{ display: 'flex', gap: 10, padding: '10px 0', borderBottom: '1px solid #F3F4F6', alignItems: 'flex-start' }}>
+                <div style={{ width: 8, height: 8, borderRadius: '50%', background: n.read ? '#E5E7EB' : '#6366F1', marginTop: 5, flexShrink: 0 }} />
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', marginBottom: 2 }}>{n.title}</div>
+                  <div style={{ fontSize: 11, color: '#9CA3AF', marginBottom: 3 }}>{timeAgo(n.createdAt)}</div>
+                  <div style={{ fontSize: 12, color: '#6B7280', lineHeight: 1.4, overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>{n.message}</div>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
 
-          {/* Fine Overview */}
-          <div style={{ background: 'white', padding: '20px', borderRadius: 12, border: '1px solid #E5E7EB' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-              <h3 style={{ fontSize: 14, fontWeight: 700, color: '#111827' }}>Fine Overview</h3>
-              <button style={{ fontSize: 12, color: '#6366F1', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600, fontFamily: 'Inter' }}>
-                View Details
-              </button>
+          {/* Overdue Alert */}
+          {stats?.overdueBorrows > 0 && (
+            <div style={{ background: '#FEF2F2', borderRadius: 12, border: '1px solid #FECACA', padding: 16 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+                <AlertTriangle size={18} color="#EF4444" />
+                <span style={{ fontSize: 14, fontWeight: 700, color: '#DC2626' }}>Overdue Alert!</span>
+              </div>
+              <p style={{ fontSize: 13, color: '#B91C1C', margin: '0 0 10px', lineHeight: 1.5 }}>
+                You have {stats.overdueBorrows} overdue book{stats.overdueBorrows > 1 ? 's' : ''}. Late fines are accruing daily.
+              </p>
+              <Link href="/student/my-books" style={{ display: 'inline-block', padding: '7px 16px', borderRadius: 8, background: '#EF4444', color: 'white', fontSize: 13, fontWeight: 700, textDecoration: 'none' }}>
+                View Overdue Books
+              </Link>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
-              <div style={{ textAlign: 'center', flex: 1 }}>
-                <div style={{ fontSize: 11, color: '#6B7280', marginBottom: 4 }}>Total Fine</div>
-                <div style={{ fontSize: 20, fontWeight: 700, color: '#F59E0B' }}>₹50</div>
-              </div>
-              <div style={{ width: 1, background: '#E5E7EB' }} />
-              <div style={{ textAlign: 'center', flex: 1 }}>
-                <div style={{ fontSize: 11, color: '#6B7280', marginBottom: 4 }}>Paid</div>
-                <div style={{ fontSize: 20, fontWeight: 700, color: '#10B981' }}>₹0</div>
-              </div>
-              <div style={{ width: 1, background: '#E5E7EB' }} />
-              <div style={{ textAlign: 'center', flex: 1 }}>
-                <div style={{ fontSize: 11, color: '#6B7280', marginBottom: 4 }}>Pending</div>
-                <div style={{ fontSize: 20, fontWeight: 700, color: '#DC2626' }}>₹50</div>
-              </div>
-            </div>
-            <button style={{
-              width: '100%',
-              padding: '12px',
-              background: '#6366F1',
-              border: 'none',
-              borderRadius: 8,
-              fontSize: 13,
-              fontWeight: 600,
-              color: 'white',
-              cursor: 'pointer',
-              fontFamily: 'Inter',
-            }}>
-              Pay Fine Now
-            </button>
-          </div>
+          )}
 
-          {/* Recommended For You */}
-          <div style={{ background: 'white', padding: '20px', borderRadius: 12, border: '1px solid #E5E7EB' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-              <h3 style={{ fontSize: 14, fontWeight: 700, color: '#111827' }}>Recommended For You</h3>
-              <button style={{ fontSize: 12, color: '#6366F1', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600, fontFamily: 'Inter' }}>
-                View All
-              </button>
+          {/* Fine Alert */}
+          {stats?.pendingFineTotal > 0 && (
+            <div style={{ background: '#FFFBEB', borderRadius: 12, border: '1px solid #FDE68A', padding: 16, marginTop: 16 }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: '#D97706', marginBottom: 8 }}>⚠️ Outstanding Fine</div>
+              <p style={{ fontSize: 13, color: '#92400E', margin: '0 0 10px' }}>You have ₹{stats.pendingFineTotal} in outstanding fines.</p>
+              <Link href="/student/fines" style={{ display: 'inline-block', padding: '7px 16px', borderRadius: 8, background: '#F59E0B', color: 'white', fontSize: 13, fontWeight: 700, textDecoration: 'none' }}>
+                Pay Fine →
+              </Link>
             </div>
-            <div style={{ display: 'flex', gap: 12, overflowX: 'auto' }}>
-              {recommended.map((book, idx) => (
-                <div key={idx} style={{ 
-                  minWidth: 90, 
-                  textAlign: 'center',
-                  cursor: 'pointer',
-                }}>
-                  <div style={{
-                    width: 90,
-                    height: 130,
-                    borderRadius: 8,
-                    overflow: 'hidden',
-                    marginBottom: 8,
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                  }}>
-                    <img 
-                      src={book.cover} 
-                      alt={book.title}
-                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                      onError={(e) => {
-                        e.target.style.display = 'none';
-                        e.target.parentElement.style.background = 'linear-gradient(135deg, #6366F1, #8B5CF6)';
-                        e.target.parentElement.innerHTML = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:white;font-size:24px;">📚</div>';
-                      }}
-                    />
-                  </div>
-                  <div style={{ fontSize: 11, fontWeight: 600, color: '#111827', marginBottom: 2, lineHeight: 1.2 }}>{book.title}</div>
-                  <div style={{ fontSize: 10, color: '#6B7280', marginBottom: 4 }}>{book.author}</div>
-                  <div style={{ fontSize: 11, fontWeight: 600, color: '#F59E0B' }}>⭐ {book.rating}</div>
-                </div>
-              ))}
-              <button style={{
-                minWidth: 40,
-                height: 130,
-                borderRadius: 8,
-                border: '1px solid #E5E7EB',
-                background: '#F9FAFB',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
-                <ChevronRight size={20} color="#6B7280" />
-              </button>
-            </div>
-          </div>
+          )}
         </div>
       </div>
+      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </div>
   );
 }

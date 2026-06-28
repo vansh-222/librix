@@ -1,25 +1,25 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import LibrarianLayout from '@/components/librarian/LibrarianLayout';
 import {
   BookOpen, ArrowLeftRight, Clock, AlertCircle, Calendar, Search, Filter, Plus, Eye, RotateCcw, MoreHorizontal, FileText, ChevronDown, CheckCircle
 } from 'lucide-react';
 
-// Sample data for issued books
-const ISSUED_BOOKS = [
-  { id: 1, bookTitle: 'Atomic Habits', author: 'James Clear', isbn: '978-1847941831', memberName: 'Rahul Verma', memberId: 'MEM001', issueDate: 'May 10, 2026', issueTime: '10:30 AM', dueDate: 'May 20, 2026', daysLeft: '4 days left', status: 'issued', cover: '#E05252' },
-  { id: 2, bookTitle: 'The Power of Habit', author: 'Charles Duhigg', isbn: '978-0812981605', memberName: 'Priya Singh', memberId: 'MEM002', issueDate: 'May 11, 2026', issueTime: '09:15 AM', dueDate: 'May 21, 2026', daysLeft: '5 days left', status: 'issued', cover: '#5B8CDB' },
-  { id: 3, bookTitle: 'Deep Work', author: 'Cal Newport', isbn: '978-0349414114', memberName: 'Arjun Mehta', memberId: 'MEM003', issueDate: 'May 12, 2026', issueTime: '02:45 PM', dueDate: 'May 22, 2026', daysLeft: '6 days left', status: 'issued', cover: '#2B6CB0' },
-  { id: 4, bookTitle: 'The 5 AM Club', author: 'Robin Sharma', isbn: '978-1443456623', memberName: 'Neha Gupta', memberId: 'MEM004', issueDate: 'May 08, 2026', issueTime: '11:20 AM', dueDate: 'May 18, 2026', daysLeft: '2 days overdue', status: 'overdue', cover: '#D4A017' },
-  { id: 5, bookTitle: 'Rich Dad Poor Dad', author: 'Robert T. Kiyosaki', isbn: '978-1612680194', memberName: 'Vikram Patel', memberId: 'MEM005', issueDate: 'May 07, 2026', issueTime: '03:10 PM', dueDate: 'May 17, 2026', daysLeft: '3 days overdue', status: 'overdue', cover: '#4CAF50' },
-];
-
-const STATS = [
-  { icon: <BookOpen size={22} color="#6C5CE7" />, iconBg: '#EDE9FE', value: '58', label: 'Books Issued' },
-  { icon: <ArrowLeftRight size={22} color="#16A34A" />, iconBg: '#DCFCE7', value: '42', label: 'Books Returned' },
-  { icon: <Clock size={22} color="#F59E0B" />, iconBg: '#FEF3C7', value: '12', label: 'Overdue Books' },
-  { icon: <AlertCircle size={22} color="#DC2626" />, iconBg: '#FEE2E2', value: '7', label: 'Due Today' },
-];
+function fmtDate(d) {
+  if (!d) return '—';
+  return new Date(d).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+function fmtTime(d) {
+  if (!d) return '';
+  return new Date(d).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+}
+function daysInfo(due) {
+  const diff = Math.ceil((new Date(due) - new Date()) / 86400000);
+  if (diff < 0) return `${Math.abs(diff)} day${Math.abs(diff) !== 1 ? 's' : ''} overdue`;
+  if (diff === 0) return 'Due today';
+  return `${diff} day${diff !== 1 ? 's' : ''} left`;
+}
+const BOOK_COLORS = ['#E05252','#5B8CDB','#2B6CB0','#D4A017','#4CAF50','#9C27B0','#26C6DA','#EA580C'];
 
 function BookCover({ color }) {
   return (
@@ -36,14 +36,70 @@ function BookCover({ color }) {
 }
 
 export default function IssueReturnPage() {
-  const [activeTab, setActiveTab] = useState('issued');
+  const [activeTab, setActiveTab]     = useState('issued');
   const [selectedDate, setSelectedDate] = useState('May 16, 2026');
   const [showFilterMenu, setShowFilterMenu] = useState(false);
+  const [records, setRecords]         = useState([]);
+  const [toast, setToast]             = useState('');
+  const [acting, setActing]           = useState('');
+
+  const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(''), 3000); };
+
+  const load = useCallback(async () => {
+    const [issued, returned] = await Promise.all([
+      fetch('/api/borrow?status=issued').then(r => r.json()),
+      fetch('/api/borrow?status=return_pending').then(r => r.json()),
+    ]);
+    const all = [...(issued.records || []), ...(returned.records || [])];
+    setRecords(all);
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  const confirmReturn = async (recordId) => {
+    setActing(recordId);
+    try {
+      const res = await fetch('/api/borrow', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ recordId, action: 'receive_book', condition: 'good' }),
+      });
+      const data = await res.json();
+      if (!res.ok) { showToast(data.error || 'Failed.'); return; }
+      showToast('Return confirmed! ✅');
+      load();
+    } catch { showToast('Something went wrong.'); }
+    finally { setActing(''); }
+  };
+
+  const markReturn = async (recordId) => {
+    setActing(recordId + 'm');
+    try {
+      await fetch('/api/borrow', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ recordId, action: 'mark_return' }) });
+      showToast('Marked as return pending.');
+      load();
+    } catch { showToast('Something went wrong.'); }
+    finally { setActing(''); }
+  };
+
+  const issuedRecs   = records.filter(r => r.status === 'issued');
+  const returnedRecs = records.filter(r => r.status === 'return_pending');
+  const overdueRecs  = records.filter(r => r.status === 'issued' && new Date(r.dueDate) < new Date());
+  const dueTodayRecs = records.filter(r => r.status === 'issued' && new Date(r.dueDate).toDateString() === new Date().toDateString());
+  const displayRecs  = activeTab === 'issued' ? issuedRecs : returnedRecs;
+
+  const STATS = [
+    { icon: <BookOpen size={22} color="#6C5CE7" />,      iconBg: '#EDE9FE', value: issuedRecs.length,   label: 'Books Issued'   },
+    { icon: <ArrowLeftRight size={22} color="#16A34A" />, iconBg: '#DCFCE7', value: returnedRecs.length, label: 'Pending Returns' },
+    { icon: <Clock size={22} color="#F59E0B" />,          iconBg: '#FEF3C7', value: overdueRecs.length,  label: 'Overdue Books'  },
+    { icon: <AlertCircle size={22} color="#DC2626" />,    iconBg: '#FEE2E2', value: dueTodayRecs.length, label: 'Due Today'      },
+  ];
 
   const tabs = [
-    { id: 'issued', label: 'Issued Books', count: 58 },
-    { id: 'returned', label: 'Returned Books', count: 42 },
+    { id: 'issued',   label: 'Issued Books',   count: issuedRecs.length   },
+    { id: 'returned', label: 'Pending Returns', count: returnedRecs.length },
   ];
+
 
   return (
     <LibrarianLayout
@@ -51,6 +107,7 @@ export default function IssueReturnPage() {
       subtitle="Issue new books or manage return transactions"
       searchPlaceholder="Search books, members, ISBN..."
     >
+      {toast && <div style={{ position: 'fixed', top: 20, right: 20, zIndex: 999, background: '#6C5CE7', color: '#fff', padding: '10px 20px', borderRadius: 10, fontSize: 14, fontWeight: 600, boxShadow: '0 4px 24px rgba(108,92,231,0.4)' }}>{toast}</div>}
       <div style={{ padding: '24px 24px 32px' }}>
         {/* Two column layout */}
         <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start' }}>
@@ -216,106 +273,70 @@ export default function IssueReturnPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {ISSUED_BOOKS.map((book, i) => (
-                    <tr key={book.id} className="tr-hover" style={{ borderBottom: i < ISSUED_BOOKS.length - 1 ? '1px solid #F3F4F6' : 'none' }}>
+                  {displayRecs.length === 0 ? (
+                    <tr><td colSpan={6} style={{ textAlign: 'center', padding: 32, color: '#9CA3AF' }}>No records found.</td></tr>
+                  ) : displayRecs.map((book, i) => {
+                    const isOverdue = new Date(book.dueDate) < new Date() && book.status === 'issued';
+                    const cover = BOOK_COLORS[i % BOOK_COLORS.length];
+                    return (
+                    <tr key={book._id} className="tr-hover" style={{ borderBottom: i < displayRecs.length - 1 ? '1px solid #F3F4F6' : 'none' }}>
                       <td style={{ padding: '10px 16px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                          <BookCover color={book.cover} />
+                          <BookCover color={cover} />
                           <div style={{ minWidth: 0, flex: 1 }}>
-                            <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{book.bookTitle}</div>
-                            <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 2 }}>{book.author}</div>
-                            <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 1 }}>ISBN: {book.isbn}</div>
+                            <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{book.bookId?.title}</div>
+                            <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 2 }}>{book.bookId?.author}</div>
+                            <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 1 }}>ISBN: {book.bookId?.isbn || '—'}</div>
                           </div>
                         </div>
                       </td>
                       <td style={{ padding: '10px 16px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                           <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#6C5CE7', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: 12, fontWeight: 700 }}>
-                            {book.memberName.split(' ').map(n => n[0]).join('')}
+                            {(book.userId?.name || '?').split(' ').map(n => n[0]).join('')}
                           </div>
                           <div style={{ minWidth: 0 }}>
-                            <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{book.memberName}</div>
-                            <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 2 }}>{book.memberId}</div>
+                            <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{book.userId?.name}</div>
+                            <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 2 }}>{book.userId?.email}</div>
                           </div>
                         </div>
                       </td>
                       <td style={{ padding: '10px 16px' }}>
-                        <div style={{ fontSize: 13, fontWeight: 500, color: '#111827' }}>{book.issueDate}</div>
-                        <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 2 }}>{book.issueTime}</div>
+                        <div style={{ fontSize: 13, fontWeight: 500, color: '#111827' }}>{fmtDate(book.issueDate)}</div>
+                        <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 2 }}>{fmtTime(book.issueDate)}</div>
                       </td>
                       <td style={{ padding: '10px 16px' }}>
-                        <div style={{ fontSize: 13, fontWeight: 500, color: '#111827' }}>{book.dueDate}</div>
-                        <div style={{ fontSize: 11, color: book.status === 'overdue' ? '#DC2626' : '#16A34A', marginTop: 2, fontWeight: 500 }}>{book.daysLeft}</div>
+                        <div style={{ fontSize: 13, fontWeight: 500, color: '#111827' }}>{fmtDate(book.dueDate)}</div>
+                        <div style={{ fontSize: 11, color: isOverdue ? '#DC2626' : '#16A34A', marginTop: 2, fontWeight: 500 }}>{daysInfo(book.dueDate)}</div>
                       </td>
                       <td style={{ padding: '10px 16px' }}>
-                        <span style={{
-                          padding: '4px 12px',
-                          background: book.status === 'overdue' ? '#FEE2E2' : '#DCFCE7',
-                          color: book.status === 'overdue' ? '#DC2626' : '#15803D',
-                          borderRadius: 9999,
-                          fontSize: 11,
-                          fontWeight: 500,
-                          display: 'inline-block'
-                        }}>
-                          {book.status === 'overdue' ? 'Overdue' : 'Issued'}
+                        <span style={{ padding: '4px 12px', background: isOverdue ? '#FEE2E2' : (book.status === 'return_pending' ? '#FEF3C7' : '#DCFCE7'), color: isOverdue ? '#DC2626' : (book.status === 'return_pending' ? '#D97706' : '#15803D'), borderRadius: 9999, fontSize: 11, fontWeight: 500, display: 'inline-block' }}>
+                          {isOverdue ? 'Overdue' : book.status === 'return_pending' ? 'Return Pending' : 'Issued'}
                         </span>
                       </td>
                       <td style={{ padding: '10px 16px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'center' }}>
-                          <button
-                            type="button"
-                            title="Process Return"
-                            className="act-btn"
-                            style={{
-                              padding: '7px 12px',
-                              border: '1px solid #6C5CE7',
-                              background: 'white',
-                              borderRadius: 6,
-                              cursor: 'pointer',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: 4,
-                              transition: 'all 0.15s ease'
-                            }}
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.background = '#6C5CE7';
-                              e.currentTarget.querySelector('svg').style.color = 'white';
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.background = 'white';
-                              e.currentTarget.querySelector('svg').style.color = '#6C5CE7';
-                            }}
+                          <button type="button" title="Confirm Return" className="act-btn"
+                            onClick={() => confirmReturn(book._id)}
+                            disabled={acting === book._id}
+                            style={{ padding: '7px 12px', border: '1px solid #6C5CE7', background: 'white', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, transition: 'all 0.15s ease' }}
+                            onMouseEnter={e => { e.currentTarget.style.background = '#6C5CE7'; }}
+                            onMouseLeave={e => { e.currentTarget.style.background = 'white'; }}
                           >
                             <CheckCircle size={15} color="#6C5CE7" style={{ transition: 'color 0.15s ease' }} />
                           </button>
-                          <button
-                            type="button"
-                            title="More Options"
-                            className="act-btn"
-                            style={{
-                              padding: '7px',
-                              border: '1px solid #E5E7EB',
-                              background: 'white',
-                              borderRadius: 6,
-                              cursor: 'pointer',
-                              display: 'flex',
-                              transition: 'all 0.15s ease'
-                            }}
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.background = '#F9FAFB';
-                              e.currentTarget.style.borderColor = '#D1D5DB';
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.background = 'white';
-                              e.currentTarget.style.borderColor = '#E5E7EB';
-                            }}
+                          <button type="button" title="More Options" className="act-btn"
+                            style={{ padding: '7px', border: '1px solid #E5E7EB', background: 'white', borderRadius: 6, cursor: 'pointer', display: 'flex', transition: 'all 0.15s ease' }}
+                            onMouseEnter={e => { e.currentTarget.style.background = '#F9FAFB'; e.currentTarget.style.borderColor = '#D1D5DB'; }}
+                            onMouseLeave={e => { e.currentTarget.style.background = 'white'; e.currentTarget.style.borderColor = '#E5E7EB'; }}
                           >
                             <MoreHorizontal size={16} color="#6B7280" />
                           </button>
                         </div>
                       </td>
                     </tr>
-                  ))}
+                  );
+                  })}
                 </tbody>
               </table>
 
