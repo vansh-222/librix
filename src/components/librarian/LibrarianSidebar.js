@@ -39,7 +39,7 @@ export default function LibrarianSidebar() {
             <BookOpen size={18} color="white" />
           </div>
           <div>
-            <div style={{ fontSize: 15, fontWeight: 700, color: '#111827', lineHeight: '19px' }}>LibraSys</div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: '#111827', lineHeight: '19px' }}>Librarium</div>
             <div style={{ fontSize: 10, color: '#9CA3AF', lineHeight: '14px' }}>Library Management</div>
           </div>
         </div>

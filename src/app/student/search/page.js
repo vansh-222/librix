@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import Link from 'next/link';
 import { Search, Grid, List, ChevronRight, ChevronLeft } from 'lucide-react';
 
 export default function SearchBooksPage() {
@@ -194,6 +195,7 @@ export default function SearchBooksPage() {
                 <div style={{ fontSize: 11, color: '#6B7280', marginBottom: 12 }}>
                   {book.available ? `${book.copies} Copies` : `${book.copies} Copies`}
                 </div>
+                <Link href={`/student/book/${book.id}`} style={{ textDecoration: 'none' }}>
                 <button style={{
                   width: '100%',
                   padding: '8px 16px',
@@ -212,6 +214,7 @@ export default function SearchBooksPage() {
                 >
                   {book.available ? 'View Details' : 'Join Waitlist'}
                 </button>
+                </Link>
               </div>
             </div>
           ))}

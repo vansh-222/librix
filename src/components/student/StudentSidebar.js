@@ -36,7 +36,7 @@ export default function StudentSidebar() {
           <BookOpen size={18} color="white" />
         </div>
         <div>
-          <div style={{ fontSize: 16, fontWeight: 700, color: '#111827', fontFamily: 'Inter' }}>LibraSys</div>
+          <div style={{ fontSize: 16, fontWeight: 700, color: '#111827', fontFamily: 'Inter' }}>Librarium</div>
           <div style={{ fontSize: 9, color: '#9CA3AF', fontFamily: 'Inter', marginTop: -2 }}>Library Management</div>
         </div>
       </Link>
@@ -103,37 +103,24 @@ export default function StudentSidebar() {
         })}
       </nav>
 
-      {/* Help Section */}
+      {/* Quote Card */}
       <div style={{
         marginTop: 'auto',
         padding: '16px',
-        background: '#FEF3C7',
+        background: 'linear-gradient(135deg, #EEF2FF 0%, #F5F3FF 100%)',
         borderRadius: 12,
-        border: '1px solid #FCD34D',
+        border: '1px solid #C7D2FE',
       }}>
-        <div style={{ width: 40, height: 40, background: '#F59E0B', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', fontSize: 20 }}>
-          💡
+        {/* Illustration placeholder */}
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 10 }}>
+          <div style={{ fontSize: 32 }}>📚</div>
         </div>
-        <div style={{ fontSize: 13, fontWeight: 600, color: '#92400E', textAlign: 'center', marginBottom: 6, fontFamily: 'Inter' }}>
-          Need Help?
+        <div style={{ fontSize: 12, color: '#4338CA', textAlign: 'center', lineHeight: 1.5, fontStyle: 'italic', marginBottom: 8, fontFamily: 'Inter' }}>
+          "Books are a uniquely portable magic."
         </div>
-        <div style={{ fontSize: 11, color: '#78350F', textAlign: 'center', marginBottom: 12, lineHeight: 1.4, fontFamily: 'Inter' }}>
-          Contact librarian or visit help center
+        <div style={{ fontSize: 11, color: '#6366F1', textAlign: 'center', fontWeight: 600, fontFamily: 'Inter' }}>
+          — Stephen King
         </div>
-        <button style={{
-          width: '100%',
-          padding: '8px',
-          background: 'white',
-          border: '1px solid #FCD34D',
-          borderRadius: 6,
-          fontSize: 12,
-          fontWeight: 600,
-          color: '#92400E',
-          cursor: 'pointer',
-          fontFamily: 'Inter',
-        }}>
-          Contact Support
-        </button>
       </div>
     </aside>
   );
