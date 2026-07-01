@@ -9,9 +9,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     Credentials({
       name: 'Credentials',
       credentials: {
-        email:         { label: 'Email',          type: 'email'    },
-        password:      { label: 'Password',       type: 'password' },
-        librarianCode: { label: 'Librarian Code', type: 'text'     },
+        email:    { label: 'Email',    type: 'email'    },
+        password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
         try {
@@ -20,41 +19,22 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           await connectDB();
 
           const email = credentials.email.trim().toLowerCase();
-          const isLibrarianLogin = !!credentials.librarianCode;
 
-          // --- Librarian path: validate access code FIRST ---
-          if (isLibrarianLogin) {
-            const validCode = process.env.LIBRARIAN_ACCESS_CODE;
-            if (!validCode || credentials.librarianCode.trim() !== validCode) {
-              console.log('[Auth] invalid librarian access code');
-              return null;
-            }
-            // Find user and enforce role = librarian
-            const user = await User.findOne({ email, role: 'librarian' }).select('+passwordHash');
-            if (!user || !user.isActive) return null;
-            const isValid = await user.comparePassword(credentials.password);
-            if (!isValid) return null;
-            await User.findByIdAndUpdate(user._id, { lastLogin: new Date() });
-            return {
-              id:        user._id.toString(),
-              name:      user.name,
-              email:     user.email,
-              role:      user.role,
-              collegeId: user.collegeId ? user.collegeId.toString() : null,
-              avatarUrl: user.avatarUrl || '',
-            };
-          }
+          // Find user by email (any role)
+          const user = await User.findOne({ email }).select('+passwordHash');
 
-          // --- Student path: no access code, role must NOT be librarian ---
-          const user = await User.findOne({ email, role: { $ne: 'librarian' } }).select('+passwordHash');
-          if (!user) {
-            console.log('[Auth] student not found or tried librarian login without code');
-            return null;
-          }
-          if (!user.isActive) return null;
+          if (!user)           { console.log('[Auth] user not found:', email); return null; }
+          if (!user.isActive)  { console.log('[Auth] user inactive:',  email); return null; }
 
           const isValid = await user.comparePassword(credentials.password);
-          if (!isValid) return null;
+          if (!isValid) { console.log('[Auth] wrong password:', email); return null; }
+
+          // Librarians must have a college assigned
+          if (user.role === 'librarian' && !user.collegeId) {
+            console.log('[Auth] librarian has no collegeId:', email);
+            // Return a special error flag — UI can show a friendly message
+            throw new Error('LIBRARIAN_NO_COLLEGE');
+          }
 
           await User.findByIdAndUpdate(user._id, { lastLogin: new Date() });
 
@@ -67,8 +47,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             avatarUrl: user.avatarUrl || '',
           };
         } catch (err) {
-          console.error('[Auth] authorize error:', err);
-          return null;
+          console.error('[Auth] authorize error:', err.message);
+          // Re-throw so NextAuth passes the error message to the client
+          throw err;
         }
       },
     }),

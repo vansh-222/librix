@@ -1,4 +1,5 @@
 import './globals.css';
+import AuthProvider from '@/components/AuthProvider';
 
 export const metadata = {
   title: 'Librarium — Smart Library Management for Modern Institutions',
@@ -18,7 +19,11 @@ export default function RootLayout({ children }) {
           rel="stylesheet"
         />
       </head>
-      <body>{children}</body>
+      <body>
+        <AuthProvider>
+          {children}
+        </AuthProvider>
+      </body>
     </html>
   );
 }

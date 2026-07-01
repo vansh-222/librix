@@ -4,6 +4,7 @@ import StudentNavbar from './StudentNavbar';
 
 export default function StudentLayout({ 
   userName,
+  userEmail,
   searchPlaceholder,
   children 
 }) {
@@ -31,6 +32,7 @@ export default function StudentLayout({
         {/* Navbar */}
         <StudentNavbar 
           userName={userName}
+          userEmail={userEmail}
           searchPlaceholder={searchPlaceholder}
         />
 

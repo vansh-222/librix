@@ -13,9 +13,11 @@ const CollegeBookSchema = new mongoose.Schema(
       ref: 'Book',
       required: true,
     },
-    total: { type: Number, required: true, min: 0 },
+    total:     { type: Number, required: true, min: 0 },
     available: { type: Number, required: true, min: 0 },
-    shelf: { type: String, default: '' },
+    shelf:     { type: String, default: '' },   // shelf number / code
+    section:   { type: String, default: '' },   // e.g. "Science", "Fiction"
+    floor:     { type: String, default: '' },   // e.g. "Ground", "1st Floor"
     addedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
@@ -29,3 +31,4 @@ CollegeBookSchema.index({ collegeId: 1, bookId: 1 }, { unique: true });
 
 export default mongoose.models.CollegeBook ||
   mongoose.model('CollegeBook', CollegeBookSchema);
+

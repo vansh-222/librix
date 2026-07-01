@@ -3,6 +3,8 @@ import LibrarianSidebar from './LibrarianSidebar';
 import LibrarianNavbar from './LibrarianNavbar';
 
 export default function LibrarianLayout({ 
+  userName,
+  userEmail,
   title, 
   subtitle, 
   searchPlaceholder,
@@ -31,6 +33,8 @@ export default function LibrarianLayout({
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', minWidth: 0, minHeight: 0 }}>
         {/* Navbar */}
         <LibrarianNavbar 
+          userName={userName}
+          userEmail={userEmail}
           title={title} 
           subtitle={subtitle} 
           searchPlaceholder={searchPlaceholder}

@@ -1,34 +1,12 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import LibrarianLayout from '@/components/librarian/LibrarianLayout';
 import {
   BookOpen, Users, ArrowLeftRight, Clock, TrendingUp, TrendingDown, Calendar, Filter, Plus, ChevronRight, FileText, BarChart3, Activity, Download
 } from 'lucide-react';
 
-// Sample data
-const STATS = [
-  { icon: <BookOpen size={22} color="#6C5CE7" />, iconBg: '#EDE9FE', value: '58', label: 'Total Books Issued', change: '+12%', isPositive: true, subtitle: 'vs last week' },
-  { icon: <Users size={22} color="#16A34A" />, iconBg: '#DCFCE7', value: '342', label: 'Active Members', change: '+8%', isPositive: true, subtitle: 'vs last week' },
-  { icon: <ArrowLeftRight size={22} color="#F59E0B" />, iconBg: '#FEF3C7', value: '42', label: 'Books Returned', change: '+15%', isPositive: true, subtitle: 'vs last week' },
-  { icon: <Clock size={22} color="#DC2626" />, iconBg: '#FEE2E2', value: '12', label: 'Overdue Books', change: '-8%', isPositive: false, subtitle: 'vs last week' },
-  { icon: <TrendingUp size={22} color="#6C5CE7" />, iconBg: '#EDE9FE', value: '₹1240', label: 'Fines Collected', change: '+6%', isPositive: true, subtitle: 'vs last week' },
-];
+const BOOK_COVER_COLORS = ['#E05252','#2B6CB0','#D4A017','#5B8CDB','#1F2937','#9C27B0'];
 
-const TOP_BORROWED = [
-  { title: 'Atomic Habits', author: 'James Clear', count: 28, cover: '#E05252' },
-  { title: 'Deep Work', author: 'Cal Newport', count: 24, cover: '#2B6CB0' },
-  { title: 'The 5 AM Club', author: 'Robin Sharma', count: 21, cover: '#D4A017' },
-  { title: 'The Power of Habit', author: 'Charles Duhigg', count: 18, cover: '#5B8CDB' },
-  { title: 'Clean Code', author: 'Robert C. Martin', count: 15, cover: '#1F2937' },
-];
-
-const MONTHLY_TRENDS = [
-  { label: 'Books Issued', value: '1,245', change: '+5%', isPositive: true, chartData: [20, 25, 30, 28, 35, 40, 38] },
-  { label: 'Books Returned', value: '1,102', change: '+11%', isPositive: true, chartData: [15, 20, 25, 30, 32, 35, 38] },
-  { label: 'New Members', value: '156', change: '+22%', isPositive: true, chartData: [5, 8, 12, 15, 18, 20, 22] },
-  { label: 'Fines Collected', value: '₹48,750', change: '-10%', isPositive: false, chartData: [50, 45, 40, 35, 38, 40, 42] },
-  { label: 'Overdue Books', value: '35', change: '-8%', isPositive: true, chartData: [45, 40, 38, 35, 32, 30, 28] },
-];
 
 function BookCover({ color }) {
   return (
@@ -57,7 +35,60 @@ function MiniSparkline({ data, color }) {
 }
 
 export default function ReportsPage() {
-  const [dateRange, setDateRange] = useState('May 10 - May 16, 2026');
+  const [dateRange, setDateRange]   = useState('May 10 - May 16, 2026');
+  const [statsData, setStatsData]   = useState({});
+  const [topBooks, setTopBooks]     = useState([]);
+
+  const load = useCallback(async () => {
+    const [statsRes, borrowRes] = await Promise.all([
+      fetch('/api/stats').then(r => r.json()),
+      fetch('/api/borrow?limit=100').then(r => r.json()),
+    ]);
+    setStatsData(statsRes);
+
+    // Build top borrowed from borrow records
+    const countMap = {};
+    (borrowRes.records || []).forEach(rec => {
+      const id = rec.bookId?._id || rec.bookId;
+      if (!id) return;
+      if (!countMap[id]) countMap[id] = { title: rec.bookId?.title || 'Unknown', author: rec.bookId?.author || '', count: 0 };
+      countMap[id].count++;
+    });
+    const sorted = Object.values(countMap).sort((a, b) => b.count - a.count).slice(0, 5);
+    setTopBooks(sorted);
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  const s = statsData;
+  const totalMembers    = s.totalMembers     || 0;
+  const activeBorrows   = s.activeBorrows    || 0;
+  const overdueCount    = s.overdueCount     || 0;
+  const pendingRequests = s.pendingRequests  || 0;
+  const finesCollected  = s.finesCollected   || 0;
+  const finesPending    = s.finesPending     || 0;
+  const totalBooks      = s.totalBooks       || 0;
+  const pendingReturns  = s.pendingReturns   || 0;
+
+  const TOP_BORROWED = topBooks.length > 0 ? topBooks : [
+    { title: '—', author: '', count: 0 },
+  ];
+
+  const STATS = [
+    { icon: <BookOpen size={22} color="#6C5CE7" />, iconBg: '#EDE9FE', value: activeBorrows || '…', label: 'Total Books Issued', change: '—', isPositive: true, subtitle: 'currently' },
+    { icon: <Users size={22} color="#16A34A" />,   iconBg: '#DCFCE7', value: totalMembers  || '…', label: 'Active Members',    change: '—', isPositive: true, subtitle: 'registered' },
+    { icon: <ArrowLeftRight size={22} color="#F59E0B" />, iconBg: '#FEF3C7', value: pendingReturns || '…', label: 'Pending Returns', change: '—', isPositive: true, subtitle: 'in queue' },
+    { icon: <Clock size={22} color="#DC2626" />,   iconBg: '#FEE2E2', value: overdueCount  || '…', label: 'Overdue Books',    change: overdueCount > 5 ? '⚠️' : '✔️', isPositive: overdueCount <= 5, subtitle: 'books' },
+    { icon: <TrendingUp size={22} color="#6C5CE7" />, iconBg: '#EDE9FE', value: `₹${finesCollected}`, label: 'Fines Collected', change: '—', isPositive: true, subtitle: 'total' },
+  ];
+
+  const MONTHLY_TRENDS = [
+    { label: 'Books Issued',    value: String(activeBorrows),  change: '—', isPositive: true,  chartData: [10,15,20,18,activeBorrows,activeBorrows,activeBorrows] },
+    { label: 'Overdue Books',   value: String(overdueCount),   change: '—', isPositive: false, chartData: [5,8,10,overdueCount,overdueCount,overdueCount,overdueCount] },
+    { label: 'Pending Requests',value: String(pendingRequests),change: '—', isPositive: true,  chartData: [2,5,8,pendingRequests,pendingRequests,pendingRequests,pendingRequests] },
+    { label: 'Fines Collected', value: `₹${finesCollected}`,  change: '—', isPositive: true,  chartData: [10,20,30,40,finesCollected,finesCollected,finesCollected] },
+    { label: 'Fines Pending',   value: `₹${finesPending}`,    change: '—', isPositive: false, chartData: [30,25,20,15,finesPending,finesPending,finesPending] },
+  ];
 
   return (
     <LibrarianLayout
@@ -154,7 +185,7 @@ export default function ReportsPage() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                   {TOP_BORROWED.map((book, i) => (
                     <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px', background: '#F9FAFB', borderRadius: 8 }}>
-                      <BookCover color={book.cover} />
+                      <BookCover color={BOOK_COVER_COLORS[i % BOOK_COVER_COLORS.length]} />
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ fontSize: 12, fontWeight: 600, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{book.title}</div>
                         <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 2 }}>{book.author}</div>
@@ -223,39 +254,33 @@ export default function ReportsPage() {
                   <div style={{ position: 'relative', flexShrink: 0 }}>
                     <svg width="140" height="140" viewBox="0 0 140 140" style={{ transform: 'rotate(-90deg)' }}>
                       <circle cx="70" cy="70" r="50" fill="none" stroke="#F3F4F6" strokeWidth="20" />
-                      {/* Active Members - Purple (69.6%) */}
-                      <circle
-                        cx="70" cy="70" r="50"
-                        fill="none" stroke="#6C5CE7" strokeWidth="20"
-                        strokeDasharray={`${314 * 0.696} 314`}
+                      {/* Active Members - Purple */}
+                      <circle cx="70" cy="70" r="50" fill="none" stroke="#6C5CE7" strokeWidth="20"
+                        strokeDasharray={`${314 * (totalMembers > 0 ? activeBorrows / totalMembers : 0.6)} 314`}
                         strokeDashoffset="0"
                       />
-                      {/* Inactive Members - Orange (22.8%) */}
-                      <circle
-                        cx="70" cy="70" r="50"
-                        fill="none" stroke="#F59E0B" strokeWidth="20"
-                        strokeDasharray={`${314 * 0.228} 314`}
-                        strokeDashoffset={`-${314 * 0.696}`}
+                      {/* Overdue - Orange */}
+                      <circle cx="70" cy="70" r="50" fill="none" stroke="#F59E0B" strokeWidth="20"
+                        strokeDasharray={`${314 * (totalMembers > 0 ? overdueCount / totalMembers : 0.2)} 314`}
+                        strokeDashoffset={`-${314 * (totalMembers > 0 ? activeBorrows / totalMembers : 0.6)}`}
                       />
-                      {/* New Members - Green (7.6%) */}
-                      <circle
-                        cx="70" cy="70" r="50"
-                        fill="none" stroke="#16A34A" strokeWidth="20"
-                        strokeDasharray={`${314 * 0.076} 314`}
-                        strokeDashoffset={`-${314 * (0.696 + 0.228)}`}
+                      {/* Pending - Green */}
+                      <circle cx="70" cy="70" r="50" fill="none" stroke="#16A34A" strokeWidth="20"
+                        strokeDasharray={`${314 * (totalMembers > 0 ? pendingRequests / totalMembers : 0.1)} 314`}
+                        strokeDashoffset={`-${314 * (totalMembers > 0 ? (activeBorrows + overdueCount) / totalMembers : 0.8)}`}
                       />
                     </svg>
                     <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center' }}>
-                      <div style={{ fontSize: 28, fontWeight: 700, color: '#111827', lineHeight: 1 }}>342</div>
+                      <div style={{ fontSize: 28, fontWeight: 700, color: '#111827', lineHeight: 1 }}>{totalMembers || '…'}</div>
                       <div style={{ fontSize: 11, color: '#6B7280', marginTop: 4 }}>Total</div>
                     </div>
                   </div>
 
                   <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 10 }}>
                     {[
-                      { color: '#6C5CE7', label: 'Active Members', value: '238 (69.6%)', bg: '#EDE9FE' },
-                      { color: '#F59E0B', label: 'Inactive Members', value: '78 (22.8%)', bg: '#FEF3C7' },
-                      { color: '#16A34A', label: 'New Members', value: '26 (7.6%)', bg: '#DCFCE7' },
+                      { color: '#6C5CE7', label: 'Active Borrows',   value: `${activeBorrows}`, bg: '#EDE9FE' },
+                      { color: '#F59E0B', label: 'Overdue Books',    value: `${overdueCount}`,  bg: '#FEF3C7' },
+                      { color: '#16A34A', label: 'Pending Requests', value: `${pendingRequests}`, bg: '#DCFCE7' },
                     ].map((item, i) => (
                       <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px', background: item.bg, borderRadius: 8 }}>
                         <div style={{ width: 10, height: 10, borderRadius: '50%', background: item.color, flexShrink: 0 }} />
@@ -317,13 +342,13 @@ export default function ReportsPage() {
               <div style={{ fontSize: 14, fontWeight: 600, color: '#111827', marginBottom: 12 }}>Library Summary (This Month)</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 {[
-                  { icon: <Users size={16} color="#6C5CE7" />, label: 'Total Members', value: '342' },
-                  { icon: <Users size={16} color="#16A34A" />, label: 'New Members', value: '26' },
-                  { icon: <BookOpen size={16} color="#6C5CE7" />, label: 'Books Issued', value: '226' },
-                  { icon: <ArrowLeftRight size={16} color="#16A34A" />, label: 'Books Returned', value: '184' },
-                  { icon: <Clock size={16} color="#DC2626" />, label: 'Overdue Books', value: '12' },
-                  { icon: <Activity size={16} color="#F59E0B" />, label: 'Pending Requests', value: '22' },
-                  { icon: <TrendingUp size={16} color="#6C5CE7" />, label: 'Fines Collected', value: '₹12,450.00' },
+                  { icon: <Users size={16} color="#6C5CE7" />,        label: 'Total Members',    value: totalMembers    || '…' },
+                  { icon: <BookOpen size={16} color="#6C5CE7" />,      label: 'Total Books',      value: totalBooks      || '…' },
+                  { icon: <BookOpen size={16} color="#EA580C" />,      label: 'Books Issued',     value: activeBorrows   || '…' },
+                  { icon: <ArrowLeftRight size={16} color="#16A34A" />,label: 'Pending Returns',  value: pendingReturns  || '…' },
+                  { icon: <Clock size={16} color="#DC2626" />,         label: 'Overdue Books',    value: overdueCount    || '…' },
+                  { icon: <Activity size={16} color="#F59E0B" />,      label: 'Pending Requests', value: pendingRequests || '…' },
+                  { icon: <TrendingUp size={16} color="#6C5CE7" />,    label: 'Fines Collected',  value: `₹${finesCollected}` },
                 ].map((item, i) => (
                   <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px', background: '#F9FAFB', borderRadius: 8 }}>
                     <div style={{ width: 32, height: 32, background: 'white', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, border: '1px solid #E5E7EB' }}>

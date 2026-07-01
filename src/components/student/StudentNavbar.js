@@ -1,12 +1,15 @@
 'use client';
 import { useState } from 'react';
-import { signOut } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
 import { Search, Bell, ChevronDown, LogOut } from 'lucide-react';
 
-export default function StudentNavbar({ userName = "Vansh", searchPlaceholder = "Search books, authors, ISBN..." }) {
+export default function StudentNavbar({ searchPlaceholder = "Search books, authors, ISBN..." }) {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const pathname = usePathname();
+  const { data: session } = useSession();
+  const userName = session?.user?.name || "Student";
+  const userEmail = session?.user?.email || "student@college.edu";
 
   // Determine page title based on route
   const getPageTitle = () => {
@@ -94,7 +97,9 @@ export default function StudentNavbar({ userName = "Vansh", searchPlaceholder = 
             onClick={() => setShowUserMenu(!showUserMenu)}
             style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}
           >
-            <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#6C5CE7', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 700, fontSize: 14 }}>V</div>
+            <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#6C5CE7', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 700, fontSize: 14 }}>
+              {userName.charAt(0).toUpperCase()}
+            </div>
             <div>
               <div style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>{userName}</div>
               <div style={{ fontSize: 11, color: '#9CA3AF' }}>Student</div>
@@ -119,7 +124,7 @@ export default function StudentNavbar({ userName = "Vansh", searchPlaceholder = 
             }}>
               <div style={{ padding: '12px 16px', borderBottom: '1px solid #F3F4F6' }}>
                 <div style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>{userName}</div>
-                <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 2 }}>student@apexcollege.edu</div>
+                <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 2 }}>{userEmail}</div>
               </div>
               <button
                 onClick={() => signOut({ callbackUrl: '/login' })}

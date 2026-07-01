@@ -1,10 +1,13 @@
 'use client';
 import { useState } from 'react';
-import { signOut } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import { Search, Bell, ChevronDown, LogOut } from 'lucide-react';
 
 export default function LibrarianNavbar({ title, subtitle, searchPlaceholder = "Search books, members, ISBN..." }) {
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const { data: session } = useSession();
+  const userName = session?.user?.name || "Librarian";
+  const userEmail = session?.user?.email || "librarian@college.edu";
 
   return (
     <div style={{
@@ -43,9 +46,11 @@ export default function LibrarianNavbar({ title, subtitle, searchPlaceholder = "
             onClick={() => setShowUserMenu(!showUserMenu)}
             style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}
           >
-            <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#6C5CE7', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 700, fontSize: 14 }}>A</div>
+            <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#6C5CE7', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 700, fontSize: 14 }}>
+              {userName.charAt(0).toUpperCase()}
+            </div>
             <div>
-              <div style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>Anita Sharma</div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>{userName}</div>
               <div style={{ fontSize: 11, color: '#9CA3AF' }}>Librarian</div>
             </div>
             <ChevronDown size={13} color="#9CA3AF" />
@@ -67,8 +72,8 @@ export default function LibrarianNavbar({ title, subtitle, searchPlaceholder = "
               overflow: 'hidden'
             }}>
               <div style={{ padding: '12px 16px', borderBottom: '1px solid #F3F4F6' }}>
-                <div style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>Anita Sharma</div>
-                <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 2 }}>librarian@apexcollege.edu</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>{userName}</div>
+                <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 2 }}>{userEmail}</div>
               </div>
               <button
                 onClick={() => signOut({ callbackUrl: '/login' })}

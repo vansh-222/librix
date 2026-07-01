@@ -12,8 +12,14 @@ export default auth((req) => {
   const session = req.auth;
 
   // Public routes — no auth needed
-  const publicRoutes = ['/', '/login', '/register', '/signup', '/forgot-password'];
-  if (publicRoutes.some(r => pathname === r) || pathname.startsWith('/api/auth') || pathname.startsWith('/api/colleges/list') || pathname.startsWith('/api/colleges/register') || pathname.startsWith('/api/users/register')) {
+  const publicRoutes = ['/', '/login', '/register', '/signup', '/forgot-password', '/librarian/setup'];
+  if (
+    publicRoutes.some(r => pathname === r) ||
+    pathname.startsWith('/api/auth') ||
+    pathname.startsWith('/api/colleges/') ||      // all college registration + verification APIs
+    pathname.startsWith('/api/librarian/setup') || // librarian account creation
+    pathname.startsWith('/api/users/register')     // student self-registration
+  ) {
     // Redirect authenticated users away from login/register
     if (session && (pathname === '/login' || pathname === '/signup' || pathname === '/register')) {
       const role = session.user.role;

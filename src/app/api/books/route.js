@@ -75,7 +75,7 @@ export async function POST(req) {
     const {
       title, author, isbn, publisher, publishedYear, cover, description,
       category, language, pages, source, googleBooksId, openLibraryId,
-      copies, shelf,
+      copies, shelf, section, floor,
     } = body;
 
     if (!title || !author) {
@@ -85,11 +85,17 @@ export async function POST(req) {
     await connectDB();
     const collegeId = session.user.collegeId;
 
-    // Find or create global book record
-    let book = await Book.findOne({ $or: [
-      isbn ? { isbn } : { title: 'NEVER_MATCH' },
-      googleBooksId ? { googleBooksId } : { title: 'NEVER_MATCH' },
-    ]});
+    if (!collegeId) {
+      return NextResponse.json({
+        error: 'Your librarian account is not linked to a college. Please visit /api/fix-librarian to fix this, then log out and log back in.',
+      }, { status: 400 });
+    }
+
+    // Find or create global book record (deduplicate by ISBN or googleBooksId)
+    let book = null;
+    if (isbn) book = await Book.findOne({ isbn });
+    if (!book && googleBooksId) book = await Book.findOne({ googleBooksId });
+    if (!book && openLibraryId) book = await Book.findOne({ openLibraryId });
 
     if (!book) {
       book = await Book.create({
@@ -105,10 +111,12 @@ export async function POST(req) {
     // Check if this college already has this book
     const existing = await CollegeBook.findOne({ collegeId, bookId: book._id });
     if (existing) {
-      // Add more copies
-      existing.total += parseInt(copies) || 1;
+      // Add more copies to existing inventory
+      existing.total     += parseInt(copies) || 1;
       existing.available += parseInt(copies) || 1;
-      if (shelf) existing.shelf = shelf;
+      if (shelf)   existing.shelf   = shelf;
+      if (section) existing.section = section;
+      if (floor)   existing.floor   = floor;
       await existing.save();
       return NextResponse.json({ success: true, collegeBook: existing, book });
     }
@@ -116,11 +124,13 @@ export async function POST(req) {
     // Create college inventory entry
     const collegeBook = await CollegeBook.create({
       collegeId,
-      bookId: book._id,
-      total: parseInt(copies) || 1,
+      bookId:    book._id,
+      total:     parseInt(copies) || 1,
       available: parseInt(copies) || 1,
-      shelf: shelf || '',
-      addedBy: session.user.id,
+      shelf:     shelf   || '',
+      section:   section || '',
+      floor:     floor   || '',
+      addedBy:   session.user.id,
     });
 
     return NextResponse.json({ success: true, collegeBook, book }, { status: 201 });

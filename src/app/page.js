@@ -92,8 +92,8 @@ export default function LandingPage() {
             {NAV.map(l => <a key={l} href={`#${l.toLowerCase().replace(' ', '-')}`} className="nl" style={{ color: 'black', fontSize: 16, fontFamily: 'Inter', fontWeight: 400, transition: 'color 0.2s' }}>{l}</a>)}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <Link href="/login" style={{ padding: '10px 28px', borderRadius: 38, border: '1px solid rgba(5,32,51,0.42)', color: DARK, fontSize: 16, fontFamily: 'Inter', fontWeight: 400 }}>Login</Link>
-            <Link href="/signup" style={{ padding: '10px 24px', borderRadius: 38, background: BLUE, color: 'white', fontSize: 16, fontFamily: 'Inter', fontWeight: 500 }}>Sign Up</Link>
+            <Link href="/register" style={{ padding: '10px 28px', borderRadius: 38, border: '1px solid rgba(5,32,51,0.42)', color: DARK, fontSize: 16, fontFamily: 'Inter', fontWeight: 400 }}>Register College</Link>
+            <Link href="/login" style={{ padding: '10px 24px', borderRadius: 38, background: BLUE, color: 'white', fontSize: 16, fontFamily: 'Inter', fontWeight: 500 }}>Login</Link>
           </div>
         </nav>
       </div>
