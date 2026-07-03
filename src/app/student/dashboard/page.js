@@ -72,20 +72,6 @@ export default function StudentDashboard() {
         </div>
       )}
 
-      {/* Welcome Banner */}
-      <div style={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', borderRadius: 16, padding: '28px 32px', marginBottom: 24, color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div>
-          <div style={{ fontSize: 13, opacity: 0.85, marginBottom: 6 }}>{getGreeting()},</div>
-          <div style={{ fontSize: 26, fontWeight: 800, marginBottom: 8 }}>{name} 👋</div>
-          <div style={{ fontSize: 13, opacity: 0.8 }}>
-            {stats?.activeBorrows > 0
-              ? `You have ${stats.activeBorrows} active borrow${stats.activeBorrows > 1 ? 's' : ''}. Keep reading!`
-              : 'Welcome to your library dashboard. Start exploring books!'}
-          </div>
-        </div>
-        <div style={{ fontSize: 72, opacity: 0.25 }}>📚</div>
-      </div>
-
       {/* Stat Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 16, marginBottom: 24 }}>
         {STAT_CARDS.map((s, i) => {

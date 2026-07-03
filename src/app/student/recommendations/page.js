@@ -110,9 +110,9 @@ export default function RecommendationsPage() {
       setTopGenres(sorted);
 
       const alreadyReadIds = new Set(returned.map(r => r.bookId?._id?.toString()));
-      const pending = new Set(
-        (reqData.requests || []).filter(r => ['requested','approved','issued'].includes(r.status)).map(r => r.bookId?._id || r.bookId)
-      );
+      const activeBorrows = (borrowData.records || []).filter(r => ['issued', 'return_pending', 'overdue'].includes(r.status)).map(r => r.bookId?._id || r.bookId);
+      const pendingReqs = (reqData.requests || []).filter(r => ['requested','approved'].includes(r.status)).map(r => r.bookId?._id || r.bookId);
+      const pending = new Set([...pendingReqs, ...activeBorrows]);
       setPendingBookIds(pending);
 
       // Fetch books by top genre for recommendations

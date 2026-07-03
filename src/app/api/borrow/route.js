@@ -2,6 +2,7 @@ import connectDB from '@/lib/db';
 import BorrowRecord from '@/models/BorrowRecord';
 import CollegeBook from '@/models/CollegeBook';
 import Reservation from '@/models/Reservation';
+import Request from '@/models/Request';
 import College from '@/models/College';
 import { createNotification } from '@/lib/notifications';
 import { fineAddedEmail, reservationAvailableEmail } from '@/lib/email';
@@ -110,6 +111,13 @@ export async function PATCH(req) {
         { collegeId: record.collegeId, bookId: record.bookId._id },
         { $inc: { available: 1 } }
       );
+
+      // Update associated request status to 'returned' so student can request again
+      if (record.requestId) {
+        await Request.findByIdAndUpdate(record.requestId, { status: 'returned' }).catch(() => {});
+      } else {
+        await Request.findOneAndUpdate({ userId: record.userId._id, bookId: record.bookId._id, status: 'issued' }, { status: 'returned' }).catch(() => {});
+      }
 
       // Fine notification
       if (fine > 0) {

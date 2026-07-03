@@ -19,7 +19,7 @@ const RequestSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ['requested', 'approved', 'rejected', 'issued', 'cancelled'],
+      enum: ['requested', 'approved', 'rejected', 'issued', 'cancelled', 'returned'],
       default: 'requested',
     },
     note: { type: String, default: '' }, // librarian rejection note
