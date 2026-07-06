@@ -45,19 +45,19 @@ export default function FinesPaymentsPage() {
   const load = useCallback(async () => {
     const res  = await fetch('/api/borrow');
     const data = await res.json();
-    const withFines = (data.records || []).filter(r => (r.fineAmount || 0) > 0);
+    const withFines = (data.records || []).filter(r => (r.fine || 0) > 0 || r.fineStatus === 'paid');
     setFinesData(withFines);
   }, []);
 
   useEffect(() => { load(); }, [load]);
 
-  const paidTotal   = finesData.filter(r => r.finePaid).reduce((s, r) => s + (r.fineAmount || 0), 0);
-  const pendingTotal = finesData.filter(r => !r.finePaid).reduce((s, r) => s + (r.fineAmount || 0), 0);
+  const paidTotal    = finesData.filter(r => r.fineStatus === 'paid').reduce((s, r) => s + (r.fine || 0), 0);
+  const pendingTotal = finesData.filter(r => r.fineStatus === 'pending').reduce((s, r) => s + (r.fine || 0), 0);
 
   const STATS = [
-    { icon: <DollarSign size={22} color="#6C5CE7" />, iconBg: '#EDE9FE', value: `₹${paidTotal.toFixed(2)}`,   label: 'Total Fine Collected', subtitle: 'All time' },
-    { icon: <Clock size={22} color="#F59E0B" />,       iconBg: '#FEF3C7', value: `₹${pendingTotal.toFixed(2)}`, label: 'Pending Amount',       subtitle: `${finesData.filter(r => !r.finePaid).length} members` },
-    { icon: <AlertTriangle size={22} color="#DC2626" />, iconBg: '#FEE2E2', value: finesData.filter(r => !r.finePaid).length, label: 'Overdue Payments', subtitle: 'Unpaid fines' },
+    { icon: <DollarSign size={22} color="#6C5CE7" />, iconBg: '#EDE9FE', value: `₹${paidTotal}`,   label: 'Total Fine Collected', subtitle: 'All time' },
+    { icon: <Clock size={22} color="#F59E0B" />,       iconBg: '#FEF3C7', value: `₹${pendingTotal}`, label: 'Pending Amount',       subtitle: `${finesData.filter(r => r.fineStatus === 'pending').length} members` },
+    { icon: <AlertTriangle size={22} color="#DC2626" />, iconBg: '#FEE2E2', value: finesData.filter(r => r.fineStatus === 'pending').length, label: 'Overdue Payments', subtitle: 'Unpaid fines' },
   ];
 
   const markPaid = async (recordId) => {
@@ -81,8 +81,7 @@ export default function FinesPaymentsPage() {
     const title = fine.bookId?.title || '';
     const matchesSearch = name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           title.toLowerCase().includes(searchTerm.toLowerCase());
-    const uiStatus = fine.finePaid ? 'paid' : 'pending';
-    const matchesStatus = statusFilter === 'all' || uiStatus === statusFilter;
+    const matchesStatus = statusFilter === 'all' || fine.fineStatus === statusFilter;
     return matchesSearch && matchesStatus;
   });
 
@@ -192,12 +191,12 @@ export default function FinesPaymentsPage() {
                    {filteredFines.length === 0 ? (
                     <tr><td colSpan={7} style={{ textAlign: 'center', padding: 32, color: '#9CA3AF' }}>No fines found.</td></tr>
                   ) : filteredFines.map((fine, i) => {
-                    const uiStatus = fine.finePaid ? 'paid' : 'pending';
                     const statusConfig = {
-                      pending: { label: 'Pending', bg: '#FEF3C7', color: '#D97706' },
-                      paid:    { label: 'Paid',    bg: '#DCFCE7', color: '#15803D' },
+                      pending: { label: '🔴 Unpaid',  bg: '#FEF2F2', color: '#DC2626' },
+                      paid:    { label: '✅ Paid',     bg: '#F0FDF4', color: '#16A34A' },
+                      waived:  { label: '⚡ Waived',   bg: '#FFFBEB', color: '#D97706' },
                     };
-                    const status = statusConfig[uiStatus] || statusConfig.pending;
+                    const status = statusConfig[fine.fineStatus] || statusConfig.pending;
                     const cover  = BOOK_COLORS[i % BOOK_COLORS.length];
                     return (
                       <tr key={fine._id} className="tr-hover" style={{ borderBottom: i < filteredFines.length - 1 ? '1px solid #F3F4F6' : 'none' }}>
@@ -222,7 +221,7 @@ export default function FinesPaymentsPage() {
                           </div>
                         </td>
                         <td style={{ padding: '10px 16px' }}>
-                          <div style={{ fontSize: 14, fontWeight: 600, color: '#DC2626' }}>₹{(fine.fineAmount || 0).toFixed(2)}</div>
+                          <div style={{ fontSize: 14, fontWeight: 600, color: '#DC2626' }}>₹{fine.fine || 0}</div>
                         </td>
                         <td style={{ padding: '10px 16px' }}>
                           <div style={{ fontSize: 13, fontWeight: 500, color: '#111827' }}>{fmtDate(fine.dueDate)}</div>
@@ -242,10 +241,10 @@ export default function FinesPaymentsPage() {
                           </span>
                         </td>
                         <td style={{ padding: '10px 16px' }}>
-                          {fine.finePaid ? (
+                          {fine.fineStatus === 'paid' ? (
                             <>
-                              <div style={{ fontSize: 13, fontWeight: 500, color: '#111827' }}>{fmtDate(fine.updatedAt)}</div>
-                              <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 2 }}>{fmtTime(fine.updatedAt)}</div>
+                              <div style={{ fontSize: 13, fontWeight: 500, color: '#111827' }}>{fmtDate(fine.finePaidAt || fine.updatedAt)}</div>
+                              <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 2 }}>{fmtTime(fine.finePaidAt || fine.updatedAt)}</div>
                             </>
                           ) : (
                             <span style={{ fontSize: 13, color: '#9CA3AF' }}>—</span>
@@ -270,7 +269,7 @@ export default function FinesPaymentsPage() {
                             >
                               <Eye size={15} color="#6C5CE7" />
                             </button>
-                            {!fine.finePaid && (
+                            {fine.fineStatus === 'pending' && (
                               <button type="button" title="Mark as Paid"
                                 onClick={() => markPaid(fine._id)}
                                 disabled={acting === fine._id}
@@ -278,7 +277,7 @@ export default function FinesPaymentsPage() {
                                 onMouseEnter={e => { e.currentTarget.style.background = '#16A34A'; e.currentTarget.style.color = 'white'; }}
                                 onMouseLeave={e => { e.currentTarget.style.background = 'white'; e.currentTarget.style.color = '#16A34A'; }}
                               >
-                                <CheckCircle size={13} /> Mark Paid
+                                {acting === fine._id ? '...' : <><CheckCircle size={13} /> Mark Paid</>}
                               </button>
                             )}
                             <button 

@@ -43,7 +43,7 @@ export async function PATCH(req) {
     const session = await auth();
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const { recordId, action, condition, extensionDays, rating, reviewNote } = await req.json();
+    const { recordId, action, condition, extensionDays, rating, reviewNote, upiTxnId } = await req.json();
     if (!recordId || !action) return NextResponse.json({ error: 'Missing fields' }, { status: 400 });
 
     await connectDB();
@@ -90,7 +90,7 @@ export async function PATCH(req) {
       // Calculate overdue fine
       if (returnDate > dueDate) {
         const lateDays = Math.ceil((returnDate - dueDate) / (1000 * 60 * 60 * 24));
-        fine = lateDays * (settings.finePerDay || 5);
+        fine = lateDays * (settings.finePerDay || 50);
       }
 
       // Extra fine for damage/loss
@@ -202,16 +202,33 @@ export async function PATCH(req) {
         return NextResponse.json({ error: 'No pending fine to pay' }, { status: 400 });
       }
       record.fineStatus = 'paid';
+      record.finePaidAt = new Date();
+      if (upiTxnId) record.upiTxnId = upiTxnId;
       await record.save();
 
+      // Notify student
       await createNotification({
         userId: record.userId._id,
         collegeId: record.collegeId,
-        title: 'Fine Paid',
-        message: `Your fine of ${settings.currencySymbol || '₹'}${record.fine} for "${record.bookId.title}" has been marked as paid.`,
+        title: 'Fine Paid ✅',
+        message: `Your fine of ₹${record.fine} for "${record.bookId.title}" has been marked as paid.`,
         type: 'general',
         link: '/student/fines',
       });
+
+      // Notify all librarians
+      const { default: User } = await import('@/models/User');
+      const librarians = await User.find({ collegeId: record.collegeId, role: 'librarian' }).select('_id').lean();
+      await Promise.all(librarians.map(l =>
+        createNotification({
+          userId: l._id,
+          collegeId: record.collegeId,
+          title: 'Fine Payment Received 💰',
+          message: `${record.userId.name} has paid ₹${record.fine} fine for "${record.bookId.title}".`,
+          type: 'general',
+          link: '/librarian/fines',
+        })
+      ));
 
     } else if (action === 'waive_fine') {
       // Librarian waives fine

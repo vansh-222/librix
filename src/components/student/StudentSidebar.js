@@ -1,7 +1,7 @@
 'use client';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { LayoutDashboard, Search, BookOpen, ClipboardList, DollarSign, Sparkles, History, Bell, User } from 'lucide-react';
+import { LayoutDashboard, Search, BookOpen, ClipboardList, DollarSign, Sparkles, History, Bell } from 'lucide-react';
 
 const NAV_ITEMS = [
   { href: '/student/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
@@ -12,7 +12,6 @@ const NAV_ITEMS = [
   { href: '/student/recommendations', icon: Sparkles, label: 'Recommendations' },
   { href: '/student/history', icon: History, label: 'Reading History' },
   { href: '/student/notifications', icon: Bell, label: 'Notifications', badge: 3 },
-  { href: '/student/profile', icon: User, label: 'Profile' },
 ];
 
 export default function StudentSidebar() {

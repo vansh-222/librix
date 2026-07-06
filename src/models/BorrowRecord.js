@@ -55,6 +55,8 @@ const BorrowRecordSchema = new mongoose.Schema(
     notes: { type: String, default: '' },
     rating: { type: Number, default: 0, min: 0, max: 5 }, // student book rating (1-5)
     reviewNote: { type: String, default: '' }, // optional review text
+    finePaidAt: { type: Date, default: null },  // when fine was paid
+    upiTxnId:   { type: String, default: '' },  // UPI transaction ID from student
   },
   { timestamps: true }
 );

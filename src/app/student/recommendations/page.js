@@ -1,93 +1,148 @@
 'use client';
-import { useState, useEffect } from 'react';
-import { BookOpen, Star, TrendingUp, ChevronRight, ChevronLeft, Loader2 } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
+import { BookOpen, Star, TrendingUp, ChevronRight, ChevronLeft, Loader2, Sparkles, Info, Heart, BarChart2, Users } from 'lucide-react';
 
-function BookCover({ cover, title, size = 68 }) {
+// ─── Book Cover ───────────────────────────────────────────────────────────────
+function BookCover({ cover, title, size = 110 }) {
   const [err, setErr] = useState(false);
+  const h = Math.round(size * 1.45);
   return (
-    <div style={{ width: size, height: Math.round(size * 1.45), borderRadius: 8, overflow: 'hidden', flexShrink: 0, background: '#F3F4F6' }}>
+    <div style={{ width: size, height: h, borderRadius: 8, overflow: 'hidden', flexShrink: 0, background: '#F3F4F6', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
       {cover && !err
         ? <img src={cover} alt={title} onError={() => setErr(true)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         : <div style={{ width: '100%', height: '100%', background: 'linear-gradient(135deg,#6366F1,#A78BFA)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <BookOpen size={size * 0.28} color="white" />
+            <BookOpen size={size * 0.3} color="white" />
           </div>
       }
     </div>
   );
 }
 
+// ─── Star Row ─────────────────────────────────────────────────────────────────
 function StarRow({ rating }) {
+  const r = rating || 0;
   return (
-    <div style={{ display: 'flex', gap: 2 }}>
-      {Array.from({ length: 5 }).map((_, i) => (
-        <Star key={i} size={12} fill={i < Math.round(rating) ? '#F59E0B' : 'none'} color={i < Math.round(rating) ? '#F59E0B' : '#D1D5DB'} />
-      ))}
-      <span style={{ fontSize: 11, color: '#9CA3AF', marginLeft: 3 }}>{rating?.toFixed(1) || '—'}</span>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+      <Star size={13} fill={r > 0 ? '#F59E0B' : 'none'} color={r > 0 ? '#F59E0B' : '#D1D5DB'} />
+      <span style={{ fontSize: 12, fontWeight: 700, color: '#374151' }}>{r > 0 ? r.toFixed(1) : '—'}</span>
     </div>
   );
 }
 
-function BookCard({ book, onRequest, isPending, isRequesting }) {
+// ─── Vertical Book Card (image on top, details below) ─────────────────────────
+function BookCard({ book, isPending, isRequesting, onRequest }) {
+  const avail = book.inventory?.available ?? 0;
   return (
-    <div style={{
-      background: 'white', borderRadius: 12, border: '1px solid #E5E7EB',
-      padding: 16, display: 'flex', flexDirection: 'column', gap: 10, transition: 'all 0.2s',
-    }}
-      onMouseEnter={e => e.currentTarget.style.boxShadow = '0 6px 20px rgba(0,0,0,0.09)'}
-      onMouseLeave={e => e.currentTarget.style.boxShadow = 'none'}
-    >
-      <div style={{ display: 'flex', gap: 12 }}>
-        <BookCover cover={book.cover} title={book.title} size={52} />
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: '#111827', lineHeight: 1.3, marginBottom: 3, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{book.title}</div>
-          <div style={{ fontSize: 11, color: '#6B7280', marginBottom: 6 }}>{book.author}</div>
-          <StarRow rating={book.avgRating || 0} />
+    <div style={{ flexShrink: 0, width: 140, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <div style={{ marginBottom: 10 }}>
+        <BookCover cover={book.cover} title={book.title} size={110} />
+      </div>
+      <div style={{ width: '100%', textAlign: 'center' }}>
+        <div style={{ fontSize: 13, fontWeight: 700, color: '#111827', lineHeight: 1.3, marginBottom: 3, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+          {book.title}
         </div>
-      </div>
-      {book.category && (
-        <span style={{ display: 'inline-block', padding: '3px 10px', borderRadius: 20, background: '#EEF2FF', color: '#6366F1', fontSize: 11, fontWeight: 600 }}>{book.category}</span>
-      )}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <span style={{ fontSize: 11, fontWeight: 600, color: (book.inventory?.available || 0) > 0 ? '#22C55E' : '#EF4444' }}>
-          {(book.inventory?.available || 0) > 0 ? `${book.inventory.available} Available` : 'Unavailable'}
-        </span>
-        {isPending ? (
-          <span style={{ fontSize: 12, color: '#6366F1', fontWeight: 600 }}>✓ Requested</span>
-        ) : (
-          <button onClick={() => onRequest(book._id, book.title)}
-            disabled={isRequesting || (book.inventory?.available || 0) < 1}
-            style={{
-              padding: '6px 14px', border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: (book.inventory?.available || 0) < 1 ? 'not-allowed' : 'pointer',
-              background: (book.inventory?.available || 0) < 1 ? '#F3F4F6' : 'linear-gradient(135deg,#6366F1,#8B5CF6)',
-              color: (book.inventory?.available || 0) < 1 ? '#9CA3AF' : 'white',
-              fontFamily: 'Inter',
-            }}>
-            {isRequesting ? '...' : 'Request'}
-          </button>
-        )}
+        <div style={{ fontSize: 12, color: '#6B7280', marginBottom: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {book.author}
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 8 }}>
+          <StarRow rating={book.avgRating} />
+        </div>
+        <Link
+          href={`/student/book/${book._id}`}
+          style={{
+            display: 'block', width: '100%', padding: '7px 0',
+            border: '1px solid #E5E7EB', borderRadius: 8,
+            background: 'white', color: '#374151',
+            fontSize: 12, fontWeight: 600, textDecoration: 'none',
+            textAlign: 'center', transition: 'all 0.15s',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.background = '#EEF2FF'; e.currentTarget.style.color = '#6366F1'; e.currentTarget.style.borderColor = '#C7D2FE'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'white'; e.currentTarget.style.color = '#374151'; e.currentTarget.style.borderColor = '#E5E7EB'; }}
+        >
+          View Details
+        </Link>
       </div>
     </div>
   );
 }
 
-function HScrollList({ children }) {
-  const ref = useState(null);
+// ─── Horizontal scrollable book row with nav arrows ──────────────────────────
+function BookRow({ books, isPending, isRequesting, onRequest }) {
+  const ref = useRef(null);
+  const scroll = (dir) => {
+    if (ref.current) ref.current.scrollBy({ left: dir * 320, behavior: 'smooth' });
+  };
   return (
-    <div style={{ overflowX: 'auto', display: 'flex', gap: 14, paddingBottom: 8 }}>
-      {children}
+    <div style={{ position: 'relative' }}>
+      <button
+        onClick={() => scroll(-1)}
+        style={{ position: 'absolute', left: -16, top: '40%', transform: 'translateY(-50%)', zIndex: 2, width: 32, height: 32, borderRadius: '50%', background: 'white', border: '1px solid #E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}
+      >
+        <ChevronLeft size={16} color="#6B7280" />
+      </button>
+      <div ref={ref} style={{ display: 'flex', gap: 20, overflowX: 'auto', paddingBottom: 8, scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+        {books.map(book => (
+          <BookCard
+            key={book._id}
+            book={book}
+            isPending={isPending(book._id?.toString())}
+            isRequesting={isRequesting[book._id]}
+            onRequest={onRequest}
+          />
+        ))}
+      </div>
+      <button
+        onClick={() => scroll(1)}
+        style={{ position: 'absolute', right: -16, top: '40%', transform: 'translateY(-50%)', zIndex: 2, width: 32, height: 32, borderRadius: '50%', background: 'white', border: '1px solid #E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}
+      >
+        <ChevronRight size={16} color="#6B7280" />
+      </button>
     </div>
   );
 }
+
+// ─── Section Header ───────────────────────────────────────────────────────────
+function SectionHeader({ title, genre }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
+      <h2 style={{ fontSize: 16, fontWeight: 800, color: '#111827', margin: 0 }}>{title}</h2>
+      <Link
+        href={genre ? `/student/search?category=${encodeURIComponent(genre)}` : '/student/search'}
+        style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, fontWeight: 600, color: '#6366F1', textDecoration: 'none' }}
+      >
+        View All <ChevronRight size={14} />
+      </Link>
+    </div>
+  );
+}
+
+// ─── Progress Bar ─────────────────────────────────────────────────────────────
+function ProgressBar({ pct, color = '#6366F1' }) {
+  return (
+    <div style={{ height: 8, background: '#F3F4F6', borderRadius: 4, overflow: 'hidden', flex: 1 }}>
+      <div style={{ height: '100%', background: color, width: `${pct}%`, borderRadius: 4, transition: 'width 0.6s ease' }} />
+    </div>
+  );
+}
+
+const QUOTES = [
+  { text: "A library is a place where you can lose your innocence without losing your virginity.", author: "Germaine Greer" },
+  { text: "Not all readers are leaders, but all leaders are readers.", author: "Harry S. Truman" },
+  { text: "A reader lives a thousand lives before he dies.", author: "George R.R. Martin" },
+  { text: "Books are a uniquely portable magic.", author: "Stephen King" },
+];
 
 export default function RecommendationsPage() {
-  const [history, setHistory]         = useState([]);   // returned books
-  const [topGenres, setTopGenres]     = useState([]);   // top read genres
-  const [byGenre, setByGenre]         = useState([]);   // books in top genre
-  const [trending, setTrending]       = useState([]);   // most recently added books
-  const [youMightLike, setYouMightLike] = useState([]); // other genre picks
-  const [loading, setLoading]         = useState(true);
-  const [toast, setToast]             = useState('');
-  const [requesting, setRequesting]   = useState({});
+  const [history, setHistory]           = useState([]);
+  const [topGenres, setTopGenres]       = useState([]);
+  const [byGenre, setByGenre]           = useState([]);
+  const [trending, setTrending]         = useState([]);
+  const [youMightLike, setYouMightLike] = useState([]);
+  const [allCategories, setAllCategories] = useState([]);
+  const [loading, setLoading]           = useState(true);
+  const [toast, setToast]               = useState('');
+  const [requesting, setRequesting]     = useState({});
   const [pendingBookIds, setPendingBookIds] = useState(new Set());
 
   const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(''), 3500); };
@@ -110,35 +165,41 @@ export default function RecommendationsPage() {
       setTopGenres(sorted);
 
       const alreadyReadIds = new Set(returned.map(r => r.bookId?._id?.toString()));
-      const activeBorrows = (borrowData.records || []).filter(r => ['issued', 'return_pending', 'overdue'].includes(r.status)).map(r => r.bookId?._id || r.bookId);
-      const pendingReqs = (reqData.requests || []).filter(r => ['requested','approved'].includes(r.status)).map(r => r.bookId?._id || r.bookId);
-      const pending = new Set([...pendingReqs, ...activeBorrows]);
-      setPendingBookIds(pending);
+      const activeBorrows = (borrowData.records || []).filter(r => ['issued', 'return_pending', 'overdue'].includes(r.status)).map(r => (r.bookId?._id || r.bookId)?.toString());
+      const pendingReqs = (reqData.requests || []).filter(r => ['requested', 'approved'].includes(r.status)).map(r => (r.bookId?._id || r.bookId)?.toString());
+      setPendingBookIds(new Set([...pendingReqs, ...activeBorrows]));
 
-      // Fetch books by top genre for recommendations
+      // Fetch books by genre for sections
       const fetchByGenre = async (genre) => {
         if (!genre) return [];
-        const res  = await fetch(`/api/books?category=${encodeURIComponent(genre)}&limit=6`);
+        const res = await fetch(`/api/books?category=${encodeURIComponent(genre)}&limit=10`);
         const data = await res.json();
-        return (data.books || []).filter(b => !alreadyReadIds.has(b._id?.toString()));
+        return data.books || [];
       };
-
-      // Fetch trending (newest books)
       const fetchTrending = async () => {
-        const res  = await fetch('/api/books?limit=6&sort=newest');
+        const res = await fetch('/api/books?limit=10&sort=newest');
         const data = await res.json();
-        return (data.books || []).filter(b => !alreadyReadIds.has(b._id?.toString()));
+        return data.books || [];
+      };
+      const fetchAllCats = async () => {
+        const res = await fetch('/api/books?limit=500');
+        const data = await res.json();
+        const catMap = {};
+        (data.books || []).forEach(b => { if (b.category) catMap[b.category] = (catMap[b.category] || 0) + 1; });
+        return Object.entries(catMap).sort((a, b) => b[1] - a[1]).slice(0, 5);
       };
 
-      const [genreBooks, secondGenreBooks, trendingBooks] = await Promise.all([
-        sorted[0] ? fetchByGenre(sorted[0][0]) : Promise.resolve([]),
+      const [genreBooks, secondGenreBooks, trendingBooks, cats] = await Promise.all([
+        sorted[0] ? fetchByGenre(sorted[0][0]) : fetchByGenre('Programming'),
         sorted[1] ? fetchByGenre(sorted[1][0]) : fetchByGenre('Self Help'),
         fetchTrending(),
+        fetchAllCats(),
       ]);
 
       setByGenre(genreBooks);
       setYouMightLike(secondGenreBooks);
       setTrending(trendingBooks);
+      setAllCategories(cats);
     }).catch(() => showToast('Failed to load recommendations.'))
       .finally(() => setLoading(false));
   }, []);
@@ -146,166 +207,167 @@ export default function RecommendationsPage() {
   const requestBook = async (bookId, title) => {
     setRequesting(prev => ({ ...prev, [bookId]: true }));
     try {
-      const res  = await fetch('/api/requests', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ bookId }) });
+      const res = await fetch('/api/requests', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ bookId }) });
       const data = await res.json();
       if (!res.ok) { showToast(data.error || 'Request failed.'); return; }
       showToast(`Request sent for "${title}"! 📚`);
-      setPendingBookIds(prev => new Set([...prev, bookId]));
+      setPendingBookIds(prev => new Set([...prev, bookId?.toString()]));
     } catch { showToast('Something went wrong.'); }
     finally { setRequesting(prev => ({ ...prev, [bookId]: false })); }
   };
 
-  const BookGrid = ({ books }) => (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px,1fr))', gap: 14 }}>
-      {books.map(book => (
-        <BookCard key={book._id} book={book}
-          isPending={pendingBookIds.has(book._id?.toString())}
-          isRequesting={requesting[book._id]}
-          onRequest={requestBook}
-        />
-      ))}
-    </div>
-  );
+  const isPending = (id) => pendingBookIds.has(id);
 
-  // ── Reading Goals Card ──
-  const booksThisMonth = history.filter(r => {
-    const d = new Date(r.returnDate);
-    const now = new Date();
-    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-  }).length;
-  const goalTarget = 3;
-  const goalPct = Math.min(100, Math.round((booksThisMonth / goalTarget) * 100));
+  // Top genres for sidebar — max pct relative to top category
+  const maxCatCount = allCategories[0]?.[1] || 1;
+  const catColors = ['#6366F1', '#EC4899', '#22C55E', '#F59E0B', '#3B82F6'];
+
+  const quote = QUOTES[new Date().getDay() % QUOTES.length];
+
+  const topGenre = topGenres[0]?.[0];
+  const secondGenre = topGenres[1]?.[0];
 
   return (
-    <div style={{ display: 'flex', height: '100%', fontFamily: 'Inter,sans-serif', background: '#F9FAFB', overflow: 'hidden' }}>
+    <div style={{ display: 'flex', minHeight: '100%', fontFamily: 'Inter,sans-serif', background: '#F9FAFB' }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        * { box-sizing: border-box; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        ::-webkit-scrollbar { display: none; }
+      `}</style>
+
+      {/* Toast */}
       {toast && (
         <div style={{ position: 'fixed', top: 20, right: 20, zIndex: 999, background: '#6366F1', color: '#fff', padding: '10px 20px', borderRadius: 10, fontSize: 14, fontWeight: 600, boxShadow: '0 4px 24px rgba(99,102,241,0.4)' }}>{toast}</div>
       )}
 
-      {/* MAIN */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: '28px 24px', minWidth: 0 }}>
+      {/* ═══ MAIN CONTENT ═══ */}
+      <div style={{ flex: 1, overflowY: 'auto', padding: '28px 40px 28px 24px', minWidth: 0 }}>
         {loading ? (
           <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 100 }}>
             <Loader2 size={32} style={{ animation: 'spin 0.8s linear infinite', color: '#6366F1' }} />
           </div>
         ) : (
           <>
-            {/* Based on your history */}
-            {byGenre.length > 0 && topGenres[0] && (
-              <section style={{ marginBottom: 32 }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-                  <div>
-                    <h2 style={{ fontSize: 16, fontWeight: 700, color: '#111827', margin: '0 0 3px' }}>
-                      Because you love "{topGenres[0][0]}"
-                    </h2>
-                    <p style={{ fontSize: 13, color: '#9CA3AF', margin: 0 }}>Based on your reading history</p>
-                  </div>
+            {/* Personalized banner */}
+            <div style={{ background: 'linear-gradient(135deg,#EEF2FF,#F5F3FF)', border: '1px solid #C7D2FE', borderRadius: 14, padding: '18px 24px', display: 'flex', alignItems: 'center', gap: 20, marginBottom: 32 }}>
+              <div style={{ width: 52, height: 52, borderRadius: 12, background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 2px 8px rgba(99,102,241,0.15)' }}>
+                <span style={{ fontSize: 26 }}>🪄</span>
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 16, fontWeight: 800, color: '#4338CA', marginBottom: 4 }}>Personalized for You ✨</div>
+                <div style={{ fontSize: 13, color: '#6366F1', lineHeight: 1.5 }}>
+                  These recommendations are based on your reading history, favorite categories, and books you've borrowed.
                 </div>
-                <BookGrid books={byGenre.slice(0, 6)} />
+              </div>
+              <button style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 16px', border: '1px solid #C7D2FE', borderRadius: 8, background: 'white', color: '#6366F1', fontSize: 13, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                <Info size={14} /> How it works
+              </button>
+            </div>
+
+            {/* Section 1: Because you read <genre> */}
+            {byGenre.length > 0 && (
+              <section style={{ marginBottom: 40 }}>
+                <SectionHeader
+                  title={topGenre ? `Because you read ${topGenre}` : 'Recommended for You'}
+                  genre={topGenre}
+                />
+                <div style={{ position: 'relative', paddingLeft: 0 }}>
+                  <BookRow books={byGenre} isPending={isPending} isRequesting={requesting} onRequest={requestBook} />
+                </div>
               </section>
             )}
 
-            {/* Trending Now */}
+            {/* Section 2: You might enjoy these */}
+            {youMightLike.length > 0 && (
+              <section style={{ marginBottom: 40 }}>
+                <SectionHeader
+                  title="You might enjoy these"
+                  genre={secondGenre}
+                />
+                <BookRow books={youMightLike} isPending={isPending} isRequesting={requesting} onRequest={requestBook} />
+              </section>
+            )}
+
+            {/* Section 3: Trending in Library */}
             {trending.length > 0 && (
-              <section style={{ marginBottom: 32 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
-                  <TrendingUp size={18} color="#6366F1" />
-                  <h2 style={{ fontSize: 16, fontWeight: 700, color: '#111827', margin: 0 }}>Trending Now</h2>
-                </div>
-                <BookGrid books={trending.slice(0, 6)} />
+              <section style={{ marginBottom: 40 }}>
+                <SectionHeader title="Trending in Library" />
+                <BookRow books={trending} isPending={isPending} isRequesting={requesting} onRequest={requestBook} />
               </section>
             )}
 
-            {/* You Might Enjoy */}
-            {youMightLike.length > 0 && topGenres[1] && (
-              <section style={{ marginBottom: 32 }}>
-                <div style={{ marginBottom: 14 }}>
-                  <h2 style={{ fontSize: 16, fontWeight: 700, color: '#111827', margin: '0 0 3px' }}>You Might Enjoy</h2>
-                  <p style={{ fontSize: 13, color: '#9CA3AF', margin: 0 }}>More from "{topGenres[1][0]}"</p>
-                </div>
-                <BookGrid books={youMightLike.slice(0, 6)} />
-              </section>
-            )}
-
-            {/* No history fallback */}
-            {history.length === 0 && !loading && (
+            {/* No history fallback — still show trending */}
+            {history.length === 0 && byGenre.length === 0 && !loading && (
               <div style={{ background: 'white', borderRadius: 12, border: '1px solid #E5E7EB', padding: 60, textAlign: 'center', marginBottom: 24 }}>
                 <BookOpen size={48} style={{ margin: '0 auto 16px', color: '#D1D5DB' }} />
                 <h3 style={{ fontSize: 16, color: '#374151', fontWeight: 600, margin: '0 0 8px' }}>No reading history yet</h3>
-                <p style={{ color: '#9CA3AF', fontSize: 14, marginBottom: 20 }}>
-                  Borrow and return some books to get personalised recommendations!
-                </p>
-                <a href="/student/search" style={{ display: 'inline-block', padding: '10px 24px', borderRadius: 8, background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white', fontSize: 14, fontWeight: 700, textDecoration: 'none' }}>
+                <p style={{ color: '#9CA3AF', fontSize: 14, marginBottom: 20 }}>Borrow and return some books to get personalised recommendations!</p>
+                <Link href="/student/search" style={{ display: 'inline-block', padding: '10px 24px', borderRadius: 8, background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white', fontSize: 14, fontWeight: 700, textDecoration: 'none' }}>
                   Browse Library
-                </a>
+                </Link>
               </div>
             )}
           </>
         )}
       </div>
 
-      {/* RIGHT PANEL */}
-      <div style={{ width: 268, flexShrink: 0, overflowY: 'auto', padding: '28px 20px 28px 0', display: 'flex', flexDirection: 'column', gap: 20 }}>
+      {/* ═══ RIGHT SIDEBAR ═══ */}
+      <div style={{ width: 288, flexShrink: 0, overflowY: 'auto', padding: '28px 20px 28px 0', display: 'flex', flexDirection: 'column', gap: 20 }}>
 
-        {/* Reading Goals */}
-        <div style={{ background: 'white', borderRadius: 12, border: '1px solid #E5E7EB', padding: 18 }}>
-          <h3 style={{ fontSize: 14, fontWeight: 700, color: '#111827', marginBottom: 14 }}>Reading Goals</h3>
-          <div style={{ marginBottom: 14 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-              <span style={{ fontSize: 13, color: '#374151', fontWeight: 500 }}>This Month</span>
-              <span style={{ fontSize: 13, fontWeight: 700, color: '#6366F1' }}>{booksThisMonth}/{goalTarget}</span>
-            </div>
-            <div style={{ height: 8, background: '#F3F4F6', borderRadius: 4, overflow: 'hidden' }}>
-              <div style={{ height: '100%', background: 'linear-gradient(90deg,#6366F1,#A78BFA)', width: `${goalPct}%`, borderRadius: 4, transition: 'width 0.5s' }} />
-            </div>
-            <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 4 }}>
-              {goalPct >= 100 ? '🎉 Goal reached!' : `${goalTarget - booksThisMonth} more to reach your goal`}
-            </div>
-          </div>
-
-          {topGenres.slice(0, 4).map(([genre, count]) => (
-            <div key={genre} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-              <span style={{ fontSize: 12, color: '#6B7280' }}>{genre}</span>
-              <span style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>{count} book{count !== 1 ? 's' : ''}</span>
-            </div>
-          ))}
-          {topGenres.length === 0 && <p style={{ fontSize: 13, color: '#9CA3AF' }}>Start reading to see your top genres.</p>}
-        </div>
-
-        {/* Reading Stats */}
-        <div style={{ background: 'white', borderRadius: 12, border: '1px solid #E5E7EB', padding: 18 }}>
-          <h3 style={{ fontSize: 14, fontWeight: 700, color: '#111827', marginBottom: 14 }}>Your Stats</h3>
+        {/* Why these recommendations */}
+        <div style={{ background: 'white', borderRadius: 12, border: '1px solid #E5E7EB', padding: 20 }}>
+          <h3 style={{ fontSize: 14, fontWeight: 800, color: '#111827', marginBottom: 18, margin: '0 0 18px' }}>Why these recommendations?</h3>
           {[
-            { label: 'Books Read',    value: history.length,                                        icon: '📖' },
-            { label: 'Genres Tried',  value: topGenres.length,                                      icon: '🎭' },
-            { label: 'Avg Rating',    value: history.filter(r => r.rating > 0).length ? (history.filter(r => r.rating > 0).reduce((s, r) => s + r.rating, 0) / history.filter(r => r.rating > 0).length).toFixed(1) + '⭐' : '—', icon: '⭐' },
-            { label: 'This Month',    value: booksThisMonth,                                        icon: '📅' },
-          ].map(s => (
-            <div key={s.label} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', background: '#F9FAFB', borderRadius: 8, marginBottom: 8 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ fontSize: 15 }}>{s.icon}</span>
-                <span style={{ fontSize: 12, color: '#6B7280' }}>{s.label}</span>
+            { icon: '📚', color: '#EEF2FF', iconColor: '#6366F1', text: 'Based on your borrowed books and reading history' },
+            { icon: '❤️', color: '#FFF1F2', iconColor: '#E11D48', text: `From categories you love: ${topGenres.slice(0, 3).map(g => g[0]).join(', ') || 'Start reading to personalize'}` },
+            { icon: '📈', color: '#F0FDF4', iconColor: '#16A34A', text: 'Popular and trending books in our library' },
+            { icon: '👥', color: '#FFFBEB', iconColor: '#D97706', text: 'Highly rated by students like you' },
+          ].map((item, i) => (
+            <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: i < 3 ? 16 : 0 }}>
+              <div style={{ width: 36, height: 36, borderRadius: 10, background: item.color, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 16 }}>
+                {item.icon}
               </div>
-              <span style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>{s.value}</span>
+              <div style={{ fontSize: 13, color: '#374151', lineHeight: 1.5, paddingTop: 2 }}>{item.text}</div>
             </div>
           ))}
         </div>
 
-        {/* Explore Categories */}
-        <div style={{ background: 'white', borderRadius: 12, border: '1px solid #E5E7EB', padding: 18 }}>
-          <h3 style={{ fontSize: 14, fontWeight: 700, color: '#111827', marginBottom: 14 }}>Explore Categories</h3>
-          {['Programming', 'Self Help', 'Psychology', 'Finance', 'History', 'Fiction'].map(cat => (
-            <a key={cat} href={`/student/search?category=${encodeURIComponent(cat)}`}
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '9px 12px', borderRadius: 8, marginBottom: 6, textDecoration: 'none', color: '#374151', background: '#F9FAFB', transition: 'all 0.15s' }}
-              onMouseEnter={e => { e.currentTarget.style.background = '#EEF2FF'; e.currentTarget.style.color = '#6366F1'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = '#F9FAFB'; e.currentTarget.style.color = '#374151'; }}>
-              <span style={{ fontSize: 13, fontWeight: 500 }}>{cat}</span>
-              <ChevronRight size={14} color="#D1D5DB" />
-            </a>
-          ))}
+        {/* Top Categories for You */}
+        <div style={{ background: 'white', borderRadius: 12, border: '1px solid #E5E7EB', padding: 20 }}>
+          <h3 style={{ fontSize: 14, fontWeight: 800, color: '#111827', margin: '0 0 18px' }}>Top Categories for You</h3>
+          {allCategories.length === 0 ? (
+            <p style={{ fontSize: 13, color: '#9CA3AF' }}>Loading categories...</p>
+          ) : allCategories.map(([cat, count], i) => {
+            const pct = Math.round((count / maxCatCount) * 100);
+            return (
+              <div key={cat} style={{ marginBottom: 14 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 5 }}>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: '#374151' }}>{cat}</span>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: catColors[i % catColors.length] }}>{pct}%</span>
+                </div>
+                <ProgressBar pct={pct} color={catColors[i % catColors.length]} />
+              </div>
+            );
+          })}
+          <Link
+            href="/student/search"
+            style={{ display: 'block', marginTop: 14, padding: '10px', border: '1px solid #E5E7EB', borderRadius: 8, background: 'white', color: '#374151', fontSize: 13, fontWeight: 600, textDecoration: 'none', textAlign: 'center', transition: 'all 0.15s' }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#F9FAFB'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'white'; }}
+          >
+            See All Categories
+          </Link>
         </div>
+
+        {/* Quote card */}
+        <div style={{ background: 'linear-gradient(135deg,#F9FAFB,#EEF2FF)', border: '1px solid #E5E7EB', borderRadius: 12, padding: 20 }}>
+          <div style={{ fontSize: 32, color: '#6366F1', lineHeight: 1, marginBottom: 10, fontFamily: 'Georgia, serif', fontWeight: 900 }}>"</div>
+          <p style={{ fontSize: 13, color: '#374151', lineHeight: 1.6, fontStyle: 'italic', margin: '0 0 12px' }}>{quote.text}</p>
+          <div style={{ fontSize: 12, fontWeight: 700, color: '#6366F1' }}>— {quote.author}</div>
+        </div>
+
       </div>
-      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </div>
   );
 }

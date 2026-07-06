@@ -2,7 +2,8 @@
 import { useState } from 'react';
 import { signOut, useSession } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
-import { Search, Bell, ChevronDown, LogOut } from 'lucide-react';
+import Link from 'next/link';
+import { Search, Bell, ChevronDown, LogOut, User } from 'lucide-react';
 
 export default function StudentNavbar({ searchPlaceholder = "Search books, authors, ISBN..." }) {
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -126,6 +127,29 @@ export default function StudentNavbar({ searchPlaceholder = "Search books, autho
                 <div style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>{userName}</div>
                 <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 2 }}>{userEmail}</div>
               </div>
+              {/* Profile link */}
+              <Link
+                href="/student/profile"
+                onClick={() => setShowUserMenu(false)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  padding: '10px 16px',
+                  fontSize: 13,
+                  color: '#374151',
+                  fontWeight: 500,
+                  textDecoration: 'none',
+                  transition: 'background 0.15s',
+                  fontFamily: 'Inter',
+                  borderBottom: '1px solid #F3F4F6',
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.background = '#F9FAFB'}
+                onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+              >
+                <User size={16} color="#6B7280" />
+                My Profile
+              </Link>
               <button
                 onClick={() => signOut({ callbackUrl: '/login' })}
                 style={{
