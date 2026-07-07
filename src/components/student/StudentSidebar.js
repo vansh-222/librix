@@ -11,10 +11,10 @@ const NAV_ITEMS = [
   { href: '/student/fines', icon: DollarSign, label: 'Fines & Payments' },
   { href: '/student/recommendations', icon: Sparkles, label: 'Recommendations' },
   { href: '/student/history', icon: History, label: 'Reading History' },
-  { href: '/student/notifications', icon: Bell, label: 'Notifications', badge: 3 },
+  { href: '/student/notifications', icon: Bell, label: 'Notifications', hasBadge: true },
 ];
 
-export default function StudentSidebar() {
+export default function StudentSidebar({ unreadCount = 0 }) {
   const pathname = usePathname();
 
   return (
@@ -80,7 +80,7 @@ export default function StudentSidebar() {
             >
               <Icon size={18} />
               <span style={{ flex: 1 }}>{item.label}</span>
-              {item.badge && (
+              {item.hasBadge && unreadCount > 0 && (
                 <span style={{
                   minWidth: 20,
                   height: 20,
@@ -94,7 +94,7 @@ export default function StudentSidebar() {
                   justifyContent: 'center',
                   padding: '0 6px',
                 }}>
-                  {item.badge}
+                  {unreadCount}
                 </span>
               )}
             </Link>

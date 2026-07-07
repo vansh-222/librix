@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { BookOpen, Star, TrendingUp, ChevronRight, ChevronLeft, Loader2, Sparkles, Info, Heart, BarChart2, Users } from 'lucide-react';
+import RequestModal from '@/components/student/RequestModal';
 
 // ─── Book Cover ───────────────────────────────────────────────────────────────
 function BookCover({ cover, title, size = 110 }) {
@@ -31,7 +32,7 @@ function StarRow({ rating }) {
 }
 
 // ─── Vertical Book Card (image on top, details below) ─────────────────────────
-function BookCard({ book, isPending, isRequesting, onRequest }) {
+function BookCard({ book, isPending, onRequest }) {
   const avail = book.inventory?.available ?? 0;
   return (
     <div style={{ flexShrink: 0, width: 140, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -56,19 +57,38 @@ function BookCard({ book, isPending, isRequesting, onRequest }) {
             background: 'white', color: '#374151',
             fontSize: 12, fontWeight: 600, textDecoration: 'none',
             textAlign: 'center', transition: 'all 0.15s',
+            marginBottom: 6,
           }}
           onMouseEnter={e => { e.currentTarget.style.background = '#EEF2FF'; e.currentTarget.style.color = '#6366F1'; e.currentTarget.style.borderColor = '#C7D2FE'; }}
           onMouseLeave={e => { e.currentTarget.style.background = 'white'; e.currentTarget.style.color = '#374151'; e.currentTarget.style.borderColor = '#E5E7EB'; }}
         >
           View Details
         </Link>
+        {isPending ? (
+          <div style={{ width: '100%', padding: '6px 0', borderRadius: 8, background: '#EEF2FF', color: '#6366F1', fontSize: 11, fontWeight: 700, textAlign: 'center', border: '1px solid #C7D2FE' }}>
+            ✓ Requested
+          </div>
+        ) : (
+          <button
+            onClick={() => onRequest(book)}
+            style={{
+              width: '100%', padding: '7px 0', border: 'none', borderRadius: 8,
+              background: avail > 0 ? 'linear-gradient(135deg,#6366F1,#8B5CF6)' : '#F3F4F6',
+              color: avail > 0 ? 'white' : '#9CA3AF',
+              fontSize: 11, fontWeight: 700, cursor: avail > 0 ? 'pointer' : 'default',
+              transition: 'all 0.15s',
+            }}
+          >
+            {avail > 0 ? '📚 Request' : 'Waitlist'}
+          </button>
+        )}
       </div>
     </div>
   );
 }
 
 // ─── Horizontal scrollable book row with nav arrows ──────────────────────────
-function BookRow({ books, isPending, isRequesting, onRequest }) {
+function BookRow({ books, isPending, onRequest }) {
   const ref = useRef(null);
   const scroll = (dir) => {
     if (ref.current) ref.current.scrollBy({ left: dir * 320, behavior: 'smooth' });
@@ -87,7 +107,6 @@ function BookRow({ books, isPending, isRequesting, onRequest }) {
             key={book._id}
             book={book}
             isPending={isPending(book._id?.toString())}
-            isRequesting={isRequesting[book._id]}
             onRequest={onRequest}
           />
         ))}
@@ -142,7 +161,7 @@ export default function RecommendationsPage() {
   const [allCategories, setAllCategories] = useState([]);
   const [loading, setLoading]           = useState(true);
   const [toast, setToast]               = useState('');
-  const [requesting, setRequesting]     = useState({});
+  const [requestModalBook, setRequestModalBook] = useState(null);
   const [pendingBookIds, setPendingBookIds] = useState(new Set());
 
   const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(''), 3500); };
@@ -204,16 +223,11 @@ export default function RecommendationsPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  const requestBook = async (bookId, title) => {
-    setRequesting(prev => ({ ...prev, [bookId]: true }));
-    try {
-      const res = await fetch('/api/requests', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ bookId }) });
-      const data = await res.json();
-      if (!res.ok) { showToast(data.error || 'Request failed.'); return; }
-      showToast(`Request sent for "${title}"! 📚`);
-      setPendingBookIds(prev => new Set([...prev, bookId?.toString()]));
-    } catch { showToast('Something went wrong.'); }
-    finally { setRequesting(prev => ({ ...prev, [bookId]: false })); }
+  const openRequestModal = (book) => setRequestModalBook(book);
+
+  const onRequestSuccess = (msg, bookId) => {
+    showToast(msg);
+    setPendingBookIds(prev => new Set([...prev, bookId?.toString()]));
   };
 
   const isPending = (id) => pendingBookIds.has(id);
@@ -273,7 +287,7 @@ export default function RecommendationsPage() {
                   genre={topGenre}
                 />
                 <div style={{ position: 'relative', paddingLeft: 0 }}>
-                  <BookRow books={byGenre} isPending={isPending} isRequesting={requesting} onRequest={requestBook} />
+                  <BookRow books={byGenre} isPending={isPending} onRequest={openRequestModal} />
                 </div>
               </section>
             )}
@@ -285,7 +299,7 @@ export default function RecommendationsPage() {
                   title="You might enjoy these"
                   genre={secondGenre}
                 />
-                <BookRow books={youMightLike} isPending={isPending} isRequesting={requesting} onRequest={requestBook} />
+                <BookRow books={youMightLike} isPending={isPending} onRequest={openRequestModal} />
               </section>
             )}
 
@@ -293,7 +307,7 @@ export default function RecommendationsPage() {
             {trending.length > 0 && (
               <section style={{ marginBottom: 40 }}>
                 <SectionHeader title="Trending in Library" />
-                <BookRow books={trending} isPending={isPending} isRequesting={requesting} onRequest={requestBook} />
+                <BookRow books={trending} isPending={isPending} onRequest={openRequestModal} />
               </section>
             )}
 
@@ -362,12 +376,21 @@ export default function RecommendationsPage() {
 
         {/* Quote card */}
         <div style={{ background: 'linear-gradient(135deg,#F9FAFB,#EEF2FF)', border: '1px solid #E5E7EB', borderRadius: 12, padding: 20 }}>
-          <div style={{ fontSize: 32, color: '#6366F1', lineHeight: 1, marginBottom: 10, fontFamily: 'Georgia, serif', fontWeight: 900 }}>"</div>
+          <div style={{ fontSize: 32, color: '#6366F1', lineHeight: 1, marginBottom: 10, fontFamily: 'Georgia, serif', fontWeight: 900 }}>&ldquo;</div>
           <p style={{ fontSize: 13, color: '#374151', lineHeight: 1.6, fontStyle: 'italic', margin: '0 0 12px' }}>{quote.text}</p>
           <div style={{ fontSize: 12, fontWeight: 700, color: '#6366F1' }}>— {quote.author}</div>
         </div>
 
       </div>
+
+      {/* Request Modal */}
+      {requestModalBook && (
+        <RequestModal
+          book={requestModalBook}
+          onClose={() => setRequestModalBook(null)}
+          onSuccess={(msg) => { onRequestSuccess(msg, requestModalBook._id); setRequestModalBook(null); }}
+        />
+      )}
     </div>
   );
 }

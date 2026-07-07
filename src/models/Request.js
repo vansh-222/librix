@@ -23,6 +23,8 @@ const RequestSchema = new mongoose.Schema(
       default: 'requested',
     },
     note: { type: String, default: '' }, // librarian rejection note
+    reason: { type: String, default: '' }, // student's stated reason for request
+    daysNeeded: { type: Number, default: 14 }, // how many days student wants the book
     respondedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
@@ -36,4 +38,5 @@ const RequestSchema = new mongoose.Schema(
 RequestSchema.index({ collegeId: 1, status: 1 });
 RequestSchema.index({ userId: 1 });
 
-export default mongoose.models.Request || mongoose.model('Request', RequestSchema);
+delete mongoose.models.Request;
+export default mongoose.model('Request', RequestSchema);

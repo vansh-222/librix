@@ -16,6 +16,7 @@ const STATUS_CFG = {
   issued:    { label: 'Issued',    color: '#6366F1', bg: '#EEF2FF', border: '#C7D2FE' },
   rejected:  { label: 'Rejected',  color: '#EF4444', bg: '#FEF2F2', border: '#FECACA' },
   cancelled: { label: 'Cancelled', color: '#9CA3AF', bg: '#F9FAFB', border: '#E5E7EB' },
+  returned:  { label: 'Returned',  color: '#10B981', bg: '#ECFDF5', border: '#A7F3D0' },
 };
 
 function BookCover({ cover, title }) {
@@ -36,9 +37,11 @@ function RequestDonut({ counts }) {
   const segs = [
     { color: '#F59E0B', count: counts.requested },
     { color: '#22C55E', count: counts.approved  },
+    { color: '#6366F1', count: counts.issued    },
+    { color: '#10B981', count: counts.returned  },
     { color: '#EF4444', count: counts.rejected  },
     { color: '#9CA3AF', count: counts.cancelled },
-  ];
+  ].filter(s => s.count > 0);
   let offset = 0;
   return (
     <svg width="120" height="120" viewBox="0 0 120 120" style={{ transform: 'rotate(-90deg)', flexShrink: 0 }}>
@@ -248,7 +251,8 @@ export default function StudentRequestsPage() {
                       {req.status === 'approved'  && 'Your request has been approved.'}
                       {req.status === 'issued'    && 'You can collect this book from the library.'}
                       {req.status === 'rejected'  && (req.note || 'This book is currently not available.')}
-                      {req.status === 'cancelled' && 'This request was cancelled.'}
+                      {req.status === 'cancelled' && 'You cancelled this request.'}
+                      {req.status === 'returned'  && 'You have successfully returned this book.'}
                     </p>
                     {req.status === 'requested' && (
                       <button onClick={() => cancelRequest(req._id)} disabled={isActing}
@@ -320,9 +324,11 @@ export default function StudentRequestsPage() {
               {[
                 { color: '#F59E0B', label: 'Pending',   count: counts.requested },
                 { color: '#22C55E', label: 'Approved',  count: counts.approved  },
+                { color: '#6366F1', label: 'Issued',    count: counts.issued    },
+                { color: '#10B981', label: 'Returned',  count: counts.returned  },
                 { color: '#EF4444', label: 'Rejected',  count: counts.rejected  },
                 { color: '#9CA3AF', label: 'Cancelled', count: counts.cancelled },
-              ].map(item => (
+              ].filter(i => i.count > 0).map(item => (
                 <div key={item.label} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <div style={{ width: 8, height: 8, borderRadius: '50%', background: item.color }} />

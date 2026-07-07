@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { signOut, useSession } from 'next-auth/react';
 import { Search, Bell, ChevronDown, LogOut } from 'lucide-react';
 
-export default function LibrarianNavbar({ title, subtitle, searchPlaceholder = "Search books, members, ISBN..." }) {
+export default function LibrarianNavbar({ title, subtitle, searchPlaceholder = "Search books, members, ISBN...", unreadCount = 0 }) {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const { data: session } = useSession();
   const userName = session?.user?.name || "Librarian";
@@ -39,7 +39,9 @@ export default function LibrarianNavbar({ title, subtitle, searchPlaceholder = "
       <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexShrink: 0 }}>
         <div style={{ position: 'relative', cursor: 'pointer' }}>
           <Bell size={20} color="#374151" />
-          <div style={{ position: 'absolute', top: -5, right: -5, width: 16, height: 16, background: '#2563EB', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: 'white' }}>3</div>
+          {unreadCount > 0 && (
+            <div style={{ position: 'absolute', top: -5, right: -5, width: 16, height: 16, background: '#2563EB', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: 'white' }}>{unreadCount}</div>
+          )}
         </div>
         <div style={{ position: 'relative' }}>
           <div 

@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect, useCallback } from 'react';
+import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import {
   BookOpen, Star, Calendar, Clock, ChevronLeft, ChevronRight,
@@ -329,6 +330,7 @@ const ITEMS_PER_PAGE = 5;
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function MyBooksPage() {
+  const { data: session, status } = useSession();
   const [tab, setTab]          = useState('borrowed');
   const [records, setRecords]  = useState([]);
   const [wishlist, setWishlist] = useState([]);
@@ -362,7 +364,12 @@ export default function MyBooksPage() {
     } catch {}
   };
 
-  useEffect(() => { loadRecords(); loadWishlist(); }, [loadRecords]);
+  useEffect(() => {
+    if (status === 'loading') return;
+    if (!session?.user?.id) { setLoading(false); return; }
+    loadRecords();
+    loadWishlist();
+  }, [loadRecords, session?.user?.id, status]);
 
   const removeFromWishlist = (bookId) => {
     const next = wishlist.filter(item => (item._id || item.id) !== bookId);

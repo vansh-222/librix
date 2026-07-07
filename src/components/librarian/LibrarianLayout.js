@@ -1,4 +1,5 @@
 'use client';
+import { useState, useEffect } from 'react';
 import LibrarianSidebar from './LibrarianSidebar';
 import LibrarianNavbar from './LibrarianNavbar';
 
@@ -10,6 +11,19 @@ export default function LibrarianLayout({
   searchPlaceholder,
   children 
 }) {
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    fetch('/api/notifications?unread=true')
+      .then(res => res.json())
+      .then(data => {
+        if (data.unreadCount !== undefined) {
+          setUnreadCount(data.unreadCount);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   return (
     <div style={{ display: 'flex', height: '100vh', background: '#F9FAFB', fontFamily: 'Inter,sans-serif', overflow: 'hidden', minHeight: 0 }}>
       <style>{`
@@ -27,7 +41,7 @@ export default function LibrarianLayout({
       `}</style>
 
       {/* Sidebar */}
-      <LibrarianSidebar />
+      <LibrarianSidebar unreadCount={unreadCount} />
 
       {/* Main Area */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', minWidth: 0, minHeight: 0 }}>
@@ -38,6 +52,7 @@ export default function LibrarianLayout({
           title={title} 
           subtitle={subtitle} 
           searchPlaceholder={searchPlaceholder}
+          unreadCount={unreadCount}
         />
 
         {/* Content */}

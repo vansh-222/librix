@@ -23,13 +23,18 @@ function daysUntil(d) {
 }
 
 export default function StudentDashboard() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [stats, setStats]               = useState(null);
   const [activeBooks, setActiveBooks]   = useState([]);
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading]           = useState(true);
 
   useEffect(() => {
+    // Keep loading while session is being fetched
+    if (status === 'loading') return;
+    // Session resolved but no user — layout would have redirected; safety guard
+    if (!session?.user?.id) { setLoading(false); return; }
+
     Promise.all([
       fetch('/api/stats').then(r => r.json()),
       fetch('/api/borrow').then(r => r.json()),
@@ -39,7 +44,7 @@ export default function StudentDashboard() {
       setActiveBooks((borrowData.records || []).filter(r => ['issued','return_pending'].includes(r.status)).slice(0, 4));
       setNotifications((notifData.notifications || []).slice(0, 5));
     }).catch(() => {}).finally(() => setLoading(false));
-  }, []);
+  }, [session?.user?.id, status]);
 
   const STAT_CARDS = [
     { icon: BookOpen,       label: 'Books Borrowed',   value: stats?.activeBorrows ?? '—', bg: '#EEF2FF', color: '#6366F1', sub: 'Currently active' },

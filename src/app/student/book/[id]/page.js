@@ -7,6 +7,7 @@ import {
   BookMarked, FileText, MessageSquare, History, ChevronRight,
   ClipboardList, Loader2, ArrowLeft,
 } from 'lucide-react';
+import RequestModal from '@/components/student/RequestModal';
 
 function Stars({ n, size = 14 }) {
   return (
@@ -30,8 +31,8 @@ export default function BookDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [data, setData] = useState(null);
-  const [isRequesting, setIsRequesting] = useState(false);
   const [isRequested, setIsRequested] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const [toast, setToast] = useState('');
   const [wishlist, setWishlist] = useState(false);
   const [notified, setNotified] = useState(false);
@@ -84,28 +85,6 @@ export default function BookDetail() {
     } catch {}
   }, [params?.id]);
 
-  const requestBook = async () => {
-    if (!data?.book?._id) return;
-    setIsRequesting(true);
-    try {
-      const res = await fetch('/api/requests', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ bookId: data.book._id }),
-      });
-      const resData = await res.json();
-      if (!res.ok) {
-        showToast(resData.error || 'Request failed.');
-        return;
-      }
-      showToast(`Request sent for "${data.book.title}"! 📚`);
-      setIsRequested(true);
-    } catch {
-      showToast('Something went wrong.');
-    } finally {
-      setIsRequesting(false);
-    }
-  };
 
   if (loading) {
     return (
@@ -450,15 +429,15 @@ export default function BookDetail() {
                 </button>
               ) : (
                 <button
-                  onClick={requestBook}
-                  disabled={isRequesting || availCopies < 1}
+                  onClick={() => setShowModal(true)}
+                  disabled={availCopies < 1}
                   style={{
                     width: '100%', padding: '12px', background: availCopies < 1 ? '#F3F4F6' : '#6366F1', color: availCopies < 1 ? '#9CA3AF' : 'white', border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 700, cursor: availCopies < 1 ? 'not-allowed' : 'pointer', transition: 'all 0.2s', boxShadow: availCopies < 1 ? 'none' : '0 2px 8px rgba(99,102,241,0.3)'
                   }}
                   onMouseEnter={e => { if (availCopies >= 1) e.currentTarget.style.background = '#4F46E5'; }}
                   onMouseLeave={e => { if (availCopies >= 1) e.currentTarget.style.background = '#6366F1'; }}
                 >
-                  {isRequesting ? 'Sending...' : availCopies < 1 ? 'Join Waitlist' : 'Request Book'}
+                  {availCopies < 1 ? 'Join Waitlist' : '📚 Request Book'}
                 </button>
               )}
 
@@ -559,6 +538,15 @@ export default function BookDetail() {
 
         </div>
       </div>
+
+      {/* Request Modal */}
+      {showModal && data?.book && (
+        <RequestModal
+          book={data.book}
+          onClose={() => setShowModal(false)}
+          onSuccess={(msg) => { showToast(msg); setIsRequested(true); }}
+        />
+      )}
     </div>
   );
 }

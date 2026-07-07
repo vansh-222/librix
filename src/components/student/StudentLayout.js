@@ -1,4 +1,5 @@
 'use client';
+import { useState, useEffect } from 'react';
 import StudentSidebar from './StudentSidebar';
 import StudentNavbar from './StudentNavbar';
 
@@ -8,6 +9,19 @@ export default function StudentLayout({
   searchPlaceholder,
   children 
 }) {
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    fetch('/api/notifications?unread=true')
+      .then(res => res.json())
+      .then(data => {
+        if (data.unreadCount !== undefined) {
+          setUnreadCount(data.unreadCount);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   return (
     <div style={{ display: 'flex', height: '100vh', background: '#F9FAFB', fontFamily: 'Inter,sans-serif', overflow: 'hidden', minHeight: 0 }}>
       <style>{`
@@ -25,7 +39,7 @@ export default function StudentLayout({
       `}</style>
 
       {/* Sidebar */}
-      <StudentSidebar />
+      <StudentSidebar unreadCount={unreadCount} />
 
       {/* Main Area */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', minWidth: 0, minHeight: 0 }}>
@@ -34,6 +48,7 @@ export default function StudentLayout({
           userName={userName}
           userEmail={userEmail}
           searchPlaceholder={searchPlaceholder}
+          unreadCount={unreadCount}
         />
 
         {/* Content */}

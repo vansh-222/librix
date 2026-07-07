@@ -44,8 +44,11 @@ export async function POST(req) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { bookId } = await req.json();
+    const { bookId, daysNeeded, reason } = await req.json();
     if (!bookId) return NextResponse.json({ error: 'Book ID required' }, { status: 400 });
+    if (!daysNeeded || daysNeeded < 1 || daysNeeded > 60) {
+      return NextResponse.json({ error: 'Days needed must be between 1 and 60' }, { status: 400 });
+    }
 
     await connectDB();
 
@@ -72,22 +75,28 @@ export async function POST(req) {
 
     const request = await Request.create({
       collegeId: session.user.collegeId,
-      userId: session.user.id,
+      userId:    session.user.id,
       bookId,
-      status: 'requested',
+      daysNeeded: daysNeeded || 14,
+      reason:     reason?.trim() || '',
+      status:    'requested',
     });
+
+    // Populate book title for notification
+    const Book = (await import('@/models/Book')).default;
+    const book = await Book.findById(bookId).select('title author').lean();
 
     // Notify librarians — fetch librarian IDs
     const User = (await import('@/models/User')).default;
     const librarians = await User.find({ collegeId: session.user.collegeId, role: 'librarian' }).select('_id').lean();
     await Promise.all(librarians.map(l =>
       createNotification({
-        userId: l._id,
+        userId:    l._id,
         collegeId: session.user.collegeId,
-        title: 'New Book Request',
-        message: `A new book request has been submitted and is awaiting your approval.`,
-        type: 'general',
-        link: '/librarian/requests',
+        title:     '📚 New Book Request',
+        message:   `${session.user.name} requested "${book?.title || 'a book'}" for ${daysNeeded} day${daysNeeded > 1 ? 's' : ''}${reason ? ` — Reason: ${reason}` : ''}.`,
+        type:      'general',
+        link:      '/librarian/requests',
       })
     ));
 
@@ -146,6 +155,7 @@ export async function PATCH(req) {
 
       // Notify student
       const college = await College.findById(request.collegeId).select('settings').lean();
+      const approvedDays = request.daysNeeded || college?.settings?.maxBorrowDays || 14;
       await createNotification({
         userId: request.userId._id,
         collegeId: request.collegeId,
@@ -157,7 +167,7 @@ export async function PATCH(req) {
         emailTemplate: requestApprovedEmail({
           userName: request.userId.name,
           bookTitle: request.bookId.title,
-          dueDate: `${college?.settings?.maxBorrowDays || 14} days from issue`,
+          dueDate: `${approvedDays} days from issue`,
         }),
       });
     } else if (action === 'reject') {
@@ -182,7 +192,7 @@ export async function PATCH(req) {
       }
 
       const college = await College.findById(request.collegeId).select('settings').lean();
-      const maxDays = college?.settings?.maxBorrowDays || 14;
+      const maxDays = request.daysNeeded || college?.settings?.maxBorrowDays || 14;
       const issueDate = new Date();
       const dueDate = new Date(issueDate);
       dueDate.setDate(dueDate.getDate() + maxDays);

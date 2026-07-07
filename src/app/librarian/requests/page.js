@@ -194,6 +194,11 @@ export default function RequestsPage() {
                               <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{req.bookId?.title}</div>
                               <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 2 }}>{req.bookId?.author}</div>
                               <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 1 }}>ISBN: {req.bookId?.isbn || '—'}</div>
+                              {req.reason && (
+                                <div style={{ fontSize: 11, color: '#4B5563', marginTop: 6, fontStyle: 'italic', background: '#F3F4F6', padding: '4px 8px', borderRadius: 6, display: 'inline-block', maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={req.reason}>
+                                  "{req.reason}"
+                                </div>
+                              )}
                             </div>
                           </div>
                         </td>
@@ -211,6 +216,11 @@ export default function RequestsPage() {
                         <td style={{ padding: '10px 16px' }}>
                           <div style={{ fontSize: 13, fontWeight: 500, color: '#111827' }}>{fmtDate(req.createdAt)}</div>
                           <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 2 }}>{fmtTime(req.createdAt)}</div>
+                          {req.daysNeeded && (
+                            <div style={{ fontSize: 11, color: '#6C5CE7', marginTop: 6, fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 4, background: '#EDE9FE', padding: '2px 8px', borderRadius: 9999 }}>
+                              {req.daysNeeded} Days
+                            </div>
+                          )}
                         </td>
                         <td style={{ padding: '10px 16px' }}>
                           <span style={{ padding: '4px 12px', background: status.bg, color: status.color, borderRadius: 9999, fontSize: 11, fontWeight: 500, display: 'inline-block' }}>

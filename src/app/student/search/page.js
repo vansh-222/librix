@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { Search, BookOpen, Loader2, ChevronLeft, ChevronRight, X, LayoutGrid, List, Calendar, SlidersHorizontal } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import RequestModal from '@/components/student/RequestModal';
 
 function BookCover({ cover, title, size = 80 }) {
   const [err, setErr] = useState(false);
@@ -44,7 +45,7 @@ export default function SearchBooksPage() {
   const [toast, setToast] = useState('');
   
   // Requesting state
-  const [requesting, setRequesting] = useState({});
+  const [requestModalBook, setRequestModalBook] = useState(null); // book object for modal
   const [pendingBookIds, setPendingBookIds] = useState(new Set());
 
   // Dynamic filter lists loaded from real inventory (NO FAKE DATA)
@@ -155,23 +156,13 @@ export default function SearchBooksPage() {
 
   useEffect(() => { doSearch(page); }, [page]);
 
-  const requestBook = async (bookId, title) => {
-    setRequesting(prev => ({ ...prev, [bookId]: true }));
-    try {
-      const res = await fetch('/api/requests', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ bookId }),
-      });
-      const data = await res.json();
-      if (!res.ok) { showToast(data.error || 'Request failed.'); return; }
-      showToast(`Request sent for "${title}"! 📚`);
-      setPendingBookIds(prev => new Set([...prev, bookId]));
-    } catch {
-      showToast('Something went wrong.');
-    } finally {
-      setRequesting(prev => ({ ...prev, [bookId]: false }));
-    }
+  const openRequestModal = (book) => {
+    setRequestModalBook(book);
+  };
+
+  const onRequestSuccess = (msg, bookId) => {
+    showToast(msg);
+    setPendingBookIds(prev => new Set([...prev, bookId]));
   };
 
   const clearAllFilters = () => {
@@ -293,7 +284,6 @@ export default function SearchBooksPage() {
               {books.map(book => {
                 const avail = book.inventory?.available ?? 0;
                 const isPending = pendingBookIds.has(book._id?.toString());
-                const isRequesting = requesting[book._id];
                 return (
                   <div
                     key={book._id}
@@ -362,8 +352,7 @@ export default function SearchBooksPage() {
                           </button>
                         ) : avail > 0 ? (
                           <button
-                            onClick={() => requestBook(book._id, book.title)}
-                            disabled={isRequesting}
+                            onClick={() => openRequestModal(book)}
                             style={{
                               padding: '8px 18px', border: '1px solid #818CF8', borderRadius: 8, background: 'white', color: '#6366F1',
                               fontSize: 13, fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s'
@@ -371,12 +360,11 @@ export default function SearchBooksPage() {
                             onMouseEnter={e => e.currentTarget.style.background = '#EEF2FF'}
                             onMouseLeave={e => e.currentTarget.style.background = 'white'}
                           >
-                            {isRequesting ? 'Sending...' : 'Request Book'}
+                            Request Book
                           </button>
                         ) : (
                           <button
-                            onClick={() => requestBook(book._id, book.title)}
-                            disabled={isRequesting}
+                            onClick={() => openRequestModal(book)}
                             style={{
                               padding: '8px 18px', border: '1px solid #E5E7EB', borderRadius: 8, background: 'white', color: '#6B7280',
                               fontSize: 13, fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s'
@@ -384,7 +372,7 @@ export default function SearchBooksPage() {
                             onMouseEnter={e => e.currentTarget.style.background = '#F9FAFB'}
                             onMouseLeave={e => e.currentTarget.style.background = 'white'}
                           >
-                            {isRequesting ? 'Sending...' : 'Join Waitlist'}
+                            Join Waitlist
                           </button>
                         )}
                       </div>
@@ -399,7 +387,6 @@ export default function SearchBooksPage() {
               {books.map(book => {
                 const avail = book.inventory?.available ?? 0;
                 const isPending = pendingBookIds.has(book._id?.toString());
-                const isRequesting = requesting[book._id];
                 return (
                   <div key={book._id}
                     style={{ background: 'white', borderRadius: 12, border: '1px solid #E5E7EB', overflow: 'hidden', display: 'flex', flexDirection: 'column', transition: 'all 0.2s' }}
@@ -433,12 +420,12 @@ export default function SearchBooksPage() {
                         {isPending ? (
                           <button disabled style={{ flex: 1.2, padding: '8px 4px', border: '1px solid #C7D2FE', borderRadius: 8, background: '#EEF2FF', color: '#6366F1', fontSize: 12, fontWeight: 600, cursor: 'not-allowed' }}>✓ Requested</button>
                         ) : (
-                          <button onClick={() => requestBook(book._id, book.title)} disabled={isRequesting}
+                          <button onClick={() => openRequestModal(book)}
                             style={{
                               flex: 1.2, padding: '8px 4px', border: '1px solid #818CF8', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'Inter',
                               background: avail > 0 ? 'white' : '#F9FAFB', color: avail > 0 ? '#6366F1' : '#6B7280',
                             }}>
-                            {isRequesting ? 'Sending...' : avail > 0 ? 'Request Book' : 'Join Waitlist'}
+                            {avail > 0 ? 'Request Book' : 'Join Waitlist'}
                           </button>
                         )}
                       </div>
@@ -630,6 +617,15 @@ export default function SearchBooksPage() {
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
         @keyframes spin{to{transform:rotate(360deg)}}
       `}</style>
+
+      {/* Request Modal */}
+      {requestModalBook && (
+        <RequestModal
+          book={requestModalBook}
+          onClose={() => setRequestModalBook(null)}
+          onSuccess={(msg) => { onRequestSuccess(msg, requestModalBook._id); setRequestModalBook(null); }}
+        />
+      )}
     </div>
   );
 }

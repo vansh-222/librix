@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect, useCallback } from 'react';
+import { useSession } from 'next-auth/react';
 import { BookOpen, Loader2, CheckCircle2, HeadphonesIcon, QrCode, CreditCard, AlertCircle } from 'lucide-react';
 
 function fmtDate(d) {
@@ -51,6 +52,7 @@ function loadRazorpayScript() {
 
 // ── Main Page ──────────────────────────────────────────────────────────────────
 export default function StudentFines() {
+  const { data: session, status } = useSession();
   const [fines, setFines]         = useState([]);
   const [college, setCollege]     = useState(null);
   const [loading, setLoading]     = useState(true);
@@ -82,7 +84,11 @@ export default function StudentFines() {
     }
   }, []);
 
-  useEffect(() => { loadData(); }, [loadData]);
+  useEffect(() => {
+    if (status === 'loading') return;
+    if (!session?.user?.id) { setLoading(false); return; }
+    loadData();
+  }, [loadData, session?.user?.id, status]);
 
   // ── Razorpay Payment Flow ──────────────────────────────────────────────────
   const payWithRazorpay = async (rec) => {

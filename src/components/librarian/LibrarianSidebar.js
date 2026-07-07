@@ -11,14 +11,14 @@ const NAV = [
   { href: '/librarian/books', icon: BookOpen, label: 'Books Management' },
   { href: '/librarian/members', icon: Users, label: 'Members' },
   { href: '/librarian/returns', icon: ArrowLeftRight, label: 'Issue / Return' },
-  { href: '/librarian/requests', icon: ClipboardList, label: 'Requests' },
+  { href: '/librarian/requests', icon: ClipboardList, label: 'Requests', hasBadge: false },
   { href: '/librarian/fines', icon: CreditCard, label: 'Fines & Payments' },
   { href: '/librarian/reports', icon: BarChart2, label: 'Reports' },
-  { href: '/librarian/notifications', icon: Bell, label: 'Notifications', badge: 6 },
+  { href: '/librarian/notifications', icon: Bell, label: 'Notifications', hasBadge: true },
   { href: '/librarian/settings', icon: Settings, label: 'Settings' },
 ];
 
-export default function LibrarianSidebar() {
+export default function LibrarianSidebar({ unreadCount = 0 }) {
   const pathname = usePathname();
 
   return (
@@ -58,10 +58,22 @@ export default function LibrarianSidebar() {
               }}>
                 <item.icon size={16} color={active ? 'white' : '#6B7280'} />
                 <span style={{ flex: 1, fontSize: 13, fontWeight: active ? 600 : 400, color: active ? 'white' : '#374151', lineHeight: '18px' }}>{item.label}</span>
-                {item.badge && (
-                  <div style={{ minWidth: 18, height: 18, background: active ? 'rgba(255,255,255,0.25)' : '#2563EB', borderRadius: 9, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: 'white', padding: '0 4px' }}>
-                    {item.badge}
-                  </div>
+                {item.hasBadge && unreadCount > 0 && (
+                  <span style={{
+                    minWidth: 20,
+                    height: 20,
+                    background: '#0ea5e9',
+                    color: 'white',
+                    fontSize: 10,
+                    fontWeight: 700,
+                    borderRadius: 10,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '0 6px',
+                  }}>
+                    {unreadCount}
+                  </span>
                 )}
               </div>
             </Link>
