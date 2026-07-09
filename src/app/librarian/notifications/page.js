@@ -53,18 +53,46 @@ export default function NotificationsPage() {
 
   const markRead = async (id) => {
     await fetch('/api/notifications', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ notificationId: id }) });
-    setNotifications(prev => prev.map(n => n._id === id ? { ...n, read: true } : n));
+    setNotifications(prev => {
+      const updated = prev.map(n => n._id === id ? { ...n, read: true } : n);
+      const newUnread = updated.filter(n => !n.read).length;
+      window.dispatchEvent(new CustomEvent('notifications-updated', { detail: { count: newUnread } }));
+      return updated;
+    });
   };
 
   const deleteOne = async (id) => {
     await fetch(`/api/notifications?id=${id}`, { method: 'DELETE' });
-    setNotifications(prev => prev.filter(n => n._id !== id));
+    setNotifications(prev => {
+      const updated = prev.filter(n => n._id !== id);
+      const newUnread = updated.filter(n => !n.read).length;
+      window.dispatchEvent(new CustomEvent('notifications-updated', { detail: { count: newUnread } }));
+      return updated;
+    });
+  };
+
+  const markAllRead = async () => {
+    await fetch('/api/notifications', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ markAll: true }) });
+    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+    window.dispatchEvent(new CustomEvent('notifications-updated', { detail: { count: 0 } }));
+  };
+
+  const deleteAllRead = async () => {
+    const readIds = notifications.filter(n => n.read).map(n => n._id);
+    await Promise.all(readIds.map(id => fetch(`/api/notifications?id=${id}`, { method: 'DELETE' })));
+    setNotifications(prev => {
+      const updated = prev.filter(n => !n.read);
+      const newUnread = updated.filter(n => !n.read).length;
+      window.dispatchEvent(new CustomEvent('notifications-updated', { detail: { count: newUnread } }));
+      return updated;
+    });
   };
 
   const total    = notifications.length;
   const unread   = notifications.filter(n => !n.read).length;
-  const system   = notifications.filter(n => ['book_issued','new_member','reservation_available'].includes(n.type)).length;
+  const system   = notifications.filter(n => ['book_issued','new_member','reservation_available','general'].includes(n.type)).length;
   const alerts   = notifications.filter(n => ['overdue_alert','fine_added'].includes(n.type)).length;
+  const reminders = notifications.filter(n => n.type === 'return_reminder').length;
 
   const STATS = [
     { icon: <Bell size={22} color="#6C5CE7" />, iconBg: '#EDE9FE', value: total,  label: 'Total Notifications',  link: 'View all →' },
@@ -168,11 +196,11 @@ export default function NotificationsPage() {
 
               {/* Actions */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                <button type="button" style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 16px', border: '1px solid #E5E7EB', borderRadius: 8, background: 'white', fontSize: 13, color: '#374151', cursor: 'pointer', fontFamily: 'Inter', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+                <button type="button" onClick={() => {}} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 16px', border: '1px solid #E5E7EB', borderRadius: 8, background: 'white', fontSize: 13, color: '#374151', cursor: 'pointer', fontFamily: 'Inter', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
                   <Check size={15} color="#6C5CE7" />
                   Filters
                 </button>
-                <button type="button" style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 16px', border: '1px solid #E5E7EB', borderRadius: 8, background: 'white', fontSize: 13, color: '#374151', cursor: 'pointer', fontFamily: 'Inter', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+                <button type="button" onClick={markAllRead} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 16px', border: '1px solid #E5E7EB', borderRadius: 8, background: 'white', fontSize: 13, color: '#374151', cursor: 'pointer', fontFamily: 'Inter', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
                   <Check size={15} color="#16A34A" />
                   Mark all as read
                 </button>
@@ -235,41 +263,43 @@ export default function NotificationsPage() {
                       </td>
                       <td style={{ padding: '12px 16px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'center' }}>
-                          <button 
-                            type="button"
-                            title="View"
-                            style={{ 
-                              padding: '7px',
-                              border: '1px solid #E5E7EB',
-                              background: 'white',
-                              borderRadius: 6,
-                              cursor: 'pointer',
-                              display: 'flex',
-                              transition: 'all 0.15s ease'
-                            }}
-                            onMouseEnter={(e) => e.currentTarget.style.background = '#F9FAFB'}
-                            onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
-                          >
-                            <Eye size={15} color="#6C5CE7" />
-                          </button>
-                          <button 
-                            type="button"
-                            title="Delete"
-                            style={{ 
-                              padding: '7px',
-                              border: '1px solid #E5E7EB',
-                              background: 'white',
-                              borderRadius: 6,
-                              cursor: 'pointer',
-                              display: 'flex',
-                              transition: 'all 0.15s ease'
-                            }}
-                            onMouseEnter={(e) => e.currentTarget.style.background = '#FEE2E2'}
-                            onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
-                          >
-                            <Trash2 size={15} color="#DC2626" />
-                          </button>
-                        </div>
+                            <button 
+                              type="button"
+                              title={notif._read ? 'Already read' : 'Mark as read'}
+                              onClick={() => markRead(notif._id)}
+                              style={{ 
+                                padding: '7px',
+                                border: '1px solid #E5E7EB',
+                                background: notif._read ? '#F9FAFB' : 'white',
+                                borderRadius: 6,
+                                cursor: notif._read ? 'default' : 'pointer',
+                                display: 'flex',
+                                transition: 'all 0.15s ease'
+                              }}
+                              onMouseEnter={(e) => { if (!notif._read) e.currentTarget.style.background = '#F9FAFB'; }}
+                              onMouseLeave={(e) => { if (!notif._read) e.currentTarget.style.background = 'white'; }}
+                            >
+                              <Eye size={15} color={notif._read ? '#9CA3AF' : '#6C5CE7'} />
+                            </button>
+                            <button 
+                              type="button"
+                              title="Delete"
+                              onClick={() => deleteOne(notif._id)}
+                              style={{ 
+                                padding: '7px',
+                                border: '1px solid #E5E7EB',
+                                background: 'white',
+                                borderRadius: 6,
+                                cursor: 'pointer',
+                                display: 'flex',
+                                transition: 'all 0.15s ease'
+                              }}
+                              onMouseEnter={(e) => e.currentTarget.style.background = '#FEE2E2'}
+                              onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                            >
+                              <Trash2 size={15} color="#DC2626" />
+                            </button>
+                          </div>
                       </td>
                     </tr>
                   ))}
@@ -278,27 +308,7 @@ export default function NotificationsPage() {
 
               {/* Pagination */}
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px', borderTop: '1px solid #F3F4F6' }}>
-                <span style={{ fontSize: 13, color: '#6B7280' }}>Showing 1 to 8 of 56 notifications</span>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                  {['‹', '1', '2', '3', '...', '7', '›'].map((p, i) => (
-                    <button key={i} type="button" style={{
-                      minWidth: 32, height: 32, padding: '0 8px',
-                      border: p === '1' ? 'none' : '1px solid transparent',
-                      borderRadius: 8,
-                      background: p === '1' ? '#6C5CE7' : 'transparent',
-                      color: p === '1' ? 'white' : (p === '‹' || p === '›' ? '#9CA3AF' : '#374151'),
-                      fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'Inter',
-                    }}>{p}</button>
-                  ))}
-                </div>
-                <div style={{ position: 'relative' }}>
-                  <select style={{ padding: '6px 30px 6px 10px', border: '1px solid #E5E7EB', borderRadius: 6, fontSize: 13, color: '#6B7280', background: 'white', cursor: 'pointer', outline: 'none', fontFamily: 'Inter', appearance: 'none' }}>
-                    <option>8 / page</option>
-                    <option>16 / page</option>
-                    <option>24 / page</option>
-                  </select>
-                  <ChevronDown size={14} color="#9CA3AF" style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
-                </div>
+                <span style={{ fontSize: 13, color: '#6B7280' }}>Showing {filteredNotifications.length} notification{filteredNotifications.length !== 1 ? 's' : ''}</span>
               </div>
             </div>
 
@@ -317,64 +327,56 @@ export default function NotificationsPage() {
             gap: 20,
           }}>
 
-            {/* Notification Summary */}
+            {/* Notification Summary — Real Data */}
             <div>
               <div style={{ fontSize: 14, fontWeight: 600, color: '#111827', marginBottom: 12 }}>Notification Summary</div>
-              
-              {/* Donut Chart */}
-              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: 16, position: 'relative' }}>
-                <svg width="140" height="140" viewBox="0 0 140 140" style={{ transform: 'rotate(-90deg)' }}>
-                  <circle cx="70" cy="70" r="50" fill="none" stroke="#F3F4F6" strokeWidth="20" />
-                  {/* Unread - Purple (32.1%) */}
-                  <circle
-                    cx="70" cy="70" r="50"
-                    fill="none" stroke="#6C5CE7" strokeWidth="20"
-                    strokeDasharray={`${314 * 0.321} 314`}
-                    strokeDashoffset="0"
-                  />
-                  {/* System - Blue (50%) */}
-                  <circle
-                    cx="70" cy="70" r="50"
-                    fill="none" stroke="#2563EB" strokeWidth="20"
-                    strokeDasharray={`${314 * 0.5} 314`}
-                    strokeDashoffset={`-${314 * 0.321}`}
-                  />
-                  {/* Reminders - Green (12.5%) */}
-                  <circle
-                    cx="70" cy="70" r="50"
-                    fill="none" stroke="#16A34A" strokeWidth="20"
-                    strokeDasharray={`${314 * 0.125} 314`}
-                    strokeDashoffset={`-${314 * (0.321 + 0.5)}`}
-                  />
-                  {/* Alerts - Orange (5.4%) */}
-                  <circle
-                    cx="70" cy="70" r="50"
-                    fill="none" stroke="#F59E0B" strokeWidth="20"
-                    strokeDasharray={`${314 * 0.054} 314`}
-                    strokeDashoffset={`-${314 * (0.321 + 0.5 + 0.125)}`}
-                  />
-                </svg>
-                <div style={{ position: 'absolute', textAlign: 'center' }}>
-                  <div style={{ fontSize: 28, fontWeight: 700, color: '#111827', lineHeight: 1 }}>56</div>
-                  <div style={{ fontSize: 11, color: '#6B7280', marginTop: 4 }}>Total</div>
-                </div>
-              </div>
-
-              {/* Legend */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {[
-                  { color: '#6C5CE7', label: 'Unread', value: '18 (32.1%)', bg: '#EDE9FE' },
-                  { color: '#2563EB', label: 'System', value: '28 (50.0%)', bg: '#DBEAFE' },
-                  { color: '#16A34A', label: 'Reminders', value: '7 (12.5%)', bg: '#DCFCE7' },
-                  { color: '#F59E0B', label: 'Alerts', value: '3 (5.4%)', bg: '#FEF3C7' },
-                ].map((item, i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px', background: item.bg, borderRadius: 8 }}>
-                    <div style={{ width: 10, height: 10, borderRadius: '50%', background: item.color, flexShrink: 0 }} />
-                    <div style={{ flex: 1, fontSize: 12, color: '#6B7280' }}>{item.label}</div>
-                    <div style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>{item.value}</div>
-                  </div>
-                ))}
-              </div>
+              {(() => {
+                const C = 2 * Math.PI * 50;
+                const cats = [
+                  { color: '#6C5CE7', label: 'Unread',    count: unread },
+                  { color: '#2563EB', label: 'System',    count: system },
+                  { color: '#16A34A', label: 'Reminders', count: reminders },
+                  { color: '#F59E0B', label: 'Alerts',    count: alerts },
+                ];
+                let offset = 0;
+                return (
+                  <>
+                    <div style={{ display: 'flex', justifyContent: 'center', position: 'relative', marginBottom: 16 }}>
+                      <svg width="140" height="140" viewBox="0 0 140 140" style={{ transform: 'rotate(-90deg)' }}>
+                        <circle cx="70" cy="70" r="50" fill="none" stroke="#F3F4F6" strokeWidth="20" />
+                        {cats.map((cat, i) => {
+                          const frac = total > 0 ? cat.count / total : 0;
+                          const dash = frac * C;
+                          const el = (
+                            <circle key={i} cx="70" cy="70" r="50" fill="none"
+                              stroke={cat.color} strokeWidth="20"
+                              strokeDasharray={`${dash} ${C - dash}`}
+                              strokeDashoffset={-offset}
+                            />
+                          );
+                          offset += dash;
+                          return el;
+                        })}
+                      </svg>
+                      <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', textAlign: 'center' }}>
+                        <div style={{ fontSize: 26, fontWeight: 700, color: '#111827', lineHeight: 1 }}>{total}</div>
+                        <div style={{ fontSize: 11, color: '#6B7280', marginTop: 4 }}>Total</div>
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                      {cats.map((item, i) => (
+                        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px', background: '#F9FAFB', borderRadius: 8 }}>
+                          <div style={{ width: 10, height: 10, borderRadius: '50%', background: item.color, flexShrink: 0 }} />
+                          <div style={{ flex: 1, fontSize: 12, color: '#6B7280' }}>{item.label}</div>
+                          <div style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>
+                            {item.count} {total > 0 ? `(${Math.round(item.count / total * 100)}%)` : ''}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                );
+              })()}
             </div>
 
             <div style={{ height: 1, background: '#E5E7EB' }} />
@@ -384,14 +386,15 @@ export default function NotificationsPage() {
               <div style={{ fontSize: 14, fontWeight: 600, color: '#111827', marginBottom: 12 }}>Quick Actions</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {[
-                  { icon: <Check size={16} color="#16A34A" />, label: 'Mark all as read', color: '#16A34A' },
-                  { icon: <Trash2 size={16} color="#DC2626" />, label: 'Delete all read', color: '#DC2626' },
-                  { icon: <Settings size={16} color="#6C5CE7" />, label: 'Notification Settings', color: '#6C5CE7' },
-                  { icon: <Mail size={16} color="#6C5CE7" />, label: 'Email Preferences', color: '#6C5CE7' },
+                  { icon: <Check size={16} color="#16A34A" />, label: 'Mark all as read', color: '#16A34A', action: markAllRead },
+                  { icon: <Trash2 size={16} color="#DC2626" />, label: 'Delete all read', color: '#DC2626', action: deleteAllRead },
+                  { icon: <Settings size={16} color="#6C5CE7" />, label: 'Notification Settings', color: '#6C5CE7', action: null },
+                  { icon: <Mail size={16} color="#6C5CE7" />, label: 'Email Preferences', color: '#6C5CE7', action: null },
                 ].map((action, i) => (
                   <button 
                     key={i} 
-                    type="button" 
+                    type="button"
+                    onClick={() => action.action && action.action()}
                     style={{
                       display: 'flex',
                       alignItems: 'center',
@@ -425,34 +428,29 @@ export default function NotificationsPage() {
 
             <div style={{ height: 1, background: '#E5E7EB' }} />
 
-            {/* Recent Notifications */}
+            {/* Recent Notifications — Real Data */}
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
                 <span style={{ fontSize: 14, fontWeight: 600, color: '#111827' }}>Recent Notifications</span>
-                <span style={{ fontSize: 12, fontWeight: 500, color: '#6C5CE7', cursor: 'pointer' }}>View All</span>
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {[
-                  { icon: '📗', iconBg: '#DCFCE7', title: 'Book Due Reminder', subtitle: 'Atomic Habits', time: 'May 16, 09:00 AM' },
-                  { icon: '👤', iconBg: '#DBEAFE', title: 'New Member Registration', subtitle: 'Arjun Mehta', time: 'May 15, 04:36 PM' },
-                  { icon: '📋', iconBg: '#FEF3C7', title: 'Request Approved', subtitle: 'Deep Work', time: 'May 15, 02:48 PM' },
-                  { icon: '💰', iconBg: '#FEE2E2', title: 'Fine Payment Received', subtitle: 'Neha Gupta', time: 'May 15, 11:07 AM' },
-                ].map((notif, i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px', background: '#F9FAFB', borderRadius: 8 }}>
-                    <div style={{ width: 36, height: 36, background: notif.iconBg, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 16 }}>
-                      {notif.icon}
+              {notifications.length === 0 ? (
+                <div style={{ fontSize: 12, color: '#9CA3AF', textAlign: 'center', padding: '12px 0' }}>No notifications.</div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  {notifications.slice(0, 4).map((n, i) => (
+                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px', background: n.read ? '#F9FAFB' : '#EEF2FF', borderRadius: 8 }}>
+                      <div style={{ width: 36, height: 36, background: TYPE_BG[n.type] || '#EDE9FE', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 16 }}>
+                        {TYPE_ICON[n.type] || '🔔'}
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: 12, fontWeight: 600, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{n.title}</div>
+                        <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 2 }}>{timeAgo(n.createdAt)}</div>
+                      </div>
+                      {!n.read && <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#6C5CE7', flexShrink: 0 }} />}
                     </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 12, fontWeight: 600, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{notif.title}</div>
-                      <div style={{ fontSize: 10, color: '#6B7280', marginTop: 2 }}>{notif.subtitle}</div>
-                      <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 2 }}>{notif.time}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <button type="button" style={{ width: '100%', padding: '8px', marginTop: 12, border: '1px solid #E5E7EB', borderRadius: 8, background: 'white', fontSize: 12, fontWeight: 500, color: '#6C5CE7', cursor: 'pointer', fontFamily: 'Inter' }}>
-                View all notifications
-              </button>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>

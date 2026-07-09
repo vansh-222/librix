@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { BookOpen, Clock, AlertTriangle, Loader2, Star, BookMarked, Bell, Search } from 'lucide-react';
 import Link from 'next/link';
@@ -29,22 +29,24 @@ export default function StudentDashboard() {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading]           = useState(true);
 
-  useEffect(() => {
-    // Keep loading while session is being fetched
-    if (status === 'loading') return;
-    // Session resolved but no user — layout would have redirected; safety guard
-    if (!session?.user?.id) { setLoading(false); return; }
-
+  const loadData = useCallback(() => {
+    setLoading(true);
     Promise.all([
-      fetch('/api/stats').then(r => r.json()),
-      fetch('/api/borrow').then(r => r.json()),
-      fetch('/api/notifications?limit=5').then(r => r.json()),
+      fetch('/api/stats', { cache: 'no-store' }).then(r => r.json()),
+      fetch('/api/borrow', { cache: 'no-store' }).then(r => r.json()),
+      fetch('/api/notifications?limit=5', { cache: 'no-store' }).then(r => r.json()),
     ]).then(([statsData, borrowData, notifData]) => {
       setStats(statsData);
       setActiveBooks((borrowData.records || []).filter(r => ['issued','return_pending'].includes(r.status)).slice(0, 4));
       setNotifications((notifData.notifications || []).slice(0, 5));
     }).catch(() => {}).finally(() => setLoading(false));
-  }, [session?.user?.id, status]);
+  }, []);
+
+  useEffect(() => {
+    if (status === 'loading') return;
+    if (!session?.user?.id) { setLoading(false); return; }
+    loadData();
+  }, [status, session?.user?.id, loadData]);
 
   const STAT_CARDS = [
     { icon: BookOpen,       label: 'Books Borrowed',   value: stats?.activeBorrows ?? '—', bg: '#EEF2FF', color: '#6366F1', sub: 'Currently active' },

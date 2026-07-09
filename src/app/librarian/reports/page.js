@@ -35,9 +35,17 @@ function MiniSparkline({ data, color }) {
 }
 
 export default function ReportsPage() {
-  const [dateRange, setDateRange]   = useState('May 10 - May 16, 2026');
+  const [dateRange, setDateRange]   = useState('Last 7 Days');
   const [statsData, setStatsData]   = useState({});
   const [topBooks, setTopBooks]     = useState([]);
+  const [toast, setToast]           = useState('');
+  const [dailyChart, setDailyChart] = useState([]);
+  const [monthlyChart, setMonthlyChart] = useState({ issued: [], returned: [] });
+
+  const showToast = (msg) => {
+    setToast(msg);
+    setTimeout(() => setToast(''), 3000);
+  };
 
   const load = useCallback(async () => {
     const [statsRes, borrowRes] = await Promise.all([
@@ -56,6 +64,33 @@ export default function ReportsPage() {
     });
     const sorted = Object.values(countMap).sort((a, b) => b.count - a.count).slice(0, 5);
     setTopBooks(sorted);
+
+    // Build Daily Chart (Last 7 Days)
+    const dChart = [];
+    for (let i = 6; i >= 0; i--) {
+      const dt = new Date();
+      dt.setDate(dt.getDate() - i);
+      const dateStr = dt.toISOString().slice(0, 10);
+      const issued = (borrowRes.records || []).filter(r => (r.issueDate || '').slice(0, 10) === dateStr).length;
+      const returned = (borrowRes.records || []).filter(r => r.returnDate && (r.returnDate || '').slice(0, 10) === dateStr).length;
+      dChart.push({ label: dt.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }), issued, returned });
+    }
+    setDailyChart(dChart);
+
+    // Build Monthly Trends (Last 6 Months)
+    const mIssued = [];
+    const mReturned = [];
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date();
+      d.setMonth(d.getMonth() - i);
+      const mStr = d.toISOString().slice(0, 7); // YYYY-MM
+      const issued = (borrowRes.records || []).filter(r => (r.issueDate || '').slice(0, 7) === mStr).length;
+      const returned = (borrowRes.records || []).filter(r => r.returnDate && (r.returnDate || '').slice(0, 7) === mStr).length;
+      mIssued.push(issued);
+      mReturned.push(returned);
+    }
+    setMonthlyChart({ issued: mIssued, returned: mReturned });
+
   }, []);
 
   useEffect(() => { load(); }, [load]);
@@ -82,12 +117,32 @@ export default function ReportsPage() {
     { icon: <TrendingUp size={22} color="#6C5CE7" />, iconBg: '#EDE9FE', value: `₹${finesCollected}`, label: 'Fines Collected', change: '—', isPositive: true, subtitle: 'total' },
   ];
 
+  const exportCSV = () => {
+    const rows = [
+      ['Metric', 'Value'],
+      ['Total Members', totalMembers],
+      ['Total Books', totalBooks],
+      ['Active Borrows', activeBorrows],
+      ['Overdue Books', overdueCount],
+      ['Pending Requests', pendingRequests],
+      ['Fines Collected', finesCollected],
+    ];
+    const csv = rows.map(r => r.join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `library_report_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    showToast('Report exported successfully! 📊');
+  };
+
   const MONTHLY_TRENDS = [
-    { label: 'Books Issued',    value: String(activeBorrows),  change: '—', isPositive: true,  chartData: [10,15,20,18,activeBorrows,activeBorrows,activeBorrows] },
-    { label: 'Overdue Books',   value: String(overdueCount),   change: '—', isPositive: false, chartData: [5,8,10,overdueCount,overdueCount,overdueCount,overdueCount] },
-    { label: 'Pending Requests',value: String(pendingRequests),change: '—', isPositive: true,  chartData: [2,5,8,pendingRequests,pendingRequests,pendingRequests,pendingRequests] },
-    { label: 'Fines Collected', value: `₹${finesCollected}`,  change: '—', isPositive: true,  chartData: [10,20,30,40,finesCollected,finesCollected,finesCollected] },
-    { label: 'Fines Pending',   value: `₹${finesPending}`,    change: '—', isPositive: false, chartData: [30,25,20,15,finesPending,finesPending,finesPending] },
+    { label: 'Books Issued',    value: String(activeBorrows),  change: '—', isPositive: true,  chartData: monthlyChart.issued },
+    { label: 'Overdue Books',   value: String(overdueCount),   change: '—', isPositive: false, chartData: [5,8,10,overdueCount,overdueCount,overdueCount] },
+    { label: 'Pending Requests',value: String(pendingRequests),change: '—', isPositive: true,  chartData: [2,5,8,pendingRequests,pendingRequests,pendingRequests] },
+    { label: 'Fines Collected', value: `₹${finesCollected}`,  change: '—', isPositive: true,  chartData: [10,20,30,40,finesCollected,finesCollected] },
+    { label: 'Books Returned',  value: String(monthlyChart.returned.reduce((a,b)=>a+b, 0)), change: '—', isPositive: true, chartData: monthlyChart.returned },
   ];
 
   return (
@@ -117,12 +172,12 @@ export default function ReportsPage() {
               </div>
 
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                <button type="button" style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 16px', border: '1px solid #E5E7EB', borderRadius: 8, background: 'white', fontSize: 13, color: '#374151', cursor: 'pointer', fontFamily: 'Inter', whiteSpace: 'nowrap', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+                <button type="button" onClick={() => showToast('Filters applied.')} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 16px', border: '1px solid #E5E7EB', borderRadius: 8, background: 'white', fontSize: 13, color: '#374151', cursor: 'pointer', fontFamily: 'Inter', whiteSpace: 'nowrap', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
                   <Filter size={15} color="#6C5CE7" />
                   Filters
                 </button>
-                <button type="button" style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 20px', border: 'none', borderRadius: 8, background: '#6C5CE7', color: 'white', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'Inter', whiteSpace: 'nowrap', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
-                  <Plus size={16} />
+                <button type="button" onClick={exportCSV} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 20px', border: 'none', borderRadius: 8, background: '#6C5CE7', color: 'white', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'Inter', whiteSpace: 'nowrap', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+                  <Download size={16} />
                   Export Report
                 </button>
               </div>
@@ -160,15 +215,20 @@ export default function ReportsPage() {
                   </select>
                 </div>
                 {/* Simple Line Chart Area */}
-                <div style={{ height: 180, display: 'flex', alignItems: 'flex-end', gap: 8, paddingTop: 10 }}>
-                  {[40, 60, 55, 70, 50, 80, 90, 75].map((height, i) => (
-                    <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-                      <div style={{ width: '100%', height: `${height}%`, background: 'linear-gradient(180deg, rgba(108,92,231,0.2) 0%, rgba(108,92,231,0.05) 100%)', border: '2px solid #6C5CE7', borderRadius: '4px 4px 0 0', position: 'relative' }}>
-                        <div style={{ position: 'absolute', top: -20, left: '50%', transform: 'translateX(-50%)', fontSize: 10, color: '#6B7280', fontWeight: 600 }}>{Math.round(height * 1.2)}</div>
+                <div style={{ height: 180, display: 'flex', alignItems: 'stretch', gap: 8, paddingTop: 10, position: 'relative' }}>
+                  {dailyChart.length > 0 && dailyChart.every(d => d.issued === 0) ? (
+                    <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9CA3AF', fontSize: 13 }}>No data for the last 7 days.</div>
+                  ) : dailyChart.map((d, i) => {
+                    const maxV = Math.max(5, ...dailyChart.map(x => x.issued));
+                    const height = (d.issued / maxV) * 100;
+                    return (
+                    <div key={i} style={{ flex: 1, height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', gap: 4 }}>
+                      <div style={{ width: '100%', height: `${Math.max(2, height)}%`, background: 'linear-gradient(180deg, rgba(108,92,231,0.2) 0%, rgba(108,92,231,0.05) 100%)', border: '2px solid #6C5CE7', borderRadius: '4px 4px 0 0', position: 'relative' }}>
+                        <div style={{ position: 'absolute', top: -20, left: '50%', transform: 'translateX(-50%)', fontSize: 10, color: '#6B7280', fontWeight: 600 }}>{d.issued}</div>
                       </div>
-                      <span style={{ fontSize: 10, color: '#9CA3AF', marginTop: 4 }}>May {10+i}</span>
+                      <span style={{ fontSize: 10, color: '#9CA3AF', marginTop: 4 }}>{d.label}</span>
                     </div>
-                  ))}
+                  )})}
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 16, justifyContent: 'center' }}>
                   <div style={{ width: 10, height: 10, background: '#6C5CE7', borderRadius: 2 }} />
@@ -180,7 +240,7 @@ export default function ReportsPage() {
               <div style={{ background: 'white', border: '1px solid #E5E7EB', borderRadius: 12, padding: '20px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
                   <span style={{ fontSize: 14, fontWeight: 600, color: '#111827' }}>Top Borrowed Books</span>
-                  <span style={{ fontSize: 12, fontWeight: 500, color: '#6C5CE7', cursor: 'pointer' }}>View All</span>
+                  <span onClick={() => showToast('Viewing all top books.')} style={{ fontSize: 12, fontWeight: 500, color: '#6C5CE7', cursor: 'pointer' }}>View All</span>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                   {TOP_BORROWED.map((book, i) => (
@@ -209,24 +269,26 @@ export default function ReportsPage() {
                   </select>
                 </div>
                 {/* Simple Bar Chart */}
-                <div style={{ height: 180, display: 'flex', alignItems: 'flex-end', gap: 8, paddingTop: 10 }}>
-                  {[
-                    { issued: 70, returned: 50 },
-                    { issued: 80, returned: 60 },
-                    { issued: 75, returned: 65 },
-                    { issued: 85, returned: 70 },
-                    { issued: 78, returned: 68 },
-                    { issued: 82, returned: 60 },
-                    { issued: 90, returned: 75 }
-                  ].map((data, i) => (
-                    <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+                <div style={{ height: 180, display: 'flex', alignItems: 'stretch', gap: 8, paddingTop: 10, position: 'relative' }}>
+                  {dailyChart.length > 0 && dailyChart.every(d => d.issued === 0 && d.returned === 0) ? (
+                    <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9CA3AF', fontSize: 13 }}>No data for the last 7 days.</div>
+                  ) : dailyChart.map((d, i) => {
+                    const maxV = Math.max(5, ...dailyChart.map(x => Math.max(x.issued, x.returned)));
+                    const hI = (d.issued / maxV) * 100;
+                    const hR = (d.returned / maxV) * 100;
+                    return (
+                    <div key={i} style={{ flex: 1, height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', gap: 4 }}>
                       <div style={{ width: '100%', display: 'flex', gap: 2, alignItems: 'flex-end', height: '100%' }}>
-                        <div style={{ flex: 1, height: `${data.issued}%`, background: '#6C5CE7', borderRadius: '3px 3px 0 0' }} />
-                        <div style={{ flex: 1, height: `${data.returned}%`, background: '#16A34A', borderRadius: '3px 3px 0 0' }} />
+                        <div style={{ flex: 1, height: `${hI > 0 ? Math.max(4, hI) : 0}%`, background: '#6C5CE7', borderRadius: '3px 3px 0 0', position: 'relative' }}>
+                          {d.issued > 0 && <div style={{ position: 'absolute', top: -18, left: '50%', transform: 'translateX(-50%)', fontSize: 10, color: '#6B7280', fontWeight: 600 }}>{d.issued}</div>}
+                        </div>
+                        <div style={{ flex: 1, height: `${hR > 0 ? Math.max(4, hR) : 0}%`, background: '#16A34A', borderRadius: '3px 3px 0 0', position: 'relative' }}>
+                          {d.returned > 0 && <div style={{ position: 'absolute', top: -18, left: '50%', transform: 'translateX(-50%)', fontSize: 10, color: '#6B7280', fontWeight: 600 }}>{d.returned}</div>}
+                        </div>
                       </div>
-                      <span style={{ fontSize: 10, color: '#9CA3AF', marginTop: 4 }}>May {10+i}</span>
+                      <span style={{ fontSize: 10, color: '#9CA3AF', marginTop: 4 }}>{d.label}</span>
                     </div>
-                  ))}
+                  )})}
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 16, justifyContent: 'center' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -392,6 +454,7 @@ export default function ReportsPage() {
                       textAlign: 'left',
                       transition: 'all 0.15s ease'
                     }}
+                    onClick={() => showToast(`Opening ${item.label}...`)}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.background = '#F9FAFB';
                       e.currentTarget.style.borderColor = '#6C5CE7';
@@ -402,12 +465,12 @@ export default function ReportsPage() {
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                      <div style={{ width: 32, height: 32, background: '#F3F4F6', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <div style={{ width: 28, height: 28, background: '#EDE9FE', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         {item.icon}
                       </div>
-                      <span style={{ fontSize: 12, fontWeight: 500, color: '#374151' }}>{item.label}</span>
+                      <span style={{ fontSize: 13, fontWeight: 500, color: '#374151' }}>{item.label}</span>
                     </div>
-                    <ChevronRight size={16} color="#9CA3AF" />
+                    <ChevronRight size={14} color="#9CA3AF" />
                   </button>
                 ))}
               </div>

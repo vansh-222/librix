@@ -67,14 +67,20 @@ export default function StudentFines() {
   const loadData = useCallback(async () => {
     setLoading(true);
     try {
+      // First: accrue any running fines for overdue books
+      await fetch('/api/borrow/accrue-fines', { method: 'POST' });
+
       const [borrowRes, collegeRes] = await Promise.all([
-        fetch('/api/borrow'),
+        fetch('/api/borrow', { cache: 'no-store' }),
         fetch('/api/colleges/my'),
       ]);
       const borrowData  = await borrowRes.json();
       const collegeData = await collegeRes.json();
 
-      const withFine = (borrowData.records || []).filter(r => (r.fine > 0) || r.fineStatus === 'paid');
+      // Show all records that have a fine (pending or paid) OR are overdue (so student sees live fine)
+      const withFine = (borrowData.records || []).filter(r =>
+        r.fine > 0 || r.fineStatus === 'paid' || (r.fineStatus === 'pending')
+      );
       setFines(withFine);
       setCollege(collegeData.college);
     } catch {
@@ -244,7 +250,7 @@ export default function StudentFines() {
               <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
                   <tr style={{ background: '#F9FAFB' }}>
-                    {['Book Details', 'Issued On', 'Due Date', 'Returned On', 'Days Late', 'Fine Amount', 'Status', 'Action'].map(h => (
+                    {['Book Details', 'Issued On', 'Due Date', 'Days Late', 'Fine Amount', 'Status'].map(h => (
                       <th key={h} style={{ fontSize: 12, fontWeight: 600, color: '#6B7280', textAlign: 'left', padding: '10px 14px', whiteSpace: 'nowrap' }}>{h}</th>
                     ))}
                   </tr>
@@ -270,45 +276,24 @@ export default function StudentFines() {
                         </td>
                         <td style={{ padding: '14px', fontSize: 13, color: '#374151' }}>{fmtDate(rec.issueDate)}</td>
                         <td style={{ padding: '14px', fontSize: 13, color: '#374151' }}>{fmtDate(rec.dueDate)}</td>
-                        <td style={{ padding: '14px', fontSize: 13, color: daysLate > 0 ? '#EF4444' : '#374151', fontWeight: daysLate > 0 ? 600 : 400 }}>{fmtDate(rec.returnDate)}</td>
-                        <td style={{ padding: '14px', fontSize: 13, color: daysLate > 0 ? '#EF4444' : '#374151', fontWeight: daysLate > 0 ? 600 : 400 }}>{daysLate}d</td>
+                        <td style={{ padding: '14px', fontSize: 13, color: daysLate > 0 ? '#EF4444' : '#374151', fontWeight: daysLate > 0 ? 600 : 400 }}>{daysLate > 0 ? `${daysLate}d overdue` : '—'}</td>
                         <td style={{ padding: '14px', fontSize: 14, fontWeight: 800, color: rec.fine > 0 ? '#EF4444' : '#22C55E' }}>₹{rec.fine}</td>
                         <td style={{ padding: '14px' }}>
-                          <span style={{
-                            display: 'inline-block', padding: '4px 12px', borderRadius: 20, fontSize: 12, fontWeight: 600,
-                            background: isUnpaid ? '#FEF2F2' : rec.fineStatus === 'waived' ? '#FFFBEB' : '#F0FDF4',
-                            color: isUnpaid ? '#EF4444' : rec.fineStatus === 'waived' ? '#D97706' : '#22C55E',
-                            border: `1px solid ${isUnpaid ? '#FECACA' : rec.fineStatus === 'waived' ? '#FDE68A' : '#BBF7D0'}`,
-                          }}>
-                            {rec.fineStatus === 'paid' ? '✅ Paid' : rec.fineStatus === 'waived' ? '⚡ Waived' : '🔴 Unpaid'}
-                          </span>
-                          {rec.fineStatus === 'paid' && rec.upiTxnId && (
-                            <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 3, fontFamily: 'monospace' }}>
-                              ID: {rec.upiTxnId.slice(0, 14)}…
-                            </div>
-                          )}
-                        </td>
-                        <td style={{ padding: '14px' }}>
-                          {isUnpaid ? (
-                            <button
-                              onClick={() => payWithRazorpay(rec)}
-                              disabled={!!paying}
-                              style={{
-                                display: 'flex', alignItems: 'center', gap: 6,
-                                padding: '8px 16px', border: 'none', borderRadius: 8,
-                                background: paying ? '#A78BFA' : 'linear-gradient(135deg,#6366F1,#8B5CF6)',
-                                color: 'white', fontSize: 12, fontWeight: 700,
-                                cursor: paying ? 'wait' : 'pointer', whiteSpace: 'nowrap',
-                              }}
-                            >
-                              {isPaying
-                                ? <><Loader2 size={13} style={{ animation: 'spin 0.8s linear infinite' }} /> Opening...</>
-                                : <><CreditCard size={13} /> Pay ₹{rec.fine}</>
-                              }
-                            </button>
-                          ) : (
-                            <span style={{ fontSize: 12, color: '#9CA3AF' }}>—</span>
-                          )}
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'flex-start' }}>
+                            <span style={{
+                              display: 'inline-block', padding: '4px 12px', borderRadius: 20, fontSize: 12, fontWeight: 600,
+                              background: isUnpaid ? '#FEF2F2' : rec.fineStatus === 'waived' ? '#FFFBEB' : '#F0FDF4',
+                              color: isUnpaid ? '#EF4444' : rec.fineStatus === 'waived' ? '#D97706' : '#22C55E',
+                              border: `1px solid ${isUnpaid ? '#FECACA' : rec.fineStatus === 'waived' ? '#FDE68A' : '#BBF7D0'}`,
+                            }}>
+                              {rec.fineStatus === 'paid' ? '✅ Paid' : rec.fineStatus === 'waived' ? '⚡ Waived' : '🔴 Unpaid'}
+                            </span>
+                            {rec.fineStatus === 'paid' && rec.upiTxnId && (
+                              <div style={{ fontSize: 10, color: '#9CA3AF', fontFamily: 'monospace' }}>
+                                ID: {rec.upiTxnId.slice(0, 14)}…
+                              </div>
+                            )}
+                          </div>
                         </td>
                       </tr>
                     );
@@ -354,12 +339,34 @@ export default function StudentFines() {
         {/* Pay All Pending */}
         {pendingFine > 0 && (
           <div style={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', borderRadius: 12, padding: 18, color: 'white' }}>
-            <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 4 }}>Total Pending</div>
-            <div style={{ fontSize: 22, fontWeight: 900, marginBottom: 4 }}>₹{pendingFine}</div>
-            <div style={{ fontSize: 11, opacity: 0.8, marginBottom: 12 }}>Click "Pay" on any row to clear it</div>
-            <div style={{ fontSize: 12, background: 'rgba(255,255,255,0.15)', borderRadius: 8, padding: '8px 12px' }}>
-              🔒 Verified by Razorpay
+            <div style={{ fontSize: 13, fontWeight: 600, opacity: 0.85, marginBottom: 4 }}>Total Pending</div>
+            <div style={{ fontSize: 30, fontWeight: 900, marginBottom: 4 }}>₹{pendingFine}</div>
+            <div style={{ fontSize: 11, opacity: 0.7, marginBottom: 14 }}>
+              {fines.filter(r => r.fineStatus === 'pending').length} unpaid fine{fines.filter(r => r.fineStatus === 'pending').length !== 1 ? 's' : ''}
             </div>
+            <button
+              onClick={() => {
+                const first = fines.find(r => r.fineStatus === 'pending');
+                if (first) payWithRazorpay(first);
+              }}
+              disabled={!!paying}
+              style={{
+                width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                padding: '12px', border: 'none', borderRadius: 10,
+                background: paying ? 'rgba(255,255,255,0.2)' : 'white',
+                color: paying ? 'rgba(255,255,255,0.7)' : '#6366F1',
+                fontSize: 14, fontWeight: 800,
+                cursor: paying ? 'wait' : 'pointer',
+                transition: 'all 0.15s',
+              }}
+              onMouseEnter={e => { if (!paying) e.currentTarget.style.transform = 'scale(1.02)'; }}
+              onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; }}
+            >
+              {paying
+                ? <><Loader2 size={15} style={{ animation: 'spin 0.8s linear infinite' }} /> Opening...</>
+                : <><CreditCard size={15} /> Pay ₹{pendingFine} Now</>
+              }
+            </button>
           </div>
         )}
 

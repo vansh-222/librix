@@ -347,7 +347,9 @@ export default function MyBooksPage() {
   const loadRecords = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/borrow');
+      // Accrue any running fines for overdue books first
+      await fetch('/api/borrow/accrue-fines', { method: 'POST' });
+      const res = await fetch('/api/borrow', { cache: 'no-store' });
       const data = await res.json();
       setRecords(data.records || []);
     } catch { showToast('Failed to load records.'); }

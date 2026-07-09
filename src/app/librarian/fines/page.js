@@ -179,12 +179,11 @@ export default function FinesPaymentsPage() {
                 <thead>
                   <tr>
                     <th style={{ padding: '12px 16px', fontSize: 11, fontWeight: 600, color: '#6B7280', textTransform: 'uppercase', textAlign: 'left', letterSpacing: '0.06em', background: '#F9FAFB', borderBottom: '1px solid #E5E7EB', width: '16%' }}>MEMBER</th>
-                    <th style={{ padding: '12px 16px', fontSize: 11, fontWeight: 600, color: '#6B7280', textTransform: 'uppercase', textAlign: 'left', letterSpacing: '0.06em', background: '#F9FAFB', borderBottom: '1px solid #E5E7EB', width: '20%' }}>BOOK DETAILS</th>
-                    <th style={{ padding: '12px 16px', fontSize: 11, fontWeight: 600, color: '#6B7280', textTransform: 'uppercase', textAlign: 'left', letterSpacing: '0.06em', background: '#F9FAFB', borderBottom: '1px solid #E5E7EB', width: '10%' }}>FINE AMOUNT</th>
-                    <th style={{ padding: '12px 16px', fontSize: 11, fontWeight: 600, color: '#6B7280', textTransform: 'uppercase', textAlign: 'left', letterSpacing: '0.06em', background: '#F9FAFB', borderBottom: '1px solid #E5E7EB', width: '13%' }}>DUE DATE</th>
-                    <th style={{ padding: '12px 16px', fontSize: 11, fontWeight: 600, color: '#6B7280', textTransform: 'uppercase', textAlign: 'left', letterSpacing: '0.06em', background: '#F9FAFB', borderBottom: '1px solid #E5E7EB', width: '10%' }}>STATUS</th>
-                    <th style={{ padding: '12px 16px', fontSize: 11, fontWeight: 600, color: '#6B7280', textTransform: 'uppercase', textAlign: 'left', letterSpacing: '0.06em', background: '#F9FAFB', borderBottom: '1px solid #E5E7EB', width: '13%' }}>PAYMENT DATE</th>
-                    <th style={{ padding: '12px 16px', fontSize: 11, fontWeight: 600, color: '#6B7280', textTransform: 'uppercase', textAlign: 'center', letterSpacing: '0.06em', background: '#F9FAFB', borderBottom: '1px solid #E5E7EB', width: '18%' }}>ACTION</th>
+                    <th style={{ padding: '12px 16px', fontSize: 11, fontWeight: 600, color: '#6B7280', textTransform: 'uppercase', textAlign: 'left', letterSpacing: '0.06em', background: '#F9FAFB', borderBottom: '1px solid #E5E7EB', width: '24%' }}>BOOK DETAILS</th>
+                    <th style={{ padding: '12px 16px', fontSize: 11, fontWeight: 600, color: '#6B7280', textTransform: 'uppercase', textAlign: 'left', letterSpacing: '0.06em', background: '#F9FAFB', borderBottom: '1px solid #E5E7EB', width: '12%' }}>FINE AMOUNT</th>
+                    <th style={{ padding: '12px 16px', fontSize: 11, fontWeight: 600, color: '#6B7280', textTransform: 'uppercase', textAlign: 'left', letterSpacing: '0.06em', background: '#F9FAFB', borderBottom: '1px solid #E5E7EB', width: '14%' }}>DUE DATE</th>
+                    <th style={{ padding: '12px 16px', fontSize: 11, fontWeight: 600, color: '#6B7280', textTransform: 'uppercase', textAlign: 'left', letterSpacing: '0.06em', background: '#F9FAFB', borderBottom: '1px solid #E5E7EB', width: '12%' }}>STATUS</th>
+                    <th style={{ padding: '12px 16px', fontSize: 11, fontWeight: 600, color: '#6B7280', textTransform: 'uppercase', textAlign: 'left', letterSpacing: '0.06em', background: '#F9FAFB', borderBottom: '1px solid #E5E7EB', width: '22%' }}>PAYMENT DATE</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -192,9 +191,9 @@ export default function FinesPaymentsPage() {
                     <tr><td colSpan={7} style={{ textAlign: 'center', padding: 32, color: '#9CA3AF' }}>No fines found.</td></tr>
                   ) : filteredFines.map((fine, i) => {
                     const statusConfig = {
-                      pending: { label: '🔴 Unpaid',  bg: '#FEF2F2', color: '#DC2626' },
-                      paid:    { label: '✅ Paid',     bg: '#F0FDF4', color: '#16A34A' },
-                      waived:  { label: '⚡ Waived',   bg: '#FFFBEB', color: '#D97706' },
+                      pending: { label: '🟡 Pending',  bg: '#FFFBEB', color: '#D97706' },
+                      paid:    { label: '✅ Received',  bg: '#F0FDF4', color: '#16A34A' },
+                      waived:  { label: '⚡ Waived',    bg: '#EEF2FF', color: '#6366F1' },
                     };
                     const status = statusConfig[fine.fineStatus] || statusConfig.pending;
                     const cover  = BOOK_COLORS[i % BOOK_COLORS.length];
@@ -245,59 +244,11 @@ export default function FinesPaymentsPage() {
                             <>
                               <div style={{ fontSize: 13, fontWeight: 500, color: '#111827' }}>{fmtDate(fine.finePaidAt || fine.updatedAt)}</div>
                               <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 2 }}>{fmtTime(fine.finePaidAt || fine.updatedAt)}</div>
+                              {fine.upiTxnId && <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 2, fontFamily: 'monospace' }}>ID: {fine.upiTxnId.slice(0,14)}…</div>}
                             </>
                           ) : (
                             <span style={{ fontSize: 13, color: '#9CA3AF' }}>—</span>
                           )}
-                        </td>
-                        <td style={{ padding: '10px 16px' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'center' }}>
-                            <button 
-                              type="button"
-                              title="View Details"
-                              style={{ 
-                                padding: '7px',
-                                border: '1px solid #E5E7EB',
-                                background: 'white',
-                                borderRadius: 6,
-                                cursor: 'pointer',
-                                display: 'flex',
-                                transition: 'all 0.15s ease'
-                              }}
-                              onMouseEnter={(e) => e.currentTarget.style.background = '#F9FAFB'}
-                              onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
-                            >
-                              <Eye size={15} color="#6C5CE7" />
-                            </button>
-                            {fine.fineStatus === 'pending' && (
-                              <button type="button" title="Mark as Paid"
-                                onClick={() => markPaid(fine._id)}
-                                disabled={acting === fine._id}
-                                style={{ padding: '7px 12px', border: '1px solid #16A34A', background: 'white', color: '#16A34A', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 500, transition: 'all 0.15s ease' }}
-                                onMouseEnter={e => { e.currentTarget.style.background = '#16A34A'; e.currentTarget.style.color = 'white'; }}
-                                onMouseLeave={e => { e.currentTarget.style.background = 'white'; e.currentTarget.style.color = '#16A34A'; }}
-                              >
-                                {acting === fine._id ? '...' : <><CheckCircle size={13} /> Mark Paid</>}
-                              </button>
-                            )}
-                            <button 
-                              type="button"
-                              title="More Options"
-                              style={{ 
-                                padding: '7px',
-                                border: '1px solid #E5E7EB',
-                                background: 'white',
-                                borderRadius: 6,
-                                cursor: 'pointer',
-                                display: 'flex',
-                                transition: 'all 0.15s ease'
-                              }}
-                              onMouseEnter={(e) => e.currentTarget.style.background = '#F9FAFB'}
-                              onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
-                            >
-                              <MoreHorizontal size={15} color="#6B7280" />
-                            </button>
-                          </div>
                         </td>
                       </tr>
                     );
@@ -326,7 +277,7 @@ export default function FinesPaymentsPage() {
 
           </div>
 
-          {/* Right Sidebar */}
+          {/* Right Sidebar — Real Data */}
           <div style={{
               width: 280,
               background: 'white',
@@ -339,141 +290,78 @@ export default function FinesPaymentsPage() {
               gap: 20,
             }}>
 
-            {/* Payment Overview (This Month) */}
+            {/* Payment Overview */}
             <div>
-              <div style={{ fontSize: 14, fontWeight: 600, color: '#111827', marginBottom: 12 }}>Payment Overview (This Month)</div>
-              
-              {/* Donut Chart */}
-              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: 16, position: 'relative' }}>
-                <svg width="160" height="160" viewBox="0 0 160 160" style={{ transform: 'rotate(-90deg)' }}>
-                  <circle cx="80" cy="80" r="60" fill="none" stroke="#F3F4F6" strokeWidth="24" />
-                  {/* Collected - Purple (59%) */}
-                  <circle
-                    cx="80" cy="80" r="60"
-                    fill="none" stroke="#6C5CE7" strokeWidth="24"
-                    strokeDasharray={`${377 * 0.59} 377`}
-                    strokeDashoffset="0"
-                  />
-                  {/* Pending - Orange (20.5%) */}
-                  <circle
-                    cx="80" cy="80" r="60"
-                    fill="none" stroke="#F59E0B" strokeWidth="24"
-                    strokeDasharray={`${377 * 0.205} 377`}
-                    strokeDashoffset={`-${377 * 0.59}`}
-                  />
-                  {/* Overdue - Red (10.3%) */}
-                  <circle
-                    cx="80" cy="80" r="60"
-                    fill="none" stroke="#DC2626" strokeWidth="24"
-                    strokeDasharray={`${377 * 0.103} 377`}
-                    strokeDashoffset={`-${377 * (0.59 + 0.205)}`}
-                  />
-                  {/* Waived - Gray (10.2%) */}
-                  <circle
-                    cx="80" cy="80" r="60"
-                    fill="none" stroke="#6B7280" strokeWidth="24"
-                    strokeDasharray={`${377 * 0.102} 377`}
-                    strokeDashoffset={`-${377 * (0.59 + 0.205 + 0.103)}`}
-                  />
-                </svg>
-                <div style={{ position: 'absolute', textAlign: 'center' }}>
-                  <div style={{ fontSize: 24, fontWeight: 700, color: '#111827', lineHeight: 1 }}>₹12,450</div>
-                  <div style={{ fontSize: 11, color: '#6B7280', marginTop: 4 }}>Total</div>
+              <div style={{ fontSize: 14, fontWeight: 600, color: '#111827', marginBottom: 16 }}>Payment Overview</div>
+              {(() => {
+                const total = paidTotal + pendingTotal;
+                const r = 60, cx = 80, cy = 80, C = 2 * Math.PI * r;
+                const paidFrac    = total > 0 ? paidTotal / total : 0;
+                const pendingFrac = total > 0 ? pendingTotal / total : 0;
+                const paidDash    = paidFrac * C;
+                const pendingDash = pendingFrac * C;
+                return (
+                  <>
+                    <div style={{ display: 'flex', justifyContent: 'center', position: 'relative', marginBottom: 16 }}>
+                      <svg width="160" height="160" viewBox="0 0 160 160" style={{ transform: 'rotate(-90deg)' }}>
+                        <circle cx={cx} cy={cy} r={r} fill="none" stroke="#F3F4F6" strokeWidth="24" />
+                        <circle cx={cx} cy={cy} r={r} fill="none" stroke="#6C5CE7" strokeWidth="24"
+                          strokeDasharray={`${paidDash} ${C - paidDash}`} strokeDashoffset="0" />
+                        <circle cx={cx} cy={cy} r={r} fill="none" stroke="#F59E0B" strokeWidth="24"
+                          strokeDasharray={`${pendingDash} ${C - pendingDash}`} strokeDashoffset={-paidDash} />
+                      </svg>
+                      <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', textAlign: 'center' }}>
+                        <div style={{ fontSize: 18, fontWeight: 700, color: '#111827' }}>₹{total}</div>
+                        <div style={{ fontSize: 11, color: '#6B7280', marginTop: 2 }}>Total</div>
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                      {[
+                        { color: '#6C5CE7', label: 'Received', value: `₹${paidTotal}` },
+                        { color: '#F59E0B', label: 'Pending',  value: `₹${pendingTotal}` },
+                      ].map((item, i) => (
+                        <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <div style={{ width: 10, height: 10, borderRadius: '50%', background: item.color }} />
+                            <span style={{ fontSize: 12, color: '#6B7280' }}>{item.label}</span>
+                          </div>
+                          <span style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>{item.value}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                );
+              })()}
+            </div>
+
+            <div style={{ height: 1, background: '#E5E7EB' }} />
+
+            {/* Recent Payments (real data) */}
+            <div>
+              <div style={{ fontSize: 14, fontWeight: 600, color: '#111827', marginBottom: 12 }}>Recent Payments</div>
+              {finesData.filter(r => r.fineStatus === 'paid').length === 0 ? (
+                <div style={{ fontSize: 12, color: '#9CA3AF', textAlign: 'center', padding: '12px 0' }}>No payments yet.</div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  {finesData
+                    .filter(r => r.fineStatus === 'paid')
+                    .sort((a, b) => new Date(b.finePaidAt || b.updatedAt) - new Date(a.finePaidAt || a.updatedAt))
+                    .slice(0, 4)
+                    .map((rec, i) => (
+                      <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px', background: '#F9FAFB', borderRadius: 8 }}>
+                        <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#DCFCE7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <CheckCircle size={16} color="#16A34A" />
+                        </div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontSize: 12, fontWeight: 600, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{rec.userId?.name || '—'}</div>
+                          <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 2 }}>{fmtDate(rec.finePaidAt || rec.updatedAt)}, {fmtTime(rec.finePaidAt || rec.updatedAt)}</div>
+                        </div>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: '#16A34A', flexShrink: 0 }}>₹{rec.fine}</div>
+                      </div>
+                    ))
+                  }
                 </div>
-              </div>
-
-              {/* Legend */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {[
-                  { color: '#6C5CE7', label: 'Collected', value: '₹10,459 (59%)' },
-                  { color: '#F59E0B', label: 'Pending', value: '₹4,320 (20.5%)' },
-                  { color: '#DC2626', label: 'Overdue', value: '₹2,180 (10.3%)' },
-                  { color: '#6B7280', label: 'Waived', value: '₹600 (10.2%)' },
-                ].map((item, i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <div style={{ width: 10, height: 10, borderRadius: '50%', background: item.color }} />
-                      <span style={{ fontSize: 12, color: '#6B7280' }}>{item.label}</span>
-                    </div>
-                    <span style={{ fontSize: 12, fontWeight: 600, color: '#111827' }}>{item.value}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div style={{ height: 1, background: '#E5E7EB' }} />
-
-            {/* Recent Payments */}
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                <span style={{ fontSize: 14, fontWeight: 600, color: '#111827' }}>Recent Payments</span>
-                <span style={{ fontSize: 12, fontWeight: 500, color: '#6C5CE7', cursor: 'pointer' }}>View All</span>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {[
-                  { name: 'Rahul Verma', amount: 50, date: 'May 16, 10:22 AM' },
-                  { name: 'Neha Gupta', amount: 20, date: 'May 15, 02:18 PM' },
-                  { name: 'Vikram Patel', amount: 80, date: 'May 14, 11:35 AM' },
-                  { name: 'Dr. Amit Joshi', amount: 40, date: 'May 14, 09:03 AM' },
-                ].map((payment, i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px', background: '#F9FAFB', borderRadius: 8 }}>
-                    <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#DCFCE7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <CheckCircle size={16} color="#16A34A" />
-                    </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 12, fontWeight: 600, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{payment.name}</div>
-                      <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 2 }}>{payment.date}</div>
-                    </div>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: '#16A34A' }}>₹{payment.amount}.00</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div style={{ height: 1, background: '#E5E7EB' }} />
-
-            {/* Quick Actions */}
-            <div>
-              <div style={{ fontSize: 14, fontWeight: 600, color: '#111827', marginBottom: 12 }}>Quick Actions</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {[
-                  { icon: <Plus size={16} color="#6C5CE7" />, label: 'Record New Payment', color: '#6C5CE7' },
-                  { icon: <XCircle size={16} color="#6C5CE7" />, label: 'Waive Fine', color: '#6C5CE7' },
-                  { icon: <Download size={16} color="#6C5CE7" />, label: 'Generate Fine Report', color: '#6C5CE7' },
-                  { icon: <DollarSign size={16} color="#6C5CE7" />, label: 'Payment History', color: '#6C5CE7' },
-                ].map((action, i) => (
-                  <button 
-                    key={i} 
-                    type="button" 
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 10,
-                      padding: '10px 12px',
-                      border: '1px solid #E5E7EB',
-                      borderRadius: 8,
-                      background: 'white',
-                      cursor: 'pointer',
-                      fontFamily: 'Inter',
-                      textAlign: 'left',
-                      transition: 'all 0.15s ease'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.background = '#F9FAFB';
-                      e.currentTarget.style.borderColor = action.color;
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.background = 'white';
-                      e.currentTarget.style.borderColor = '#E5E7EB';
-                    }}
-                  >
-                    <div style={{ width: 32, height: 32, background: '#F3F4F6', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      {action.icon}
-                    </div>
-                    <span style={{ fontSize: 12, fontWeight: 500, color: '#374151' }}>{action.label}</span>
-                  </button>
-                ))}
-              </div>
+              )}
             </div>
           </div>
         </div>

@@ -30,35 +30,7 @@ export default function SettingsPage() {
   const [autoBackup, setAutoBackup] = useState(true);
   const [sessionTimeout, setSessionTimeout] = useState('30 Minutes');
 
-  // UPI & Fine settings (fetched from DB)
-  const [upiId, setUpiId]       = useState('');
-  const [upiName, setUpiName]   = useState('');
-  const [finePerDay, setFinePerDay] = useState(50);
-  const [upiSaving, setUpiSaving]   = useState(false);
-  const [upiToast, setUpiToast]     = useState('');
-
-  const showUpiToast = (msg) => { setUpiToast(msg); setTimeout(() => setUpiToast(''), 3000); };
-
-  useEffect(() => {
-    fetch('/api/colleges/my').then(r => r.json()).then(({ college }) => {
-      if (college?.settings) {
-        setUpiId(college.settings.upiId || '');
-        setUpiName(college.settings.upiName || '');
-        setFinePerDay(college.settings.finePerDay || 50);
-      }
-    }).catch(() => {});
-  }, []);
-
-  const saveUpiSettings = async () => {
-    setUpiSaving(true);
-    try {
-      const res  = await fetch('/api/colleges/my', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ upiId, upiName, finePerDay: Number(finePerDay) }) });
-      const data = await res.json();
-      if (!res.ok) { showUpiToast(data.error || 'Save failed.'); return; }
-      showUpiToast('Saved! ✅');
-    } catch { showUpiToast('Something went wrong.'); }
-    finally { setUpiSaving(false); }
-  };
+  // Removed UPI settings per user request (now using Razorpay)
 
   return (
     <LibrarianLayout
@@ -66,7 +38,6 @@ export default function SettingsPage() {
       subtitle="Manage your library system preferences"
       searchPlaceholder="Search notifications..."
     >
-      {upiToast && <div style={{ position: 'fixed', top: 20, right: 20, zIndex: 999, background: '#22C55E', color: 'white', padding: '10px 20px', borderRadius: 10, fontSize: 14, fontWeight: 600, boxShadow: '0 4px 16px rgba(0,0,0,0.15)' }}>{upiToast}</div>}
       <div style={{ background: '#F9FAFB', padding: '24px', overflowY: 'auto', flex: 1 }}>
           <div style={{ maxWidth: 1000, display: 'flex', gap: 24 }}>
             
@@ -324,52 +295,6 @@ export default function SettingsPage() {
             {/* Right Column */}
             <div style={{ width: 320, display: 'flex', flexDirection: 'column', gap: 24 }}>
               
-              {/* UPI & Fine Settings — REAL */}
-              <div style={{ background: 'white', border: '1px solid #E5E7EB', borderRadius: 12, padding: '24px' }}>
-                <div style={{ fontSize: 16, fontWeight: 600, color: '#111827', marginBottom: 4 }}>UPI & Fine Settings</div>
-                <div style={{ fontSize: 13, color: '#6B7280', marginBottom: 20 }}>Set your UPI ID for student payments and fine rate.</div>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                  <div>
-                    <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#374151', marginBottom: 6 }}>UPI ID</label>
-                    <input
-                      value={upiId}
-                      onChange={e => setUpiId(e.target.value)}
-                      placeholder="e.g. library@okaxis"
-                      style={{ width: '100%', padding: '10px 12px', border: '1px solid #E5E7EB', borderRadius: 8, fontSize: 13, fontFamily: 'Inter', outline: 'none', boxSizing: 'border-box', color: '#111827', background: 'white' }}
-                    />
-                    <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 4 }}>Students scan this ID's QR to pay fines.</div>
-                  </div>
-                  <div>
-                    <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#374151', marginBottom: 6 }}>Display Name (UPI)</label>
-                    <input
-                      value={upiName}
-                      onChange={e => setUpiName(e.target.value)}
-                      placeholder="e.g. ABC College Library"
-                      style={{ width: '100%', padding: '10px 12px', border: '1px solid #E5E7EB', borderRadius: 8, fontSize: 13, fontFamily: 'Inter', outline: 'none', boxSizing: 'border-box', color: '#111827', background: 'white' }}
-                    />
-                  </div>
-                  <div>
-                    <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#374151', marginBottom: 6 }}>Fine per Day (₹)</label>
-                    <input
-                      type="number"
-                      min="1"
-                      value={finePerDay}
-                      onChange={e => setFinePerDay(e.target.value)}
-                      style={{ width: '100%', padding: '10px 12px', border: '1px solid #E5E7EB', borderRadius: 8, fontSize: 13, fontFamily: 'Inter', outline: 'none', boxSizing: 'border-box', color: '#111827', background: 'white' }}
-                    />
-                    <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 4 }}>Charged per overdue day.</div>
-                  </div>
-                  <button
-                    onClick={saveUpiSettings}
-                    disabled={upiSaving}
-                    style={{ padding: '10px 20px', border: 'none', borderRadius: 8, background: upiSaving ? '#A78BFA' : '#6C5CE7', color: 'white', fontSize: 13, fontWeight: 700, cursor: upiSaving ? 'wait' : 'pointer', fontFamily: 'Inter' }}
-                  >
-                    {upiSaving ? 'Saving...' : 'Save UPI Settings'}
-                  </button>
-                </div>
-              </div>
-
               {/* Security */}
               <div style={{ background: 'white', border: '1px solid #E5E7EB', borderRadius: 12, padding: '24px' }}>
                 <div style={{ fontSize: 16, fontWeight: 600, color: '#111827', marginBottom: 4 }}>Security</div>

@@ -13,15 +13,26 @@ export default function LibrarianLayout({
 }) {
   const [unreadCount, setUnreadCount] = useState(0);
 
-  useEffect(() => {
+  const fetchUnread = () => {
     fetch('/api/notifications?unread=true')
       .then(res => res.json())
       .then(data => {
-        if (data.unreadCount !== undefined) {
-          setUnreadCount(data.unreadCount);
-        }
+        if (data.unreadCount !== undefined) setUnreadCount(data.unreadCount);
       })
       .catch(() => {});
+  };
+
+  useEffect(() => {
+    fetchUnread();
+    const handler = (e) => {
+      if (e.detail && e.detail.count !== undefined) {
+        setUnreadCount(e.detail.count);
+      } else {
+        fetchUnread();
+      }
+    };
+    window.addEventListener('notifications-updated', handler);
+    return () => window.removeEventListener('notifications-updated', handler);
   }, []);
 
   return (

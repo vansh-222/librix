@@ -49,7 +49,7 @@ export default function RequestsPage() {
 
   const total    = requests.length;
   const pending  = requests.filter(r => r.status === 'requested').length;
-  const approved = requests.filter(r => r.status === 'approved' || r.status === 'issued').length;
+  const approved = requests.filter(r => ['approved', 'issued', 'returned'].includes(r.status)).length;
   const rejected = requests.filter(r => r.status === 'rejected').length;
 
   const STATS = [
@@ -60,6 +60,7 @@ export default function RequestsPage() {
   ];
 
   const doAction = async (requestId, action) => {
+    
     setActing(requestId + action);
     try {
       const res = await fetch('/api/requests', {
@@ -82,11 +83,22 @@ export default function RequestsPage() {
     { id: 'rejected',  label: 'Rejected'     },
   ];
 
-  const STATUS_MAP = { requested: 'pending', approved: 'approved', issued: 'approved', rejected: 'rejected', cancelled: 'rejected' };
+  const STATUS_MAP = {
+    requested: 'pending',
+    approved:  'approved',
+    issued:    'approved',
+    returned:  'returned',
+    rejected:  'rejected',
+    cancelled: 'rejected',
+  };
 
   const filteredRequests = activeTab === 'all'
     ? requests
-    : requests.filter(r => (activeTab === 'requested' ? r.status === 'requested' : activeTab === 'approved' ? ['approved','issued'].includes(r.status) : r.status === activeTab));
+    : requests.filter(r => (
+        activeTab === 'requested' ? r.status === 'requested' :
+        activeTab === 'approved'  ? ['approved','issued','returned'].includes(r.status) :
+        r.status === activeTab
+      ));
 
   return (
     <LibrarianLayout
@@ -181,6 +193,7 @@ export default function RequestsPage() {
                     const statusConfig = {
                       pending:  { label: 'Pending',  bg: '#FEF3C7', color: '#D97706' },
                       approved: { label: 'Approved', bg: '#DCFCE7', color: '#15803D' },
+                      returned: { label: 'Returned', bg: '#ECFDF5', color: '#10B981' },
                       rejected: { label: 'Rejected', bg: '#FEE2E2', color: '#DC2626' },
                     };
                     const status = statusConfig[uiStatus] || statusConfig.pending;
