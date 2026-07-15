@@ -10,6 +10,14 @@ const CollegeSchema = new mongoose.Schema(
     emailDomain:{ type: String, required: true, lowercase: true }, // extracted from email
     siteDomain: { type: String, required: true, lowercase: true }, // extracted from website
 
+    // AISHE government identifier (unique per institution)
+    aisheCode:   { type: String, default: '', sparse: true }, // e.g. C-27869
+
+    // Contact person details
+    contactName:  { type: String, default: '' },
+    designation:  { type: String, default: '' },
+    mobile:       { type: String, default: '' },
+
     // Verification
     domainVerified: { type: Boolean, default: false },
     emailVerified:  { type: Boolean, default: false },
@@ -52,6 +60,7 @@ const CollegeSchema = new mongoose.Schema(
 
 CollegeSchema.index({ institutionKey: 1 });
 CollegeSchema.index({ libraryCode: 1 });
+CollegeSchema.index({ aisheCode: 1 }, { sparse: true });
 CollegeSchema.index({ otpExpiresAt: 1 }, { expireAfterSeconds: 0 });
 
 export default mongoose.models.College || mongoose.model('College', CollegeSchema);

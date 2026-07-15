@@ -96,7 +96,7 @@ async function sendOTPEmail(email, otp, collegeName) {
 export async function POST(req) {
   try {
     const body = await req.json();
-    const { name, university, website, email } = body;
+    const { name, university, website, email, aisheCode, contactName, designation, mobile } = body;
 
     if (!name || !university || !website || !email) {
       return NextResponse.json({ error: 'All fields are required' }, { status: 400 });
@@ -136,7 +136,7 @@ export async function POST(req) {
 
     await connectDB();
 
-    // Check duplicate
+    // Check duplicate by email
     const existing = await College.findOne({ email: email.toLowerCase() });
     if (existing) {
       if (existing.verificationStatus === 'verified') {
@@ -147,8 +147,26 @@ export async function POST(req) {
       const otpHash   = await bcrypt.hash(otp, 8);
       const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
       await College.findByIdAndUpdate(existing._id, { otpHash, otpExpiresAt: expiresAt });
-      await sendOTPEmail(email, otp, existing.name);
-      return NextResponse.json({ otpSent: true, maskedEmail: maskEmail(email), resent: true });
+      const emailResult = await sendOTPEmail(email, otp, existing.name);
+      return NextResponse.json({
+        otpSent:     true,
+        maskedEmail: maskEmail(email),
+        resent:      true,
+        devMode:     emailResult.devMode || false,
+      });
+    }
+
+    // Check duplicate AISHE code (if provided)
+    if (aisheCode && aisheCode.trim()) {
+      const aisheExists = await College.findOne({
+        aisheCode:          aisheCode.trim().toUpperCase(),
+        verificationStatus: 'verified',
+      });
+      if (aisheExists) {
+        return NextResponse.json({
+          error: 'This institution (AISHE code) is already registered on Librarium.',
+        }, { status: 409 });
+      }
     }
 
     // ── Create pending college + send OTP ────────────────────────────────────
@@ -163,16 +181,21 @@ export async function POST(req) {
       email:       email.toLowerCase().trim(),
       emailDomain,
       siteDomain,
-      domainVerified: true, // domains matched above
+      domainVerified: true,
       emailVerified:  false,
       verificationStatus: 'pending',
       otpHash,
       otpExpiresAt: expiresAt,
+      // AISHE + contact
+      aisheCode:   aisheCode ? aisheCode.trim().toUpperCase() : '',
+      contactName: contactName || '',
+      designation: designation || '',
+      mobile:      mobile      || '',
     });
 
     const emailResult = await sendOTPEmail(email, otp, name);
 
-    console.log(`[College Register] OTP sent to ${email} | Domain: ${siteDomain} ✅`);
+    console.log(`[College Register] OTP sent to ${email} | AISHE: ${aisheCode || 'N/A'} | Domain: ${siteDomain} ✅`);
 
     return NextResponse.json({
       otpSent:     true,
