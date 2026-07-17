@@ -47,7 +47,7 @@ async function sendOTPEmail(email, otp, collegeName) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from:    'Librarium <noreply@librarium.app>',
+        from:    'Librarium <onboarding@resend.dev>',
         to:      [email],
         subject: `${otp} — Your Librarium Verification Code`,
         html: `

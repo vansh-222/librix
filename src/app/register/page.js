@@ -682,66 +682,6 @@ export default function RegisterCollegePage() {
                   </p>
                 </div>
 
-                {/* OR divider */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '18px 0' }}>
-                  <div style={{ flex: 1, height: 1, background: 'var(--border)' }} />
-                  <span style={{ fontSize: 12, color: 'var(--muted)', fontWeight: 600 }}>OR</span>
-                  <div style={{ flex: 1, height: 1, background: 'var(--border)' }} />
-                </div>
-
-                {/* Search institution */}
-                <div style={{ marginBottom: 16, position: 'relative' }}>
-                  <label style={S.label}>Search Your Institution</label>
-                  <p style={{ ...S.hint, marginBottom: 8, marginTop: 0 }}>Search by institution name and select from the verified list</p>
-                  <div style={{ position: 'relative' }}>
-                    <Search size={15} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--muted)', pointerEvents: 'none' }} />
-                    <input
-                      value={searchQuery}
-                      onChange={e => handleSearch(e.target.value)}
-                      placeholder="Type institution name, city or university…"
-                      style={{
-                        width: '100%', background: 'var(--surface-2)', border: '1px solid var(--border)',
-                        borderRadius: 8, padding: '10px 14px 10px 38px', color: 'var(--text)', fontSize: 13,
-                        fontFamily: 'Inter,sans-serif', outline: 'none',
-                      }}
-                    />
-                    {searchLoading && (
-                      <Loader2 size={14} style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--brand)', animation: 'spin 1s linear infinite' }} />
-                    )}
-                  </div>
-
-                  {/* Search results dropdown */}
-                  {searchResults.length > 0 && (
-                    <div className="search-drop" style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 10, marginTop: 4, zIndex: 20, boxShadow: '0 8px 24px rgba(0,0,0,0.3)', overflow: 'hidden' }}>
-                      {searchResults.map(r => (
-                        <div key={r.aisheCode} className="search-drop-item" onClick={() => selectResult(r)}
-                          style={{ padding: '12px 16px', cursor: 'pointer', borderBottom: '1px solid var(--border)', transition: 'background 0.12s' }}>
-                          <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text)', marginBottom: 3 }}>{r.institutionName}</div>
-                          <div style={{ display: 'flex', gap: 12, fontSize: 11, color: 'var(--muted)' }}>
-                            <span><span style={{ color: 'var(--brand)', fontWeight: 600 }}>{r.aisheCode}</span></span>
-                            {r.state    && <span><MapPin size={10} style={{ verticalAlign: 'middle' }} /> {r.state}</span>}
-                            {r.type     && <span>{r.type}</span>}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                {/* Where to find AISHE code info box */}
-                <div style={{ background: 'rgba(99,102,241,0.06)', border: '1px solid rgba(99,102,241,0.2)', borderRadius: 10, padding: '14px 16px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 6 }}>
-                    <Info size={14} color="var(--brand)" />
-                    <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--brand)' }}>Where to find AISHE Code?</span>
-                  </div>
-                  <p style={{ fontSize: 12, color: 'var(--muted)', lineHeight: 1.7, marginBottom: 6 }}>
-                    You can find AISHE code on your institution's official documents, AICTE/UGC approvals,
-                    or search on{' '}
-                    <a href="https://aishe.gov.in" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--brand)', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 3 }}>
-                      aishe.gov.in <ExternalLink size={10} />
-                    </a>
-                  </p>
-                </div>
               </>
             )}
           </div>
@@ -790,46 +730,20 @@ export default function RegisterCollegePage() {
                   style={{ background: '#F9FAFB', borderColor: '#E5E7EB', color: '#374151', cursor: 'default' }} />
               </div>
             </div>
-            <div style={{ ...S.row2, marginBottom: 14 }}>
-              <div>
-                <label style={S.label}>District</label>
-                <input className="input" value={aisheRecord?.district || ''} readOnly placeholder="Auto-filled after verification"
-                  style={{ background: '#F9FAFB', borderColor: '#E5E7EB', color: '#374151', cursor: 'default' }} />
-              </div>
-              <div>
-                <label style={S.label}>AICTE ID (if applicable)</label>
-                <input className="input" value={aisheRecord?.aicteId || ''} readOnly placeholder="Auto-filled after verification"
-                  style={{ background: '#F9FAFB', borderColor: '#E5E7EB', color: '#374151', cursor: 'default' }} />
-              </div>
+            <div style={{ marginBottom: 14 }}>
+              <label style={S.label}>District</label>
+              <input className="input" value={aisheRecord?.district || ''} readOnly placeholder="Auto-filled after verification"
+                style={{ background: '#F9FAFB', borderColor: '#E5E7EB', color: '#374151', cursor: 'default' }} />
             </div>
-            <div style={{ ...S.row2, marginBottom: 14 }}>
-              <div>
-                <label style={S.label}>Year of Establishment</label>
-                <input className="input" value={aisheRecord?.yearEstablished || ''} readOnly placeholder="Auto-filled after verification"
-                  style={{ background: '#F9FAFB', borderColor: '#E5E7EB', color: '#374151', cursor: 'default' }} />
-              </div>
-              <div>
-                <label style={S.label}>Management Type</label>
-                <input className="input" value={aisheRecord?.managementType || ''} readOnly placeholder="Auto-filled after verification"
-                  style={{ background: '#F9FAFB', borderColor: '#E5E7EB', color: '#374151', cursor: 'default' }} />
-              </div>
-            </div>
-            <div style={{ ...S.row2 }}>
-              <div>
-                <label style={S.label}>Ownership Type</label>
-                <input className="input" value={aisheRecord?.ownershipType || ''} readOnly placeholder="Auto-filled after verification"
-                  style={{ background: '#F9FAFB', borderColor: '#E5E7EB', color: '#374151', cursor: 'default' }} />
-              </div>
-              <div>
-                <label style={S.label}>Official Website (Domain) <span style={S.reqStar}>*</span></label>
-                <input
-                  className="input"
-                  value={website}
-                  onChange={e => setWebsite(e.target.value)}
-                  placeholder="Enter any official domain (e.g., abgi.co.in)"
-                />
-                <p style={S.hint}>Enter any official domain (e.g., abgi.co.in)</p>
-              </div>
+            <div>
+              <label style={S.label}>Official Website (Domain) <span style={S.reqStar}>*</span></label>
+              <input
+                className="input"
+                value={website}
+                onChange={e => setWebsite(e.target.value)}
+                placeholder="Enter any official domain (e.g., abgi.co.in)"
+              />
+              <p style={S.hint}>Enter any official domain (e.g., abgi.co.in)</p>
             </div>
           </div>
 

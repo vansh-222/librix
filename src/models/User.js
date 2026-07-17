@@ -25,6 +25,9 @@ const UserSchema = new mongoose.Schema(
     avatarUrl: { type: String, default: '' },
     isActive: { type: Boolean, default: true },
     lastLogin: { type: Date, default: null },
+    // Password reset
+    resetTokenHash:   { type: String, select: false, default: null },
+    resetTokenExpiry: { type: Date,   default: null },
   },
   { timestamps: true }
 );

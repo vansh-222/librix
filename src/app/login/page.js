@@ -6,7 +6,7 @@ import { signIn } from 'next-auth/react';
 import {
   BookOpen, Eye, EyeOff, Loader2, AlertCircle,
   ShieldCheck, Landmark, Users, BarChart3, Mail, Lock,
-  ChevronDown, GraduationCap, Quote, UserPlus
+  Quote, UserPlus
 } from 'lucide-react';
 
 const SCROLL_AND_THEME = `
@@ -134,7 +134,6 @@ function BuildingIllustration() {
 function LoginContent() {
   const router       = useRouter();
   const searchParams = useSearchParams();
-  const [role, setRole]   = useState('librarian'); // 'librarian' | 'student' | 'teacher'
   const [form, setForm] = useState({ email: '', password: '' });
   const [showPass, setShowPass] = useState(false);
   const [remember, setRemember] = useState(true);
@@ -168,12 +167,12 @@ function LoginContent() {
       return;
     }
 
-    // Fetch session to check role and redirect
-    const res     = await fetch('/api/auth/session');
-    const session = await res.json();
+    // Fetch session and redirect based on role stored in DB
+    const res      = await fetch('/api/auth/session');
+    const session  = await res.json();
     const userRole = session?.user?.role;
 
-    if (userRole === 'librarian' || userRole === 'super_admin' || role === 'librarian') {
+    if (userRole === 'librarian' || userRole === 'super_admin') {
       router.push('/librarian/dashboard');
     } else {
       router.push('/student/dashboard');
@@ -417,31 +416,7 @@ function LoginContent() {
               )}
 
               <form onSubmit={handleSubmit}>
-                {/* 1. Role Select / Login As */}
-                <div style={{ marginBottom: 18 }}>
-                  <label style={{ display: 'block', fontSize: 13, fontWeight: 700, color: '#0F172A', marginBottom: 6 }}>
-                    Login as <span style={{ color: '#EF4444' }}>*</span>
-                  </label>
-                  <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                    <div style={{ position: 'absolute', left: 14, color: '#64748B', pointerEvents: 'none' }}>
-                      {role === 'student' ? <GraduationCap size={18} /> : <Landmark size={18} />}
-                    </div>
-                    <select
-                      className="login-select"
-                      value={role}
-                      onChange={(e) => setRole(e.target.value)}
-                    >
-                      <option value="librarian">Institution / Librarian</option>
-                      <option value="student">Student</option>
-                      <option value="teacher">Teacher / Faculty</option>
-                    </select>
-                    <div style={{ position: 'absolute', right: 14, color: '#64748B', pointerEvents: 'none' }}>
-                      <ChevronDown size={16} />
-                    </div>
-                  </div>
-                </div>
-
-                {/* 2. Email / Username */}
+                {/* Email / Username */}
                 <div style={{ marginBottom: 18 }}>
                   <label style={{ display: 'block', fontSize: 13, fontWeight: 700, color: '#0F172A', marginBottom: 6 }}>
                     Email ID / Username <span style={{ color: '#EF4444' }}>*</span>
