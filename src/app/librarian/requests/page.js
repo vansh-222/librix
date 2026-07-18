@@ -13,6 +13,16 @@ function fmtTime(d) {
   if (!d) return '';
   return new Date(d).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
 }
+function fmtRelativeTime(d) {
+  if (!d) return '';
+  const date      = new Date(d);
+  const today     = new Date();
+  const yesterday = new Date(today); yesterday.setDate(today.getDate() - 1);
+  const time = date.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+  if (date.toDateString() === today.toDateString())     return `Today, ${time}`;
+  if (date.toDateString() === yesterday.toDateString()) return `Yesterday, ${time}`;
+  return `${date.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}, ${time}`;
+}
 
 const BOOK_COLORS = ['#E05252','#2B6CB0','#9C27B0','#F5F5F5','#D4A017','#26C6DA','#EA580C','#6C5CE7'];
 
@@ -322,44 +332,36 @@ export default function RequestsPage() {
                 <span style={{ fontSize: 12, fontWeight: 500, color: '#6C5CE7', cursor: 'pointer' }}>View All</span>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                {[
-                  { title: 'Atomic Habits', member: 'Rahul Verma', time: 'Today, 10:30 AM', status: 'Pending', statusColor: '#F59E0B', cover: '#E05252' },
-                  { title: 'Deep Work', member: 'Arjun Mehta', time: 'Today, 02:45 PM', status: 'Pending', statusColor: '#F59E0B', cover: '#2B6CB0' },
-                  { title: 'Clean Code', member: 'Neha Gupta', time: 'Yesterday, 11:30 AM', status: 'Approved', statusColor: '#16A34A', cover: '#9C27B0' },
-                  { title: 'The 5 AM Club', member: 'Vikram Patel', time: 'May 15, 03:15 PM', status: 'Rejected', statusColor: '#DC2626', cover: '#D4A017' },
-                ].map((item, i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '10px', background: '#F9FAFB', borderRadius: 8 }}>
-                    <div style={{ 
-                      width: 32, 
-                      height: 44, 
-                      borderRadius: 3, 
-                      background: item.cover, 
-                      flexShrink: 0,
-                      boxShadow: '1px 1px 3px rgba(0,0,0,0.15)',
-                      position: 'relative',
-                      overflow: 'hidden'
-                    }}>
-                      <div style={{ position: 'absolute', left: 0, top: 0, width: 4, height: '100%', background: 'rgba(0,0,0,0.15)' }} />
-                    </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 12, fontWeight: 600, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.title}</div>
-                      <div style={{ fontSize: 11, color: '#6B7280', marginTop: 2 }}>requested by {item.member}</div>
-                      <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 2 }}>{item.time}</div>
-                      <span style={{ 
-                        display: 'inline-block',
-                        marginTop: 4,
-                        padding: '2px 8px', 
-                        background: item.statusColor + '20', 
-                        color: item.statusColor, 
-                        borderRadius: 9999, 
-                        fontSize: 10, 
-                        fontWeight: 600 
-                      }}>
-                        {item.status}
-                      </span>
-                    </div>
-                  </div>
-                ))}
+                {(() => {
+                  const recent = [...requests]
+                    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                    .slice(0, 4);
+                  if (recent.length === 0) return (
+                    <div style={{ textAlign: 'center', padding: '16px 0', color: '#9CA3AF', fontSize: 12 }}>No requests yet</div>
+                  );
+                  return recent.map((req, i) => {
+                    const isApproved = ['approved','issued','returned'].includes(req.status);
+                    const isRejected = ['rejected','cancelled'].includes(req.status);
+                    const statusLabel = isApproved ? 'Approved' : isRejected ? 'Rejected' : 'Pending';
+                    const statusColor = isApproved ? '#16A34A' : isRejected ? '#DC2626' : '#F59E0B';
+                    const cover = BOOK_COLORS[i % BOOK_COLORS.length];
+                    return (
+                      <div key={req._id} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '10px', background: '#F9FAFB', borderRadius: 8 }}>
+                        <div style={{ width: 32, height: 44, borderRadius: 3, background: cover, flexShrink: 0, boxShadow: '1px 1px 3px rgba(0,0,0,0.15)', position: 'relative', overflow: 'hidden' }}>
+                          <div style={{ position: 'absolute', left: 0, top: 0, width: 4, height: '100%', background: 'rgba(0,0,0,0.15)' }} />
+                        </div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontSize: 12, fontWeight: 600, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{req.bookId?.title || '—'}</div>
+                          <div style={{ fontSize: 11, color: '#6B7280', marginTop: 2 }}>requested by {req.userId?.name || '—'}</div>
+                          <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 2 }}>{fmtRelativeTime(req.createdAt)}</div>
+                          <span style={{ display: 'inline-block', marginTop: 4, padding: '2px 8px', background: statusColor + '20', color: statusColor, borderRadius: 9999, fontSize: 10, fontWeight: 600 }}>
+                            {statusLabel}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  });
+                })()}
               </div>
             </div>
 
@@ -370,55 +372,61 @@ export default function RequestsPage() {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
                 <span style={{ fontSize: 14, fontWeight: 600, color: '#111827' }}>Request Summary (This Month)</span>
               </div>
-              
-              {/* Donut Chart */}
-              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: 16, position: 'relative' }}>
-                <svg width="160" height="160" viewBox="0 0 160 160" style={{ transform: 'rotate(-90deg)' }}>
-                  <circle cx="80" cy="80" r="60" fill="none" stroke="#F3F4F6" strokeWidth="24" />
-                  {/* Pending - Orange (45.8%) */}
-                  <circle
-                    cx="80" cy="80" r="60"
-                    fill="none" stroke="#F59E0B" strokeWidth="24"
-                    strokeDasharray={`${377 * 0.458} 377`}
-                    strokeDashoffset="0"
-                  />
-                  {/* Approved - Green (37.5%) */}
-                  <circle
-                    cx="80" cy="80" r="60"
-                    fill="none" stroke="#16A34A" strokeWidth="24"
-                    strokeDasharray={`${377 * 0.375} 377`}
-                    strokeDashoffset={`-${377 * 0.458}`}
-                  />
-                  {/* Rejected - Red (16.7%) */}
-                  <circle
-                    cx="80" cy="80" r="60"
-                    fill="none" stroke="#DC2626" strokeWidth="24"
-                    strokeDasharray={`${377 * 0.167} 377`}
-                    strokeDashoffset={`-${377 * (0.458 + 0.375)}`}
-                  />
-                </svg>
-                <div style={{ position: 'absolute', textAlign: 'center' }}>
-                  <div style={{ fontSize: 28, fontWeight: 700, color: '#111827', lineHeight: 1 }}>48</div>
-                  <div style={{ fontSize: 11, color: '#6B7280', marginTop: 4 }}>Total</div>
-                </div>
-              </div>
-
-              {/* Legend */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {[
-                  { color: '#F59E0B', label: 'Pending', value: '22 (45.8%)' },
-                  { color: '#16A34A', label: 'Approved', value: '18 (37.5%)' },
-                  { color: '#DC2626', label: 'Rejected', value: '8 (16.7%)' },
-                ].map((item, i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <div style={{ width: 10, height: 10, borderRadius: '50%', background: item.color }} />
-                      <span style={{ fontSize: 12, color: '#6B7280' }}>{item.label}</span>
+              {(() => {
+                const now  = new Date();
+                const mon  = requests.filter(r => {
+                  const d = new Date(r.createdAt);
+                  return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+                });
+                const mTotal    = mon.length;
+                const mPending  = mon.filter(r => r.status === 'requested').length;
+                const mApproved = mon.filter(r => ['approved','issued','returned'].includes(r.status)).length;
+                const mRejected = mon.filter(r => ['rejected','cancelled'].includes(r.status)).length;
+                const pPending  = mTotal > 0 ? mPending  / mTotal : 0;
+                const pApproved = mTotal > 0 ? mApproved / mTotal : 0;
+                const pRejected = mTotal > 0 ? mRejected / mTotal : 0;
+                const C = 377; // 2π×60
+                return (
+                  <>
+                    {/* Donut Chart */}
+                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: 16, position: 'relative' }}>
+                      <svg width="160" height="160" viewBox="0 0 160 160" style={{ transform: 'rotate(-90deg)' }}>
+                        <circle cx="80" cy="80" r="60" fill="none" stroke="#F3F4F6" strokeWidth="24" />
+                        {mTotal === 0 ? null : <>
+                          <circle cx="80" cy="80" r="60" fill="none" stroke="#F59E0B" strokeWidth="24"
+                            strokeDasharray={`${C * pPending} ${C}`} strokeDashoffset="0" />
+                          <circle cx="80" cy="80" r="60" fill="none" stroke="#16A34A" strokeWidth="24"
+                            strokeDasharray={`${C * pApproved} ${C}`} strokeDashoffset={`-${C * pPending}`} />
+                          <circle cx="80" cy="80" r="60" fill="none" stroke="#DC2626" strokeWidth="24"
+                            strokeDasharray={`${C * pRejected} ${C}`} strokeDashoffset={`-${C * (pPending + pApproved)}`} />
+                        </>}
+                      </svg>
+                      <div style={{ position: 'absolute', textAlign: 'center' }}>
+                        <div style={{ fontSize: 28, fontWeight: 700, color: '#111827', lineHeight: 1 }}>{mTotal}</div>
+                        <div style={{ fontSize: 11, color: '#6B7280', marginTop: 4 }}>Total</div>
+                      </div>
                     </div>
-                    <span style={{ fontSize: 12, fontWeight: 600, color: '#111827' }}>{item.value}</span>
-                  </div>
-                ))}
-              </div>
+                    {/* Legend */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                      {[
+                        { color: '#F59E0B', label: 'Pending',  count: mPending,  pct: pPending  },
+                        { color: '#16A34A', label: 'Approved', count: mApproved, pct: pApproved },
+                        { color: '#DC2626', label: 'Rejected', count: mRejected, pct: pRejected },
+                      ].map((item, i) => (
+                        <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <div style={{ width: 10, height: 10, borderRadius: '50%', background: item.color }} />
+                            <span style={{ fontSize: 12, color: '#6B7280' }}>{item.label}</span>
+                          </div>
+                          <span style={{ fontSize: 12, fontWeight: 600, color: '#111827' }}>
+                            {item.count} {mTotal > 0 ? `(${(item.pct * 100).toFixed(1)}%)` : ''}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                );
+              })()}
             </div>
 
             <div style={{ height: 1, background: '#E5E7EB' }} />

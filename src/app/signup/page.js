@@ -1,11 +1,11 @@
 'use client';
-import { useState, Suspense } from 'react';
+import { useState, Suspense, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import {
   BookOpen, Loader2, AlertCircle, CheckCircle,
   Eye, EyeOff, Hash, GraduationCap, Library, Key, User,
-  ShieldCheck, Landmark, Users, BarChart3, Mail, Lock, Quote, UserPlus
+  ShieldCheck, Landmark, Users, BarChart3, Mail, Lock, Quote, UserPlus, RefreshCw
 } from 'lucide-react';
 
 const SCROLL_AND_THEME = `
@@ -149,6 +149,14 @@ function SignupContent() {
   const [error,   setError]             = useState('');
   const [success, setSuccess]           = useState(null);
 
+  // OTP step
+  const [otpStep,    setOtpStep]    = useState(false);   // true = show OTP screen
+  const [otpDigits,  setOtpDigits]  = useState(['','','','','','']);
+  const [otpLoading, setOtpLoading] = useState(false);
+  const [otpError,   setOtpError]   = useState('');
+  const [resendCool, setResendCool] = useState(0);       // countdown seconds
+  const otpRefs = [useRef(), useRef(), useRef(), useRef(), useRef(), useRef()];
+
   const set = (k) => (e) => {
     setError('');
     setForm(f => ({ ...f, [k]: e.target.value }));
@@ -157,70 +165,219 @@ function SignupContent() {
   const switchTab = (t) => {
     setTab(t);
     setError('');
+    setOtpStep(false);
+    setOtpDigits(['','','','','','']);
     setForm({ collegeCode: '', setupKey: '', name: '', email: '', password: '' });
   };
 
   const isLibrarian = tab === 'librarian';
 
+  // ── Step 1: Submit form → send OTP ────────────────────────────────────
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (form.password.length < 8) {
       setError('Password must be at least 8 characters.');
       return;
     }
-
     setLoading(true);
     setError('');
-
     try {
-      if (isLibrarian) {
-        // Librarian Setup Flow
-        const res  = await fetch('/api/librarian/setup', {
-          method:  'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body:    JSON.stringify({ 
-            setupKey: form.setupKey.trim().toUpperCase(), 
-            name: form.name, 
-            email: form.email, 
-            password: form.password 
-          }),
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Librarian setup failed. Please check your setup key.');
-        setSuccess({
-          type: 'librarian',
-          collegeName: data.collegeName || 'your college',
-          libraryCode: data.libraryCode
-        });
-        setTimeout(() => router.push('/login'), 4000);
-
-      } else {
-        // Student Signup Flow
-        const res = await fetch('/api/users/register', {
-          method:  'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            name:        form.name,
-            email:       form.email,
-            password:    form.password,
-            collegeCode: form.collegeCode.trim().toUpperCase(),
-            role:        'student',
-          }),
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Registration failed. Check if your college code is correct.');
-        setSuccess({
-          type: 'student',
-          collegeName: data.collegeName || 'your college'
-        });
-        setTimeout(() => router.push('/login'), 3000);
-      }
+      const res = await fetch('/api/auth/signup-otp/send', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name:       form.name,
+          email:      form.email,
+          password:   form.password,
+          role:       tab,
+          collegeCode: form.collegeCode.trim().toUpperCase(),
+          setupKey:    form.setupKey.trim().toUpperCase(),
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to send verification code.');
+      // Move to OTP step
+      setOtpStep(true);
+      setOtpDigits(['','','','','','']);
+      setOtpError('');
+      startResendCooldown();
+      setTimeout(() => otpRefs[0]?.current?.focus(), 100);
     } catch (err) {
       setError(err.message);
     } finally {
       setLoading(false);
     }
   };
+
+  // ── Resend cooldown (60 s) ────────────────────────────────────────────
+  const startResendCooldown = () => {
+    setResendCool(60);
+    const iv = setInterval(() => setResendCool(c => { if (c <= 1) { clearInterval(iv); return 0; } return c - 1; }), 1000);
+  };
+
+  const handleResend = async () => {
+    if (resendCool > 0) return;
+    setOtpError('');
+    setOtpLoading(true);
+    try {
+      const res = await fetch('/api/auth/signup-otp/send', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: form.name, email: form.email, password: form.password,
+          role: tab,
+          collegeCode: form.collegeCode.trim().toUpperCase(),
+          setupKey:    form.setupKey.trim().toUpperCase(),
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Could not resend code.');
+      setOtpDigits(['','','','','','']);
+      startResendCooldown();
+      otpRefs[0]?.current?.focus();
+    } catch (err) {
+      setOtpError(err.message);
+    } finally {
+      setOtpLoading(false);
+    }
+  };
+
+  // ── OTP digit input handlers ──────────────────────────────────────────
+  const handleOtpChange = (i, val) => {
+    const d = val.replace(/\D/g, '').slice(-1);
+    const next = [...otpDigits]; next[i] = d;
+    setOtpDigits(next);
+    setOtpError('');
+    if (d && i < 5) otpRefs[i + 1]?.current?.focus();
+  };
+
+  const handleOtpKeyDown = (i, e) => {
+    if (e.key === 'Backspace' && !otpDigits[i] && i > 0) otpRefs[i - 1]?.current?.focus();
+  };
+
+  const handleOtpPaste = (e) => {
+    e.preventDefault();
+    const pasted = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
+    if (!pasted) return;
+    const next = ['','','','','',''];
+    pasted.split('').forEach((ch, i) => { if (i < 6) next[i] = ch; });
+    setOtpDigits(next);
+    otpRefs[Math.min(pasted.length, 5)]?.current?.focus();
+  };
+
+  // ── Step 2: Verify OTP → create account ──────────────────────────────
+  const handleVerifyOTP = async (e) => {
+    e.preventDefault();
+    const otp = otpDigits.join('');
+    if (otp.length < 6) { setOtpError('Please enter all 6 digits.'); return; }
+    setOtpLoading(true);
+    setOtpError('');
+    try {
+      const res = await fetch('/api/auth/signup-otp/verify', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: form.email, otp }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Verification failed.');
+      setSuccess(
+        tab === 'librarian'
+          ? { type: 'librarian', collegeName: data.collegeName || 'your college', libraryCode: data.libraryCode }
+          : { type: 'student',   collegeName: data.collegeName || 'your college' }
+      );
+      setTimeout(() => router.push('/login'), tab === 'librarian' ? 5000 : 3000);
+    } catch (err) {
+      setOtpError(err.message);
+      // Auto-clear digits on wrong code
+      setOtpDigits(['','','','','','']);
+      setTimeout(() => otpRefs[0]?.current?.focus(), 50);
+    } finally {
+      setOtpLoading(false);
+    }
+  };
+
+  // ── OTP Step Screen ───────────────────────────────────────────────────
+  if (otpStep && !success) {
+    return (
+      <div className="signup-page" style={{ minHeight: '100vh', background: '#F8FAFC', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+        <style>{SCROLL_AND_THEME}</style>
+        <div style={{ background: '#FFFFFF', borderRadius: 24, border: '1px solid #E2E8F0', padding: '48px 44px', maxWidth: 440, width: '100%', boxShadow: '0 12px 36px rgba(0,0,0,0.05)' }}>
+          {/* Icon */}
+          <div style={{ width: 64, height: 64, borderRadius: '50%', background: '#EFF6FF', border: '2px solid #BFDBFE', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+            <Mail size={28} color="#2563EB" />
+          </div>
+          <h2 style={{ fontSize: 24, fontWeight: 800, color: '#0F172A', textAlign: 'center', margin: '0 0 8px' }}>Check your email</h2>
+          <p style={{ fontSize: 13, color: '#64748B', textAlign: 'center', lineHeight: 1.6, margin: '0 0 28px' }}>
+            We sent a 6-digit code to<br/>
+            <strong style={{ color: '#0F172A' }}>{form.email}</strong>
+          </p>
+
+          {otpError && (
+            <div style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)', borderRadius: 10, padding: '11px 14px', marginBottom: 20, display: 'flex', alignItems: 'center', gap: 9, fontSize: 13, color: '#EF4444' }}>
+              <AlertCircle size={15} style={{ flexShrink: 0 }} />
+              {otpError}
+            </div>
+          )}
+
+          <form onSubmit={handleVerifyOTP}>
+            {/* 6-digit OTP inputs */}
+            <div style={{ display: 'flex', gap: 10, justifyContent: 'center', marginBottom: 28 }} onPaste={handleOtpPaste}>
+              {otpDigits.map((d, i) => (
+                <input
+                  key={i}
+                  ref={otpRefs[i]}
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={1}
+                  value={d}
+                  onChange={e => handleOtpChange(i, e.target.value)}
+                  onKeyDown={e => handleOtpKeyDown(i, e)}
+                  style={{
+                    width: 50, height: 58, textAlign: 'center', fontSize: 24, fontWeight: 800,
+                    border: `2px solid ${d ? '#2563EB' : '#E2E8F0'}`,
+                    borderRadius: 12, background: d ? '#EFF6FF' : '#F8FAFC',
+                    color: '#0F172A', outline: 'none', fontFamily: 'Inter',
+                    transition: 'all 0.15s',
+                    boxShadow: d ? '0 0 0 3px rgba(37,99,235,0.1)' : 'none',
+                  }}
+                />
+              ))}
+            </div>
+
+            <button type="submit" disabled={otpLoading || otpDigits.join('').length < 6} style={{
+              width: '100%', height: 48, borderRadius: 10, border: 'none', cursor: 'pointer',
+              background: otpDigits.join('').length === 6 ? 'linear-gradient(135deg,#2563EB,#1D4ED8)' : '#E2E8F0',
+              color: otpDigits.join('').length === 6 ? '#fff' : '#94A3B8',
+              fontSize: 15, fontWeight: 700, fontFamily: 'Inter',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+              transition: 'all 0.2s', boxShadow: otpDigits.join('').length === 6 ? '0 4px 14px rgba(37,99,235,0.3)' : 'none',
+            }}>
+              {otpLoading ? <><Loader2 size={16} style={{ animation: 'spin 0.8s linear infinite' }} /> Verifying…</> : 'Verify & Create Account'}
+            </button>
+          </form>
+
+          {/* Resend */}
+          <div style={{ textAlign: 'center', marginTop: 20 }}>
+            <span style={{ fontSize: 13, color: '#64748B' }}>Didn&apos;t receive it? </span>
+            {resendCool > 0 ? (
+              <span style={{ fontSize: 13, color: '#94A3B8', fontWeight: 600 }}>Resend in {resendCool}s</span>
+            ) : (
+              <button onClick={handleResend} disabled={otpLoading} style={{ background: 'none', border: 'none', color: '#2563EB', fontSize: 13, fontWeight: 700, cursor: 'pointer', padding: 0, display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+                <RefreshCw size={13} /> Resend code
+              </button>
+            )}
+          </div>
+
+          {/* Back */}
+          <div style={{ textAlign: 'center', marginTop: 14 }}>
+            <button onClick={() => { setOtpStep(false); setOtpError(''); }} style={{ background: 'none', border: 'none', color: '#64748B', fontSize: 12, cursor: 'pointer', fontFamily: 'Inter' }}>
+              ← Back to edit details
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   /* ── Success Screen ─────────────────────────────────────────────── */
   if (success) {
@@ -698,9 +855,9 @@ function SignupContent() {
                 }}
               >
                 {loading ? (
-                  <><Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} /> Creating account…</>
+                  <><Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} /> Sending code…</>
                 ) : (
-                  <><UserPlus size={16} /> Create Account</>
+                  <><Mail size={16} /> Send Verification Code</>
                 )}
               </button>
             </form>

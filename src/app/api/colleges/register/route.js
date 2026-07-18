@@ -25,68 +25,28 @@ function generateOTP() {
   return String(Math.floor(100000 + Math.random() * 900000)); // 6 digits
 }
 
-// ── Email sender via Resend ───────────────────────────────────────────────────
+import { sendEmail, collegeOtpEmailHtml } from '@/lib/mailer';
+
+// ── Email sender via Unified Mailer ───────────────────────────────────────────
 
 async function sendOTPEmail(email, otp, collegeName) {
-  const apiKey = process.env.RESEND_API_KEY;
-
-  // Dev fallback — log OTP to console if no valid Resend key
-  if (!apiKey || apiKey.startsWith('re_xxxx')) {
-    console.log(`\n${'═'.repeat(50)}`);
-    console.log(`[OTP - DEV MODE] To: ${email}`);
-    console.log(`[OTP - DEV MODE] Code: ${otp}`);
-    console.log(`${'═'.repeat(50)}\n`);
-    return { success: true, devMode: true };
-  }
-
   try {
-    const res = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        from:    'Librarium <onboarding@resend.dev>',
-        to:      [email],
-        subject: `${otp} — Your Librarium Verification Code`,
-        html: `
-          <div style="font-family:Inter,sans-serif;max-width:480px;margin:0 auto;padding:32px 24px;background:#0F1117;color:#F1F5F9;border-radius:12px;">
-            <div style="text-align:center;margin-bottom:28px;">
-              <div style="display:inline-flex;align-items:center;gap:10px;">
-                <div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#6366F1,#8B5CF6);display:flex;align-items:center;justify-content:center;">
-                  📚
-                </div>
-                <span style="font-size:22px;font-weight:800;">Librar<span style="color:#6366F1;">ium</span></span>
-              </div>
-            </div>
-            <h2 style="font-size:20px;font-weight:800;text-align:center;margin-bottom:8px;">Institution Verification</h2>
-            <p style="color:#94A3B8;font-size:14px;text-align:center;margin-bottom:28px;">
-              Verifying <strong style="color:#F1F5F9;">${collegeName}</strong>
-            </p>
-            <div style="background:#1A1D27;border:1px solid #2A2D3A;border-radius:12px;padding:24px;text-align:center;margin-bottom:24px;">
-              <div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#94A3B8;margin-bottom:10px;">Your OTP Code</div>
-              <div style="font-size:40px;font-weight:900;letter-spacing:8px;color:#6366F1;font-family:monospace;">${otp}</div>
-              <div style="font-size:12px;color:#94A3B8;margin-top:10px;">Expires in 10 minutes</div>
-            </div>
-            <p style="font-size:12px;color:#64748B;text-align:center;line-height:1.6;">
-              If you did not request this, please ignore this email.<br/>
-              Do not share this code with anyone.
-            </p>
-          </div>
-        `,
-      }),
-    });
+    // ── Always log OTP to terminal (dev helper) ──
+    console.log(`\n${'━'.repeat(52)}`);
+    console.log(`  🏫  OTP for ${email.trim()} (College Register)`);
+    console.log(`  🔑  Code    : ${otp}`);
+    console.log(`  ⏱️   Expires : 10 minutes`);
+    console.log(`${'━'.repeat(52)}\n`);
 
-    if (!res.ok) {
-      const err = await res.text();
-      console.error('[Resend] Error:', res.status, err.slice(0, 200));
-      return { success: false, error: err };
-    }
+    await sendEmail({
+      to:      email.trim(),
+      subject: `Your Librarium Institution Verification Code`,
+      html:    collegeOtpEmailHtml({ collegeName: collegeName.trim(), otp }),
+    });
 
     return { success: true };
   } catch (err) {
-    console.error('[Resend] Fetch error:', err.message);
+    console.error('[Mailer] Fetch error:', err.message);
     return { success: false, error: err.message };
   }
 }

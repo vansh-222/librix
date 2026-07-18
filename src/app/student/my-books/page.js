@@ -464,15 +464,7 @@ export default function MyBooksPage() {
       {/* ═══ MAIN AREA ═══ */}
       <div style={{ flex: 1, padding: '28px 24px', minWidth: 0, overflowY: 'auto' }}>
         
-        <div style={{ marginBottom: 20 }}>
-          <h1 style={{ fontSize: 26, fontWeight: 800, color: '#111827', marginBottom: 4 }}>My Books</h1>
-          <div style={{ fontSize: 13, color: '#6B7280', display: 'flex', alignItems: 'center', gap: 6 }}>
-            <Link href="/student/dashboard" style={{ color: '#6B7280', textDecoration: 'none' }}>Home</Link>
-            <span>›</span>
-            <span style={{ color: '#111827', fontWeight: 600 }}>My Books</span>
-          </div>
-        </div>
-
+        
         {/* Tab Bar */}
         <div style={{ background: 'white', borderRadius: 12, border: '1px solid #E5E7EB', display: 'flex', marginBottom: 24, overflow: 'hidden' }}>
           {TABS.map((t, i) => {
