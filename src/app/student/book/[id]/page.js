@@ -75,7 +75,7 @@ export default function BookDetail() {
 
     // Check if book is in wishlist
     try {
-      const stored = localStorage.getItem('librarium_wishlist');
+      const stored = localStorage.getItem('librix_wishlist');
       if (stored) {
         const parsed = JSON.parse(stored);
         if (Array.isArray(parsed) && parsed.some(b => (b._id || b.id) === params.id)) {
@@ -447,7 +447,7 @@ export default function BookDetail() {
                   setWishlist(nextState);
                   showToast(nextState ? 'Added to Wishlist ❤️' : 'Removed from Wishlist');
                   try {
-                    const stored = localStorage.getItem('librarium_wishlist');
+                    const stored = localStorage.getItem('librix_wishlist');
                     let list = stored ? JSON.parse(stored) : [];
                     if (!Array.isArray(list)) list = [];
                     if (nextState) {
@@ -457,7 +457,7 @@ export default function BookDetail() {
                     } else {
                       list = list.filter(b => (b._id || b.id) !== book._id);
                     }
-                    localStorage.setItem('librarium_wishlist', JSON.stringify(list));
+                    localStorage.setItem('librix_wishlist', JSON.stringify(list));
                   } catch {}
                 }}
                 style={{ width: '100%', padding: '10px', background: wishlist ? '#FEF2F2' : 'white', color: wishlist ? '#EF4444' : '#6366F1', border: `1px solid ${wishlist ? '#FECACA' : '#E5E7EB'}`, borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, transition: 'all 0.15s' }}

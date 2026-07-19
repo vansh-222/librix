@@ -51,12 +51,12 @@ async function sendResetEmail({ to, name, resetUrl }) {
   const html = `
     <div style="font-family:Inter,sans-serif;max-width:480px;margin:0 auto;background:#0F1117;color:#F1F5F9;border-radius:14px;padding:36px 32px;">
       <div style="text-align:center;margin-bottom:28px;">
-        <span style="font-size:22px;font-weight:800;">Librar<span style="color:#6366F1;">ium</span></span>
+        <span style="font-size:22px;font-weight:800;">Librix</span>
       </div>
       <h2 style="font-size:20px;font-weight:800;margin-bottom:8px;">Reset Your Password</h2>
       <p style="color:#94A3B8;font-size:14px;line-height:1.6;margin-bottom:24px;">
         Hi <strong style="color:#F1F5F9;">${name}</strong>,<br/>
-        We received a request to reset your Librarium password. Click the button below to set a new password.
+        We received a request to reset your Librix password. Click the button below to set a new password.
       </p>
       <a href="${resetUrl}" style="display:block;text-align:center;background:linear-gradient(135deg,#6366F1,#8B5CF6);color:#fff;font-size:15px;font-weight:700;padding:14px 28px;border-radius:10px;text-decoration:none;margin-bottom:24px;">
         Reset Password
@@ -65,7 +65,7 @@ async function sendResetEmail({ to, name, resetUrl }) {
         This link expires in <strong>30 minutes</strong>.<br/>
         If you did not request a password reset, you can safely ignore this email.
       </p>
-      <p style="font-size:11px;color:#475569;text-align:center;margin-top:20px;">Librarium — Smart Library Management</p>
+      <p style="font-size:11px;color:#475569;text-align:center;margin-top:20px;">Librix — Smart Library Management</p>
     </div>
   `;
 
@@ -85,9 +85,9 @@ async function sendResetEmail({ to, name, resetUrl }) {
         'Content-Type':  'application/json',
       },
       body: JSON.stringify({
-        from:    'Librarium <onboarding@resend.dev>',
+        from:    'Librix <onboarding@resend.dev>',
         to:      [to],
-        subject: 'Reset your Librarium password',
+        subject: 'Reset your Librix password',
         html,
       }),
     });

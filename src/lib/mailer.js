@@ -1,5 +1,5 @@
 /**
- * Unified email sender for Librarium.
+ * Unified email sender for Librix.
  *
  * Priority order:
  *  1. Brevo SMTP  — best deliverability, free 300/day, no domain needed
@@ -49,7 +49,7 @@ export async function sendEmail({ to, subject, html }) {
   if (brevoUser && brevoKey) {
     const transporter = createBrevoTransport();
     await transporter.sendMail({
-      from: `"Librarium" <${brevoUser}>`,
+      from: `"Librix" <${brevoUser}>`,
       to,
       subject,
       html,
@@ -62,7 +62,7 @@ export async function sendEmail({ to, subject, html }) {
   if (gmailUser && gmailPass) {
     const transporter = createGmailTransport();
     await transporter.sendMail({
-      from: `"Librarium" <${gmailUser}>`,
+      from: `"Librix" <${gmailUser}>`,
       to,
       subject,
       html,
@@ -80,7 +80,7 @@ export async function sendEmail({ to, subject, html }) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from:    'Librarium <onboarding@resend.dev>',
+        from:    'Librix <onboarding@resend.dev>',
         to:      [to],
         subject,
         html,
@@ -110,12 +110,12 @@ export function otpEmailHtml({ name, otp, role }) {
   return `
     <div style="font-family:Inter,Arial,sans-serif;max-width:480px;margin:0 auto;background:#ffffff;border:1px solid #E2E8F0;border-radius:16px;padding:40px 36px;">
       <div style="text-align:center;margin-bottom:28px;">
-        <span style="font-size:22px;font-weight:800;color:#0F172A;">Librar<span style="color:#2563EB;">ium</span></span>
+        <span style="font-size:22px;font-weight:800;color:#0F172A;">Librix</span>
       </div>
       <h2 style="font-size:20px;font-weight:800;color:#0F172A;margin:0 0 8px;">Verify Your Email</h2>
       <p style="font-size:14px;color:#64748B;line-height:1.6;margin:0 0 28px;">
         Hi <strong style="color:#0F172A;">${name}</strong>,<br/>
-        Use the code below to complete your <strong>${roleLabel}</strong> account registration on Librarium.
+        Use the code below to complete your <strong>${roleLabel}</strong> account registration on Librix.
       </p>
       <div style="text-align:center;background:#F8FAFC;border:2px dashed #BFDBFE;border-radius:14px;padding:28px 20px;margin-bottom:28px;">
         <div style="font-size:42px;font-weight:900;letter-spacing:14px;color:#2563EB;font-family:monospace;">${otp}</div>
@@ -126,7 +126,7 @@ export function otpEmailHtml({ name, otp, role }) {
         Never share this code with anyone.
       </p>
       <div style="border-top:1px solid #E2E8F0;margin-top:28px;padding-top:16px;text-align:center;font-size:11px;color:#CBD5E1;">
-        Librarium — Smart Library Management
+        Librix — Smart Library Management
       </div>
     </div>
   `;
@@ -136,7 +136,7 @@ export function collegeOtpEmailHtml({ collegeName, otp }) {
   return `
     <div style="font-family:Inter,Arial,sans-serif;max-width:480px;margin:0 auto;background:#ffffff;border:1px solid #E2E8F0;border-radius:16px;padding:40px 36px;">
       <div style="text-align:center;margin-bottom:28px;">
-        <span style="font-size:22px;font-weight:800;color:#0F172A;">Librar<span style="color:#2563EB;">ium</span></span>
+        <span style="font-size:22px;font-weight:800;color:#0F172A;">Librix</span>
       </div>
       <h2 style="font-size:20px;font-weight:800;color:#0F172A;text-align:center;margin:0 0 8px;">Institution Verification</h2>
       <p style="font-size:14px;color:#64748B;line-height:1.6;text-align:center;margin:0 0 28px;">
@@ -152,7 +152,7 @@ export function collegeOtpEmailHtml({ collegeName, otp }) {
         Do not share this code with anyone.
       </p>
       <div style="border-top:1px solid #E2E8F0;margin-top:28px;padding-top:16px;text-align:center;font-size:11px;color:#CBD5E1;">
-        Librarium — Smart Library Management
+        Librix — Smart Library Management
       </div>
     </div>
   `;
@@ -162,9 +162,9 @@ export function welcomeEmailHtml({ name, role, collegeName, libraryCode, setupKe
   return `
     <div style="font-family:Inter,Arial,sans-serif;max-width:540px;margin:0 auto;background:#ffffff;border:1px solid #E2E8F0;border-radius:16px;padding:40px 36px;">
       <div style="text-align:center;margin-bottom:28px;">
-        <span style="font-size:22px;font-weight:800;color:#0F172A;">Librar<span style="color:#2563EB;">ium</span></span>
+        <span style="font-size:22px;font-weight:800;color:#0F172A;">Librix</span>
       </div>
-      <h2 style="font-size:20px;font-weight:800;color:#0F172A;margin:0 0 8px;">Welcome to Librarium! 🎉</h2>
+      <h2 style="font-size:20px;font-weight:800;color:#0F172A;margin:0 0 8px;">Welcome to Librix! 🎉</h2>
       <p style="font-size:14px;color:#64748B;line-height:1.6;margin:0 0 20px;">
         Hi <strong style="color:#0F172A;">${name}</strong>,<br/>
         Your <strong>${role}</strong> account for <strong>${collegeName}</strong> has been created successfully.
@@ -184,7 +184,7 @@ export function welcomeEmailHtml({ name, role, collegeName, libraryCode, setupKe
         </div>
       ` : ''}
       <div style="border-top:1px solid #E2E8F0;margin-top:28px;padding-top:16px;text-align:center;font-size:11px;color:#CBD5E1;">
-        Librarium — Smart Library Management
+        Librix — Smart Library Management
       </div>
     </div>
   `;
@@ -194,12 +194,12 @@ export function forgotPasswordEmailHtml({ name, resetUrl }) {
   return `
     <div style="font-family:Inter,Arial,sans-serif;max-width:480px;margin:0 auto;background:#ffffff;border:1px solid #E2E8F0;border-radius:16px;padding:40px 36px;">
       <div style="text-align:center;margin-bottom:28px;">
-        <span style="font-size:22px;font-weight:800;color:#0F172A;">Librar<span style="color:#2563EB;">ium</span></span>
+        <span style="font-size:22px;font-weight:800;color:#0F172A;">Librix</span>
       </div>
       <h2 style="font-size:20px;font-weight:800;color:#0F172A;margin:0 0 8px;">Reset Your Password</h2>
       <p style="font-size:14px;color:#64748B;line-height:1.6;margin:0 0 28px;">
         Hi <strong style="color:#0F172A;">${name}</strong>,<br/>
-        We received a request to reset your Librarium password. Click the button below to create a new one.
+        We received a request to reset your Librix password. Click the button below to create a new one.
       </p>
       <div style="text-align:center;margin-bottom:28px;">
         <a href="${resetUrl}" style="display:inline-block;padding:14px 32px;background:#2563EB;color:#ffffff;border-radius:10px;font-size:15px;font-weight:700;text-decoration:none;">
@@ -210,7 +210,7 @@ export function forgotPasswordEmailHtml({ name, resetUrl }) {
         This link expires in <strong>1 hour</strong>. If you did not request a password reset, ignore this email.
       </p>
       <div style="border-top:1px solid #E2E8F0;margin-top:28px;padding-top:16px;text-align:center;font-size:11px;color:#CBD5E1;">
-        Librarium — Smart Library Management
+        Librix — Smart Library Management
       </div>
     </div>
   `;

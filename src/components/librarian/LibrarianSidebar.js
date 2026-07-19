@@ -35,12 +35,9 @@ export default function LibrarianSidebar({ unreadCount = 0 }) {
       {/* Logo */}
       <div style={{ padding: '18px 16px 14px', borderBottom: '1px solid #F3F4F6' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-          <div style={{ width: 34, height: 34, background: '#6C5CE7', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-            <BookOpen size={18} color="white" />
-          </div>
+          <img src="https://res.cloudinary.com/dadiutcqh/image/upload/v1784449649/c7205191-78c8-486e-9996-7894591bf72b_szzaji.png" alt="Librix Logo" style={{ height: 40, width: 'auto', objectFit: 'contain' }} />
           <div>
-            <div style={{ fontSize: 15, fontWeight: 700, color: '#111827', lineHeight: '19px' }}>Librarium</div>
-            <div style={{ fontSize: 10, color: '#9CA3AF', lineHeight: '14px' }}>Library Management</div>
+            <div style={{ fontSize: 10, color: '#9CA3AF', lineHeight: '14px', marginTop: 4 }}>Library Management</div>
           </div>
         </div>
       </div>

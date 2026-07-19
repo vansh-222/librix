@@ -1,7 +1,7 @@
 import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-const FROM = 'Librarium <notifications@librarium.app>';
+const FROM = 'Librix <notifications@librix.app>';
 
 export async function sendNotificationEmail({ to, subject, html }) {
   try {
@@ -22,7 +22,7 @@ export function requestApprovedEmail({ userName, bookTitle, dueDate }) {
         <p>Hi <strong>${userName}</strong>,</p>
         <p>Your request for <strong>${bookTitle}</strong> has been approved.</p>
         <p>Please collect your book from the library by <strong>${dueDate}</strong>.</p>
-        <p style="color:#94A3B8;font-size:12px;margin-top:32px;">Librarium — Smart Library Management</p>
+        <p style="color:#94A3B8;font-size:12px;margin-top:32px;">Librix — Smart Library Management</p>
       </div>
     `,
   };
@@ -37,7 +37,7 @@ export function returnReminderEmail({ userName, bookTitle, dueDate }) {
         <p>Hi <strong>${userName}</strong>,</p>
         <p><strong>${bookTitle}</strong> is due on <strong>${dueDate}</strong>.</p>
         <p>Please return it on time to avoid fines.</p>
-        <p style="color:#94A3B8;font-size:12px;margin-top:32px;">Librarium — Smart Library Management</p>
+        <p style="color:#94A3B8;font-size:12px;margin-top:32px;">Librix — Smart Library Management</p>
       </div>
     `,
   };
@@ -52,7 +52,7 @@ export function fineAddedEmail({ userName, bookTitle, fineAmount, symbol }) {
         <p>Hi <strong>${userName}</strong>,</p>
         <p>A fine of <strong>${symbol}${fineAmount}</strong> has been added for <strong>${bookTitle}</strong>.</p>
         <p>Please clear it at the library at your earliest convenience.</p>
-        <p style="color:#94A3B8;font-size:12px;margin-top:32px;">Librarium — Smart Library Management</p>
+        <p style="color:#94A3B8;font-size:12px;margin-top:32px;">Librix — Smart Library Management</p>
       </div>
     `,
   };
@@ -67,7 +67,7 @@ export function reservationAvailableEmail({ userName, bookTitle }) {
         <p>Hi <strong>${userName}</strong>,</p>
         <p>Your reserved book <strong>${bookTitle}</strong> is now available!</p>
         <p>Please collect it within <strong>48 hours</strong> or your reservation will expire.</p>
-        <p style="color:#94A3B8;font-size:12px;margin-top:32px;">Librarium — Smart Library Management</p>
+        <p style="color:#94A3B8;font-size:12px;margin-top:32px;">Librix — Smart Library Management</p>
       </div>
     `,
   };

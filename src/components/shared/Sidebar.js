@@ -16,17 +16,7 @@ export default function Sidebar({ user, navItems }) {
         borderBottom: '1px solid var(--border)',
         display: 'flex', alignItems: 'center', gap: 10,
       }}>
-        <div style={{
-          width: 32, height: 32, borderRadius: 8,
-          background: 'linear-gradient(135deg, #6366F1, #8B5CF6)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-        }}>
-          <BookOpen size={16} color="#fff" />
-        </div>
-        <div>
-          <div style={{ fontSize: 15, fontWeight: 800, letterSpacing: '-0.01em' }}>
-            Librar<span style={{ color: 'var(--brand)' }}>ium</span>
-          </div>
+        <img src="https://res.cloudinary.com/dadiutcqh/image/upload/v1784449649/c7205191-78c8-486e-9996-7894591bf72b_szzaji.png" alt="Librix Logo" style={{ height: 40, width: 'auto', objectFit: 'contain' }} />
           <div style={{ fontSize: 10, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
             {user?.role?.replace('_', ' ')}
           </div>

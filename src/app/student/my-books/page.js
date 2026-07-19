@@ -358,7 +358,7 @@ export default function MyBooksPage() {
 
   const loadWishlist = () => {
     try {
-      const stored = localStorage.getItem('librarium_wishlist');
+      const stored = localStorage.getItem('librix_wishlist');
       if (stored) {
         const parsed = JSON.parse(stored);
         setWishlist(Array.isArray(parsed) ? parsed : []);
@@ -376,7 +376,7 @@ export default function MyBooksPage() {
   const removeFromWishlist = (bookId) => {
     const next = wishlist.filter(item => (item._id || item.id) !== bookId);
     setWishlist(next);
-    try { localStorage.setItem('librarium_wishlist', JSON.stringify(next)); } catch {}
+    try { localStorage.setItem('librix_wishlist', JSON.stringify(next)); } catch {}
     showToast('Removed from Wishlist');
   };
 

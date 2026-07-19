@@ -2,7 +2,7 @@ import './globals.css';
 import AuthProvider from '@/components/AuthProvider';
 
 export const metadata = {
-  title: 'Librarium — Smart Library Management for Modern Institutions',
+  title: 'Librix — Smart Library Management for Modern Institutions',
   description:
     'A multi-tenant SaaS library management system for colleges, universities, and institutions. Manage books, borrowing, fines, and members with ease.',
   keywords: 'library management, SaaS, college library, book borrowing, digital library',

@@ -193,19 +193,21 @@ function LoginContent() {
         background: '#FFFFFF',
         borderBottom: '1px solid #E2E8F0',
       }}>
-        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
-          <div style={{
-            width: 38, height: 38, borderRadius: 10,
-            background: 'linear-gradient(135deg, #2563EB, #1D4ED8)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: '0 2px 8px rgba(37,99,235,0.25)',
-          }}>
-            <BookOpen size={20} color="#fff" />
-          </div>
+               <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
+          <img
+            src="https://res.cloudinary.com/dadiutcqh/image/upload/v1784449649/c7205191-78c8-486e-9996-7894591bf72b_szzaji.png"
+            alt="Librix Logo"
+            style={{
+              height: 42,
+              width: 'auto',
+              objectFit: 'contain',
+            }}
+          />
           <div>
             <div style={{ fontSize: 17, fontWeight: 800, color: '#0F172A', lineHeight: 1.1 }}>
-              Librarium
+              Librix
             </div>
+
             <div style={{ fontSize: 11, color: '#64748B', fontWeight: 500, marginTop: 2 }}>
               Smart Library Management
             </div>

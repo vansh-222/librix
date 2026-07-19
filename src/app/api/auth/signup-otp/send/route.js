@@ -100,7 +100,7 @@ export async function POST(req) {
     // NOTE: Subject does NOT contain the OTP — that's a spam trigger.
     await sendEmail({
       to:      email.trim(),
-      subject: `Your Librarium signup verification code`,
+      subject: `Your Librix signup verification code`,
       html:    otpEmailHtml({ name: name.trim(), otp, role }),
     });
 

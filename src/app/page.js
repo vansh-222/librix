@@ -83,10 +83,7 @@ export default function LandingPage() {
       <div style={{ position: 'sticky', top: 16, zIndex: 100, padding: '0 27px' }}>
         <nav style={{ maxWidth: 1386, margin: '0 auto', background: 'white', boxShadow: '0px 4px 25.3px rgba(26,115,232,0.23)', borderRadius: 40, border: '1px solid #D9D9D9', padding: '0 40px', height: 71, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div style={{ width: 36, height: 36, borderRadius: 10, background: `linear-gradient(135deg,${BLUE},${DARK})`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <BookOpen size={18} color="white" />
-            </div>
-            <span style={{ fontSize: 20, fontWeight: 700, color: DARK, fontFamily: 'Inter' }}>Librar<span style={{ color: BLUE }}>ium</span></span>
+            <img src="https://res.cloudinary.com/dadiutcqh/image/upload/v1784448482/e2d37f27-b9e1-484c-a59b-79e086b1aec2_rah6h8.png" alt="Librix Logo" style={{ height: 50, width: 'auto', objectFit: 'contain', transform: 'scale(1.3)' }} />
           </Link>
           <div style={{ display: 'flex', alignItems: 'center', gap: 44 }}>
             {NAV.map(l => <a key={l} href={`#${l.toLowerCase().replace(' ', '-')}`} className="nl" style={{ color: 'black', fontSize: 16, fontFamily: 'Inter', fontWeight: 400, transition: 'color 0.2s' }}>{l}</a>)}
@@ -124,7 +121,7 @@ export default function LandingPage() {
             Smart Library Management for Modern{' '}<span style={{ color: BLUE }}>Institutions</span>
           </h1>
           <p style={{ fontSize: 20, fontWeight: 400, fontFamily: 'Inter', color: 'rgba(0,0,0,0.60)', lineHeight: 1.6, maxWidth: 682, margin: '0 auto 40px' }}>
-            Librarium is an all-in-one library management system to manage books, members, requests, issue &amp; return, fines and reports — designed for colleges, universities, and modern libraries.
+            Librix is an all-in-one library management system to manage books, members, requests, issue &amp; return, fines and reports — designed for colleges, universities, and modern libraries.
           </p>
           <div style={{ display: 'flex', gap: 15, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 48 }}>
             <Link href="/signup" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 231, height: 47, background: DARK, borderRadius: 38, color: 'white', fontSize: 20, fontFamily: 'Inter', fontWeight: 500 }}>
@@ -375,7 +372,7 @@ export default function LandingPage() {
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 20, marginTop: 32 }}>
             {[
-              'https://res.cloudinary.com/dadiutcqh/image/upload/v1782019390/857605ecf94c219c481aac1296e972aa71ae6f96_1_gtqj1y.png',
+              'https://www.shorttermprograms.com/images/cache/600_by_314/uploads/institution-logos/harvard-university.png',
               'https://res.cloudinary.com/dadiutcqh/image/upload/v1782019390/857605ecf94c219c481aac1296e972aa71ae6f96_1_gtqj1y.png',
               'https://res.cloudinary.com/dadiutcqh/image/upload/v1782018803/images_s87tb3.png',
               'https://res.cloudinary.com/dadiutcqh/image/upload/v1782017284/2f8c789ce17bd7ed3d26af13b68b51a32e6d69e1_p56sol.png',
@@ -393,13 +390,13 @@ export default function LandingPage() {
       <section id="features" style={{ padding: '100px 24px' }}>
         <div style={{ maxWidth: 1320, margin: '0 auto' }}>
           <div style={{ display: 'flex', gap: 80, alignItems: 'center', marginBottom: 100, flexWrap: 'wrap' }}>
-            <div style={{flex:1,minWidth:300,borderRadius:20,overflow:'hidden',boxShadow:'0 4px 30px rgba(26,115,232,0.1)'}}>
-              <img src="https://res.cloudinary.com/dadiutcqh/image/upload/v1782019559/84670e5cba4e54b72090eecb729579233879ad64_qakcu8.png" alt="Digital library experience" style={{width:'100%',height:'100%',objectFit:'cover',display:'block'}}/>
+            <div style={{ flex: 1, minWidth: 300, borderRadius: 20, overflow: 'hidden', boxShadow: '0 4px 30px rgba(26,115,232,0.1)' }}>
+              <img src="https://res.cloudinary.com/dadiutcqh/image/upload/v1782019559/84670e5cba4e54b72090eecb729579233879ad64_qakcu8.png" alt="Digital library experience" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
             </div>
             <div style={{ flex: 1, minWidth: 280 }}>
               <h2 style={{ fontSize: 32, fontWeight: 600, fontFamily: 'Inter', color: 'black', marginBottom: 16 }}>Digital library experience</h2>
               <p style={{ fontSize: 20, fontWeight: 500, fontFamily: 'Inter', color: 'rgba(0,0,0,0.60)', lineHeight: 1.6, marginBottom: 24 }}>
-                Librarium makes it simple to search, explore, and access resources while giving colleges a smarter way to manage books, members, requests, and everyday library operations.
+                Librix makes it simple to search, explore, and access resources while giving colleges a smarter way to manage books, members, requests, and everyday library operations.
               </p>
               <Link href="/register" style={{ display: 'inline-flex', padding: '10px 24px', borderRadius: 38, background: BLUE, color: 'white', fontSize: 16, fontWeight: 500, fontFamily: 'Inter' }}>View All</Link>
             </div>
@@ -408,12 +405,12 @@ export default function LandingPage() {
             <div style={{ flex: 1, minWidth: 280 }}>
               <h2 style={{ fontSize: 32, fontWeight: 600, fontFamily: 'Inter', color: 'black', marginBottom: 16 }}>Complete library control</h2>
               <p style={{ fontSize: 20, fontWeight: 500, fontFamily: 'Inter', color: 'rgba(0,0,0,0.60)', lineHeight: 1.6, marginBottom: 24 }}>
-                Librarium provides colleges with a centralized library management system that simplifies book tracking, automates workflows, and helps librarians make smarter decisions with detailed insights.
+                Librix provides colleges with a centralized library management system that simplifies book tracking, automates workflows, and helps librarians make smarter decisions with detailed insights.
               </p>
               <Link href="/register" style={{ display: 'inline-flex', padding: '10px 24px', borderRadius: 38, background: BLUE, color: 'white', fontSize: 16, fontWeight: 500, fontFamily: 'Inter' }}>View All</Link>
             </div>
-            <div style={{flex:1,minWidth:300,borderRadius:20,overflow:'hidden',boxShadow:'0 4px 30px rgba(26,115,232,0.1)'}}>
-              <img src="https://res.cloudinary.com/dadiutcqh/image/upload/v1782019590/c23908cd7f6e2843bd0b728b52979a5291a5b749_qdvb33.png" alt="Complete library control" style={{width:'100%',height:'100%',objectFit:'cover',display:'block'}}/>
+            <div style={{ flex: 1, minWidth: 300, borderRadius: 20, overflow: 'hidden', boxShadow: '0 4px 30px rgba(26,115,232,0.1)' }}>
+              <img src="https://res.cloudinary.com/dadiutcqh/image/upload/v1782019590/c23908cd7f6e2843bd0b728b52979a5291a5b749_qdvb33.png" alt="Complete library control" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
             </div>
           </div>
         </div>
@@ -431,7 +428,7 @@ export default function LandingPage() {
           <div style={{ flex: 1, minWidth: 280 }}>
             <h2 style={{ color: 'white', fontSize: 24, fontWeight: 600, fontFamily: 'Inter', marginBottom: 12 }}>Transform Your Library Today</h2>
             <p style={{ color: 'rgba(255,255,255,0.72)', fontSize: 16, fontWeight: 400, fontFamily: 'Inter', maxWidth: 539, lineHeight: 1.6, marginBottom: 16 }}>
-              Join colleges using Librarium to simplify library management and transform the way they handle books, students, and daily operations.
+              Join colleges using Librix to simplify library management and transform the way they handle books, students, and daily operations.
             </p>
             <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
               {['1000+ Members', 'Daily Updates', 'Active Discussions'].map(t => (
@@ -451,13 +448,10 @@ export default function LandingPage() {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', gap: 40, marginBottom: 48 }}>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-                <div style={{ width: 36, height: 36, borderRadius: 10, background: `linear-gradient(135deg,${BLUE},${DARK})`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <BookOpen size={18} color="white" />
-                </div>
-                <span style={{ fontSize: 18, fontWeight: 700, color: 'white', fontFamily: 'Inter' }}>Librar<span style={{ color: BLUE }}>ium</span></span>
+                <img src="https://res.cloudinary.com/dadiutcqh/image/upload/v1784448482/e2d37f27-b9e1-484c-a59b-79e086b1aec2_rah6h8.png" alt="Librix Logo" style={{ height: 44, width: 'auto', objectFit: 'contain' }} />
               </div>
               <p style={{ color: 'white', fontSize: 16, fontWeight: 400, fontFamily: 'Inter', lineHeight: 1.6, marginBottom: 12 }}>Empowering smarter libraries worldwide</p>
-              <p style={{ color: 'white', fontSize: 16, fontWeight: 400, fontFamily: 'Inter' }}>Info@librarium.app</p>
+              <p style={{ color: 'white', fontSize: 16, fontWeight: 400, fontFamily: 'Inter' }}>Info@librix.app</p>
             </div>
             {[
               { title: 'Product', links: ['Features', 'Solutions', 'Pricing'] },
@@ -478,7 +472,7 @@ export default function LandingPage() {
           </div>
         </div>
         <div style={{ background: '#0B1B2D', padding: '18px 24px', textAlign: 'center' }}>
-          <div style={{ color: 'white', fontSize: 12, fontWeight: 500, fontFamily: 'Inter' }}>© 2026 Librarium. All rights reserved.</div>
+          <div style={{ color: 'white', fontSize: 12, fontWeight: 500, fontFamily: 'Inter' }}>© 2026 Librix. All rights reserved.</div>
         </div>
       </footer>
     </div>

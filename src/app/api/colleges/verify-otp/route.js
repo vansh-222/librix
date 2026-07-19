@@ -48,7 +48,7 @@ async function sendWelcomeEmail({ email, collegeName, institutionKey, libraryCod
       <div style="text-align:center;margin-bottom:28px;">
         <div style="display:inline-flex;align-items:center;gap:10px;">
           <div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#6366F1,#8B5CF6);display:flex;align-items:center;justify-content:center;font-size:20px;">📚</div>
-          <span style="font-size:22px;font-weight:800;">Librar<span style="color:#6366F1;">ium</span></span>
+          <span style="font-size:22px;font-weight:800;">Librix</span>
         </div>
       </div>
 
@@ -58,7 +58,7 @@ async function sendWelcomeEmail({ email, collegeName, institutionKey, libraryCod
 
       <h2 style="font-size:20px;font-weight:800;margin-bottom:6px;">Welcome, ${collegeName}!</h2>
       <p style="color:#94A3B8;font-size:14px;margin-bottom:28px;line-height:1.6;">
-        Your institution has been verified and activated on Librarium. Below are your one-time credentials — please save them securely.
+        Your institution has been verified and activated on Librix. Below are your one-time credentials — please save them securely.
       </p>
 
       <div style="background:#1A1D27;border:1px solid #2A2D3A;border-radius:12px;padding:20px;margin-bottom:16px;">
@@ -76,7 +76,7 @@ async function sendWelcomeEmail({ email, collegeName, institutionKey, libraryCod
       <div style="background:#1A1D27;border:1px solid rgba(34,197,94,0.3);border-radius:12px;padding:20px;margin-bottom:28px;">
         <div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#94A3B8;margin-bottom:6px;">📚 Student Library Code</div>
         <div style="font-size:26px;font-weight:900;letter-spacing:4px;color:#22C55E;font-family:monospace;">${libraryCode}</div>
-        <div style="font-size:11px;color:#64748B;margin-top:6px;">Share with students — they enter this code when signing up on Librarium.</div>
+        <div style="font-size:11px;color:#64748B;margin-top:6px;">Share with students — they enter this code when signing up on Librix.</div>
       </div>
 
       <div style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);border-radius:10px;padding:14px 18px;margin-bottom:24px;">
@@ -88,10 +88,10 @@ async function sendWelcomeEmail({ email, collegeName, institutionKey, libraryCod
       </div>
 
       <p style="font-size:12px;color:#64748B;text-align:center;line-height:1.6;">
-        If you did not register on Librarium, please contact us immediately.<br/>
+        If you did not register on Librix, please contact us immediately.<br/>
         Do not share the Librarian Setup Key publicly.
       </p>
-      <p style="font-size:11px;color:#475569;text-align:center;margin-top:20px;">Librarium — Smart Library Management</p>
+      <p style="font-size:11px;color:#475569;text-align:center;margin-top:20px;">Librix — Smart Library Management</p>
     </div>
   `;
 
@@ -115,9 +115,9 @@ async function sendWelcomeEmail({ email, collegeName, institutionKey, libraryCod
         'Content-Type':  'application/json',
       },
       body: JSON.stringify({
-        from:    'Librarium <onboarding@resend.dev>',
+        from:    'Librix <onboarding@resend.dev>',
         to:      [email],
-        subject: `🎉 ${collegeName} — Your Librarium Credentials`,
+        subject: `🎉 ${collegeName} — Your Librix Credentials`,
         html,
       }),
     });

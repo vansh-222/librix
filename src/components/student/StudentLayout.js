@@ -20,6 +20,14 @@ export default function StudentLayout({
         }
       })
       .catch(() => {});
+
+    const handler = (e) => {
+      if (e.detail && e.detail.count !== undefined) {
+        setUnreadCount(e.detail.count);
+      }
+    };
+    window.addEventListener('notifications-updated', handler);
+    return () => window.removeEventListener('notifications-updated', handler);
   }, []);
 
   return (

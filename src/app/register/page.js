@@ -485,25 +485,31 @@ export default function RegisterCollegePage() {
       {/* ── TOP NAV ─────────────────────────────────────────────────────────── */}
       <nav style={{
         position: 'sticky', top: 0, zIndex: 40,
-        background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(12px)',
-        borderBottom: '1px solid #E2E8F0',
+        height: 68,
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '0 28px', height: 56,
-        boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
+        padding: '0 40px',
+        background: '#FFFFFF',
+        borderBottom: '1px solid #E2E8F0',
       }}>
-        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 9, textDecoration: 'none' }}>
-          <div style={{ width: 32, height: 32, borderRadius: 8, background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <BookOpen size={16} color="#fff" />
-          </div>
+       <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
+          <img
+            src="https://res.cloudinary.com/dadiutcqh/image/upload/v1784449649/c7205191-78c8-486e-9996-7894591bf72b_szzaji.png"
+            alt="Librix Logo"
+            style={{
+              height: 42,
+              width: 'auto',
+              objectFit: 'contain',
+            }}
+          />
           <div>
-            <div style={{ fontSize: 15, fontWeight: 800, color: '#0F172A', lineHeight: 1 }}>
-              Librar<span style={{ color: '#4F46E5' }}>ium</span>
+            <div style={{ fontSize: 17, fontWeight: 800, color: '#0F172A', lineHeight: 1.1 }}>
+              Libri<span style={{ color: '#000000ff' }}>x</span>
             </div>
-            <div style={{ fontSize: 10, color: '#475569', lineHeight: 1, marginTop: 1 }}>Smart Library Management</div>
+            <div style={{ fontSize: 11, color: '#64748B', fontWeight: 500, marginTop: 2 }}>Smart Library Management</div>
           </div>
         </Link>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
           <button style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', color: '#475569', fontSize: 13, cursor: 'pointer', padding: '6px 10px', borderRadius: 8 }}>
             <HelpCircle size={14} /> Need Help?
           </button>

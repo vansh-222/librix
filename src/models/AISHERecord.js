@@ -12,7 +12,7 @@ const AISHERecordSchema = new mongoose.Schema(
     yearEstablished: { type: String, default: '' },
     managementType:  { type: String, default: '' }, // Government | Private | Aided
     ownershipType:   { type: String, default: '' },
-    isRegistered:    { type: Boolean, default: false }, // true once claimed on Librarium
+    isRegistered:    { type: Boolean, default: false }, // true once claimed on Librix
   },
   { timestamps: true }
 );

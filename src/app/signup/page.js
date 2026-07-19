@@ -77,14 +77,14 @@ function BuildingIllustration() {
         {/* Background clouds / bushes */}
         <path d="M40 135 C30 135 25 125 32 118 C35 110 48 110 52 118 C58 115 68 120 65 130 Z" fill="#E2E8F0" opacity="0.6" />
         <path d="M190 135 C180 135 175 125 182 118 C185 110 198 110 202 118 C208 115 218 120 215 130 Z" fill="#E2E8F0" opacity="0.6" />
-        
+
         {/* Flag structure */}
         <line x1="120" y1="20" x2="120" y2="45" stroke="#475569" strokeWidth="2.5" strokeLinecap="round" />
         <path d="M121 21 L142 28 L121 35 Z" fill="#2563EB" />
 
         {/* Main building body */}
         <rect x="60" y="65" width="120" height="70" rx="4" fill="#FFFFFF" stroke="#CBD5E1" strokeWidth="2" />
-        
+
         {/* Left & Right wings */}
         <rect x="42" y="80" width="18" height="55" rx="2" fill="#F1F5F9" stroke="#CBD5E1" strokeWidth="2" />
         <rect x="180" y="80" width="18" height="55" rx="2" fill="#F1F5F9" stroke="#CBD5E1" strokeWidth="2" />
@@ -138,22 +138,22 @@ function SignupContent() {
 
   const [form, setForm] = useState({
     collegeCode: '', // for student
-    setupKey:    '', // for librarian
-    name:        '',
-    email:       '',
-    password:    '',
+    setupKey: '', // for librarian
+    name: '',
+    email: '',
+    password: '',
   });
-  
+
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading]           = useState(false);
-  const [error,   setError]             = useState('');
-  const [success, setSuccess]           = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(null);
 
   // OTP step
-  const [otpStep,    setOtpStep]    = useState(false);   // true = show OTP screen
-  const [otpDigits,  setOtpDigits]  = useState(['','','','','','']);
+  const [otpStep, setOtpStep] = useState(false);   // true = show OTP screen
+  const [otpDigits, setOtpDigits] = useState(['', '', '', '', '', '']);
   const [otpLoading, setOtpLoading] = useState(false);
-  const [otpError,   setOtpError]   = useState('');
+  const [otpError, setOtpError] = useState('');
   const [resendCool, setResendCool] = useState(0);       // countdown seconds
   const otpRefs = [useRef(), useRef(), useRef(), useRef(), useRef(), useRef()];
 
@@ -166,7 +166,7 @@ function SignupContent() {
     setTab(t);
     setError('');
     setOtpStep(false);
-    setOtpDigits(['','','','','','']);
+    setOtpDigits(['', '', '', '', '', '']);
     setForm({ collegeCode: '', setupKey: '', name: '', email: '', password: '' });
   };
 
@@ -183,22 +183,22 @@ function SignupContent() {
     setError('');
     try {
       const res = await fetch('/api/auth/signup-otp/send', {
-        method:  'POST',
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name:       form.name,
-          email:      form.email,
-          password:   form.password,
-          role:       tab,
+          name: form.name,
+          email: form.email,
+          password: form.password,
+          role: tab,
           collegeCode: form.collegeCode.trim().toUpperCase(),
-          setupKey:    form.setupKey.trim().toUpperCase(),
+          setupKey: form.setupKey.trim().toUpperCase(),
         }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to send verification code.');
       // Move to OTP step
       setOtpStep(true);
-      setOtpDigits(['','','','','','']);
+      setOtpDigits(['', '', '', '', '', '']);
       setOtpError('');
       startResendCooldown();
       setTimeout(() => otpRefs[0]?.current?.focus(), 100);
@@ -221,18 +221,18 @@ function SignupContent() {
     setOtpLoading(true);
     try {
       const res = await fetch('/api/auth/signup-otp/send', {
-        method:  'POST',
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: form.name, email: form.email, password: form.password,
           role: tab,
           collegeCode: form.collegeCode.trim().toUpperCase(),
-          setupKey:    form.setupKey.trim().toUpperCase(),
+          setupKey: form.setupKey.trim().toUpperCase(),
         }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Could not resend code.');
-      setOtpDigits(['','','','','','']);
+      setOtpDigits(['', '', '', '', '', '']);
       startResendCooldown();
       otpRefs[0]?.current?.focus();
     } catch (err) {
@@ -259,7 +259,7 @@ function SignupContent() {
     e.preventDefault();
     const pasted = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
     if (!pasted) return;
-    const next = ['','','','','',''];
+    const next = ['', '', '', '', '', ''];
     pasted.split('').forEach((ch, i) => { if (i < 6) next[i] = ch; });
     setOtpDigits(next);
     otpRefs[Math.min(pasted.length, 5)]?.current?.focus();
@@ -274,7 +274,7 @@ function SignupContent() {
     setOtpError('');
     try {
       const res = await fetch('/api/auth/signup-otp/verify', {
-        method:  'POST',
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: form.email, otp }),
       });
@@ -283,13 +283,13 @@ function SignupContent() {
       setSuccess(
         tab === 'librarian'
           ? { type: 'librarian', collegeName: data.collegeName || 'your college', libraryCode: data.libraryCode }
-          : { type: 'student',   collegeName: data.collegeName || 'your college' }
+          : { type: 'student', collegeName: data.collegeName || 'your college' }
       );
       setTimeout(() => router.push('/login'), tab === 'librarian' ? 5000 : 3000);
     } catch (err) {
       setOtpError(err.message);
       // Auto-clear digits on wrong code
-      setOtpDigits(['','','','','','']);
+      setOtpDigits(['', '', '', '', '', '']);
       setTimeout(() => otpRefs[0]?.current?.focus(), 50);
     } finally {
       setOtpLoading(false);
@@ -308,7 +308,7 @@ function SignupContent() {
           </div>
           <h2 style={{ fontSize: 24, fontWeight: 800, color: '#0F172A', textAlign: 'center', margin: '0 0 8px' }}>Check your email</h2>
           <p style={{ fontSize: 13, color: '#64748B', textAlign: 'center', lineHeight: 1.6, margin: '0 0 28px' }}>
-            We sent a 6-digit code to<br/>
+            We sent a 6-digit code to<br />
             <strong style={{ color: '#0F172A' }}>{form.email}</strong>
           </p>
 
@@ -397,7 +397,7 @@ function SignupContent() {
             <CheckCircle size={38} color="#22C55E" />
           </div>
           <h2 style={{ fontSize: 26, fontWeight: 800, color: '#0F172A', marginBottom: 10 }}>Account Created!</h2>
-          
+
           {success.type === 'librarian' ? (
             <>
               <p style={{ color: '#475569', fontSize: 14, lineHeight: 1.6, marginBottom: 20 }}>
@@ -443,18 +443,20 @@ function SignupContent() {
         borderBottom: '1px solid #E2E8F0',
       }}>
         <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
-          <div style={{
-            width: 38, height: 38, borderRadius: 10,
-            background: 'linear-gradient(135deg, #2563EB, #1D4ED8)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: '0 2px 8px rgba(37,99,235,0.25)',
-          }}>
-            <BookOpen size={20} color="#fff" />
-          </div>
+          <img
+            src="https://res.cloudinary.com/dadiutcqh/image/upload/v1784449649/c7205191-78c8-486e-9996-7894591bf72b_szzaji.png"
+            alt="Librix Logo"
+            style={{
+              height: 42,
+              width: 'auto',
+              objectFit: 'contain',
+            }}
+          />
           <div>
             <div style={{ fontSize: 17, fontWeight: 800, color: '#0F172A', lineHeight: 1.1 }}>
-              Librarium
+              Librix
             </div>
+
             <div style={{ fontSize: 11, color: '#64748B', fontWeight: 500, marginTop: 2 }}>
               Smart Library Management
             </div>

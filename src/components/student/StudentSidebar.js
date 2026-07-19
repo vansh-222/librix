@@ -31,12 +31,9 @@ export default function StudentSidebar({ unreadCount = 0 }) {
     }}>
       {/* Logo */}
       <Link href="/student/dashboard" style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 32, padding: '0 8px', textDecoration: 'none' }}>
-        <div style={{ width: 32, height: 32, background: 'linear-gradient(135deg, #6C5CE7, #A78BFA)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <BookOpen size={18} color="white" />
-        </div>
+        <img src="https://res.cloudinary.com/dadiutcqh/image/upload/v1784449649/c7205191-78c8-486e-9996-7894591bf72b_szzaji.png" alt="Librix Logo" style={{ height: 40, width: 'auto', objectFit: 'contain' }} />
         <div>
-          <div style={{ fontSize: 16, fontWeight: 700, color: '#111827', fontFamily: 'Inter' }}>Librarium</div>
-          <div style={{ fontSize: 9, color: '#9CA3AF', fontFamily: 'Inter', marginTop: -2 }}>Library Management</div>
+          <div style={{ fontSize: 9, color: '#9CA3AF', fontFamily: 'Inter', marginTop: 2 }}>Library Management</div>
         </div>
       </Link>
 

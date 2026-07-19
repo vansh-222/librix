@@ -40,7 +40,7 @@ async function sendOTPEmail(email, otp, collegeName) {
 
     await sendEmail({
       to:      email.trim(),
-      subject: `Your Librarium Institution Verification Code`,
+      subject: `Your Librix Institution Verification Code`,
       html:    collegeOtpEmailHtml({ collegeName: collegeName.trim(), otp }),
     });
 
@@ -124,7 +124,7 @@ export async function POST(req) {
       });
       if (aisheExists) {
         return NextResponse.json({
-          error: 'This institution (AISHE code) is already registered on Librarium.',
+          error: 'This institution (AISHE code) is already registered on Librix.',
         }, { status: 409 });
       }
     }
