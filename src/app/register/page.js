@@ -117,7 +117,7 @@ export default function RegisterCollegePage() {
       }
       if (data.alreadyRegistered) {
         setAisheStatus('registered');
-        setAisheError('This institution is already registered on Librarium.');
+        setAisheError('This institution is already registered on Librix.');
         return;
       }
       setAisheRecord(data.record);
@@ -535,7 +535,7 @@ export default function RegisterCollegePage() {
           {/* Page title */}
           <div style={{ marginBottom: 24 }}>
             <h1 style={{ fontSize: 28, fontWeight: 800, color: '#0F172A', marginBottom: 4 }}>Register Your Institution</h1>
-            <p style={{ color: '#334155', fontSize: 14, fontWeight: 500 }}>Join Librarium and digitize your library with our smart platform.</p>
+            <p style={{ color: '#334155', fontSize: 14, fontWeight: 500 }}>Join Librix and digitize your library with our smart platform.</p>
           </div>
 
           
@@ -918,7 +918,7 @@ export default function RegisterCollegePage() {
               <span style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>Why Verification is Important?</span>
             </div>
             {[
-              { icon: '✅', text: 'Ensures only genuine institutions can use Librarium' },
+              { icon: '✅', text: 'Ensures only genuine institutions can use Librix' },
               { icon: '🔒', text: 'Protects data and maintains platform integrity' },
               { icon: '🤝', text: 'Helps us provide better support and services' },
               { icon: '📋', text: 'Required for government compliance' },
@@ -987,7 +987,7 @@ export default function RegisterCollegePage() {
             <div style={{ fontSize: 13, fontWeight: 700, color: '#111827', marginBottom: 12 }}>🎧 Need Help?</div>
             <p style={{ fontSize: 12, color: '#374151', marginBottom: 12, lineHeight: 1.5 }}>Our support team is here to help you with registration.</p>
             {[
-              { icon: <Mail size={12} />,  val: 'support@librarium.com' },
+              { icon: <Mail size={12} />,  val: 'support@Librix.com' },
               { icon: <Phone size={12} />, val: '+91 12345 67890' },
               { icon: <Clock size={12} />, val: 'Mon – Sat: 9:00 AM – 6:00 PM' },
             ].map(c => (
@@ -1001,7 +1001,7 @@ export default function RegisterCollegePage() {
           <div style={{ padding: '16px 18px', background: 'linear-gradient(135deg,rgba(79,70,229,0.07),rgba(124,58,237,0.07))', border: '1px solid rgba(79,70,229,0.2)', borderRadius: 12, textAlign: 'center' }}>
             <div style={{ fontSize: 28, fontWeight: 900, color: '#4F46E5', marginBottom: 2 }}>500+</div>
             <div style={{ fontSize: 12, fontWeight: 700, color: '#111827', marginBottom: 4 }}>Trusted by Institutions</div>
-            <div style={{ fontSize: 11, color: '#6B7280' }}>Join 500+ verified institutions using Librarium</div>
+            <div style={{ fontSize: 11, color: '#6B7280' }}>Join 500+ verified institutions using Librix</div>
             <div style={{ display: 'flex', justifyContent: 'center', gap: 3, marginTop: 10 }}>
               {'⭐⭐⭐⭐⭐'.split('').map((s, i) => <span key={i} style={{ fontSize: 14 }}>{s}</span>)}
             </div>

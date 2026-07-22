@@ -53,7 +53,7 @@ export default function LibrarianNavbar({ title, subtitle, searchPlaceholder = "
             </div>
             <div>
               <div style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>{userName}</div>
-              <div style={{ fontSize: 11, color: '#9CA3AF' }}>Librarian</div>
+              <div style={{ fontSize: 11, color: '#9CA3AF' }}>Librix</div>
             </div>
             <ChevronDown size={13} color="#9CA3AF" />
           </div>

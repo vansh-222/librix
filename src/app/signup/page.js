@@ -518,7 +518,7 @@ function SignupContent() {
                   Create Your <span style={{ color: '#2563EB' }}>Account</span>
                 </h1>
                 <p style={{ fontSize: 14, color: '#64748B', marginTop: 8, fontWeight: 500 }}>
-                  Join Librarium and be a part of a smarter way to manage libraries.
+                  Join Librix and be a part of a smarter way to manage libraries.
                 </p>
               </div>
 
@@ -595,7 +595,7 @@ function SignupContent() {
                 <Quote size={22} style={{ transform: 'rotate(180deg)' }} />
               </div>
               <p style={{ fontSize: 13, color: '#334155', lineHeight: 1.6, margin: '0 0 12px', fontWeight: 500 }}>
-                Librarium has made library management seamless for our institution. Highly recommended!
+                Librix has made library management seamless for our institution. Highly recommended!
               </p>
               <div style={{ display: 'flex', gap: 3, marginBottom: 10 }}>
                 {'⭐⭐⭐⭐⭐'.split('').map((s, i) => <span key={i} style={{ fontSize: 13 }}>{s}</span>)}
@@ -762,7 +762,7 @@ function SignupContent() {
                     />
                   </div>
                   <p style={{ fontSize: 11, color: '#3B82F6', marginTop: 6, marginBottom: 0, fontWeight: 500 }}>
-                    Enter the one-time verification code generated when your institution registered on Librarium.
+                    Enter the one-time verification code generated when your institution registered on Librix.
                   </p>
                 </div>
               ) : (
@@ -895,7 +895,7 @@ function SignupContent() {
         background: '#FFFFFF',
         borderTop: '1px solid #E2E8F0',
       }}>
-        <div>© 2025 Librarium. All rights reserved.</div>
+        <div>© 2025 Librix. All rights reserved.</div>
         <div style={{ display: 'flex', gap: 24 }}>
           <Link href="/privacy" style={{ color: '#64748B', textDecoration: 'none' }}>Privacy Policy</Link>
           <span>|</span>

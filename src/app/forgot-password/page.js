@@ -17,12 +17,12 @@ const THEME = `
     padding: 0 14px 0 44px; font-size: 14px; font-family: inherit;
     color: #0F172A; outline: none; transition: border-color 0.15s, box-shadow 0.15s;
   }
-  .fp-input:focus { border-color: #6366F1; box-shadow: 0 0 0 3px rgba(99,102,241,0.12); background: #fff; }
+  .fp-input:focus { border-color: #2563EB; box-shadow: 0 0 0 3px rgba(37,99,235,0.12); background: #fff; }
   .fp-btn {
     width: 100%; height: 48px; border-radius: 10px; border: none; cursor: pointer;
-    background: linear-gradient(135deg, #6366F1, #8B5CF6);
+    background: #2563EB;
     color: #fff; font-size: 15px; font-weight: 700; font-family: inherit;
-    box-shadow: 0 4px 14px rgba(99,102,241,0.35);
+    box-shadow: 0 4px 14px rgba(37,99,235,0.35);
     transition: opacity 0.15s, transform 0.15s;
     display: flex; align-items: center; justify-content: center; gap: 8px;
   }
@@ -66,19 +66,43 @@ export default function ForgotPasswordPage() {
     <div style={{ minHeight: '100vh', background: '#F8FAFC', display: 'flex', flexDirection: 'column' }}>
       <style>{THEME}</style>
 
-      {/* Header */}
-      <header style={{ padding: '18px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#fff', borderBottom: '1px solid #E2E8F0' }}>
-        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 9, textDecoration: 'none' }}>
-          <div style={{ width: 34, height: 34, borderRadius: 9, background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <BookOpen size={17} color="#fff" />
+      {/* Header — matches signup page navbar */}
+      <header style={{
+        height: 68,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '0 40px',
+        background: '#FFFFFF',
+        borderBottom: '1px solid #E2E8F0',
+      }}>
+        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
+          <img
+            src="https://res.cloudinary.com/dadiutcqh/image/upload/v1784449649/c7205191-78c8-486e-9996-7894591bf72b_szzaji.png"
+            alt="Librix Logo"
+            style={{ height: 42, width: 'auto', objectFit: 'contain' }}
+          />
+          <div>
+            <div style={{ fontSize: 17, fontWeight: 800, color: '#0F172A', lineHeight: 1.1 }}>Librix</div>
+            <div style={{ fontSize: 11, color: '#64748B', fontWeight: 500, marginTop: 2 }}>Smart Library Management</div>
           </div>
-          <span style={{ fontSize: 18, fontWeight: 800, color: '#0F172A' }}>
-            Librar<span style={{ color: '#6366F1' }}>ium</span>
-          </span>
         </Link>
-        <Link href="/login" style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, color: '#6366F1', textDecoration: 'none' }}>
-          <ArrowLeft size={14} /> Back to Login
-        </Link>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          <span style={{ fontSize: 13, color: '#64748B', fontWeight: 500 }}>Remember your password?</span>
+          <Link href="/login" style={{
+            padding: '8px 20px',
+            borderRadius: 8,
+            background: '#EFF6FF',
+            border: '1px solid #BFDBFE',
+            color: '#2563EB',
+            fontSize: 13,
+            fontWeight: 700,
+            textDecoration: 'none',
+          }}>
+            Login
+          </Link>
+        </div>
       </header>
 
       {/* Main */}
@@ -101,7 +125,7 @@ export default function ForgotPasswordPage() {
                 💡 Didn&apos;t receive it? Check your spam folder, or{' '}
                 <button
                   onClick={() => { setSent(false); setEmail(''); }}
-                  style={{ background: 'none', border: 'none', color: '#6366F1', fontWeight: 700, cursor: 'pointer', fontSize: 12, padding: 0 }}
+                  style={{ background: 'none', border: 'none', color: '#2563EB', fontWeight: 700, cursor: 'pointer', fontSize: 12, padding: 0 }}
                 >
                   try again
                 </button>
@@ -115,8 +139,8 @@ export default function ForgotPasswordPage() {
             /* ── Form State ── */
             <>
               {/* Icon */}
-              <div style={{ width: 56, height: 56, borderRadius: 14, background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 20 }}>
-                <Mail size={24} color="#6366F1" />
+              <div style={{ width: 56, height: 56, borderRadius: 14, background: 'rgba(37,99,235,0.08)', border: '1px solid rgba(37,99,235,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 20 }}>
+                <Mail size={24} color="#2563EB" />
               </div>
 
               <h1 style={{ fontSize: 24, fontWeight: 800, color: '#0F172A', marginBottom: 8 }}>Forgot password?</h1>
@@ -169,7 +193,7 @@ export default function ForgotPasswordPage() {
 
       {/* Footer */}
       <footer style={{ padding: '16px 32px', textAlign: 'center', fontSize: 12, color: '#94A3B8', borderTop: '1px solid #E2E8F0', background: '#fff' }}>
-        © 2025 Librarium. All rights reserved.
+        © 2025 Librix. All rights reserved.
       </footer>
     </div>
   );

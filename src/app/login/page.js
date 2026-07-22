@@ -362,7 +362,7 @@ function LoginContent() {
                 <Quote size={22} style={{ transform: 'rotate(180deg)' }} />
               </div>
               <p style={{ fontSize: 13, color: '#334155', lineHeight: 1.6, margin: '0 0 12px', fontWeight: 500 }}>
-                Librarium has transformed the way we manage our library. Everything is now smarter and faster.
+                Librix has transformed the way we manage our library. Everything is now smarter and faster.
               </p>
               <div style={{ display: 'flex', gap: 3, marginBottom: 10 }}>
                 {'⭐⭐⭐⭐⭐'.split('').map((s, i) => <span key={i} style={{ fontSize: 13 }}>{s}</span>)}
@@ -628,7 +628,7 @@ function LoginContent() {
         background: '#FFFFFF',
         borderTop: '1px solid #E2E8F0',
       }}>
-        <div>© 2025 Librarium. All rights reserved.</div>
+        <div>© 2025 Librix. All rights reserved.</div>
         <div style={{ display: 'flex', gap: 24 }}>
           <Link href="/privacy" style={{ color: '#64748B', textDecoration: 'none' }}>Privacy Policy</Link>
           <span>|</span>

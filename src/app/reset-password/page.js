@@ -219,7 +219,7 @@ function ResetPasswordContent() {
 
       {/* Footer */}
       <footer style={{ padding: '16px 32px', textAlign: 'center', fontSize: 12, color: '#94A3B8', borderTop: '1px solid #E2E8F0', background: '#fff' }}>
-        © 2025 Librarium. All rights reserved.
+        © 2025 Librix. All rights reserved.
       </footer>
     </div>
   );

@@ -1,4 +1,5 @@
 'use client';
+import { useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { BookOpen, Star } from 'lucide-react';
 
@@ -66,8 +67,80 @@ const RecordMock = () => (
 );
 
 export default function LandingPage() {
-  const NAV = ['Features', 'Resources', 'About Us', 'Pricing', 'Contact'];
+  const NAV = ['Home', 'Platform', 'AI Features', 'Institutions'];
   const T = (s, extra = {}) => ({ fontFamily: 'Inter', wordWrap: 'break-word', ...extra, ...s });
+
+  // Scroll-triggered animation for book cards
+  const cardsRef = useRef(null);
+  useEffect(() => {
+    const el = cardsRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          el.querySelectorAll('.card-hidden').forEach((card) => {
+            card.classList.remove('card-hidden');
+            card.classList.add('card-visible');
+          });
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.15 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  // Scroll-triggered animation for left text column
+  const textRef = useRef(null);
+  useEffect(() => {
+    const el = textRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          el.querySelectorAll('.txt-hidden').forEach((node) => {
+            node.classList.remove('txt-hidden');
+            node.classList.add('txt-visible');
+          });
+          el.querySelectorAll('.line-hidden').forEach((node) => {
+            node.classList.remove('line-hidden');
+            node.classList.add('line-visible');
+          });
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.2 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  // Scroll-triggered animation for Trusted section
+  const trustedRef = useRef(null);
+  useEffect(() => {
+    const el = trustedRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          el.querySelectorAll('.txt-hidden').forEach((node) => {
+            node.classList.remove('txt-hidden'); node.classList.add('txt-visible');
+          });
+          el.querySelectorAll('.line-hidden').forEach((node) => {
+            node.classList.remove('line-hidden'); node.classList.add('line-visible');
+          });
+          el.querySelectorAll('.logo-hidden').forEach((node) => {
+            node.classList.remove('logo-hidden'); node.classList.add('logo-visible');
+          });
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.15 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <div style={{ fontFamily: 'Inter,sans-serif', background: 'white', color: 'black', overflowX: 'hidden', minHeight: '100vh' }}>
@@ -77,6 +150,44 @@ export default function LandingPage() {
         html,body{height:auto!important;overflow:visible!important;min-height:100vh}
         html{scroll-behavior:smooth}a{text-decoration:none}
         .nl:hover{color:#1A73E8!important}.hl:hover{opacity:.85}
+        @keyframes scrollLeft {
+          0%   { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        @keyframes scrollRight {
+          0%   { transform: translateX(-50%); }
+          100% { transform: translateX(0); }
+        }
+        @keyframes floatBooks {
+          0%, 100% { transform: translateY(0px); }
+          50%       { transform: translateY(-22px); }
+        }
+        @keyframes fadeInUp {
+          0%   { opacity: 0; transform: translateY(60px); }
+          100% { opacity: 1; transform: translateY(0); }
+        }
+        .card-hidden { opacity: 0; transform: translateY(60px); }
+        .card-visible {
+          animation: fadeInUp 0.6s cubic-bezier(0.22,1,0.36,1) both;
+        }
+        @keyframes growDown {
+          0%   { transform: scaleY(0); opacity: 0; }
+          100% { transform: scaleY(1); opacity: 1; }
+        }
+        @keyframes slideInLeft {
+          0%   { opacity: 0; transform: translateX(-40px); }
+          100% { opacity: 1; transform: translateX(0); }
+        }
+        .txt-hidden  { opacity: 0; transform: translateX(-40px); }
+        .txt-visible { animation: slideInLeft 0.65s cubic-bezier(0.22,1,0.36,1) both; }
+        .line-hidden  { opacity: 0; transform: scaleY(0); transform-origin: top; }
+        .line-visible { animation: growDown 0.7s cubic-bezier(0.22,1,0.36,1) both; transform-origin: top; }
+        @keyframes popUp {
+          0%   { opacity: 0; transform: translateY(40px) scale(0.95); }
+          100% { opacity: 1; transform: translateY(0)   scale(1); }
+        }
+        .logo-hidden  { opacity: 0; transform: translateY(40px) scale(0.95); }
+        .logo-visible { animation: popUp 0.55s cubic-bezier(0.22,1,0.36,1) both; }
       `}</style>
 
       {/* NAVBAR */}
@@ -86,11 +197,11 @@ export default function LandingPage() {
             <img src="https://res.cloudinary.com/dadiutcqh/image/upload/v1784448482/e2d37f27-b9e1-484c-a59b-79e086b1aec2_rah6h8.png" alt="Librix Logo" style={{ height: 50, width: 'auto', objectFit: 'contain', transform: 'scale(1.3)' }} />
           </Link>
           <div style={{ display: 'flex', alignItems: 'center', gap: 44 }}>
-            {NAV.map(l => <a key={l} href={`#${l.toLowerCase().replace(' ', '-')}`} className="nl" style={{ color: 'black', fontSize: 16, fontFamily: 'Inter', fontWeight: 400, transition: 'color 0.2s' }}>{l}</a>)}
+            {NAV.map(l => <Link key={l} href={l === 'Platform' ? '/platform' : l === 'Home' ? '/' : `#${l.toLowerCase().replace(' ', '-')}`} className="nl" style={{ color: 'black', fontSize: 16, fontFamily: 'Inter', fontWeight: 400, transition: 'color 0.2s' }}>{l}</Link>)}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <Link href="/register" style={{ padding: '10px 28px', borderRadius: 38, border: '1px solid rgba(5,32,51,0.42)', color: DARK, fontSize: 16, fontFamily: 'Inter', fontWeight: 400 }}>Register College</Link>
-            <Link href="/login" style={{ padding: '10px 24px', borderRadius: 38, background: BLUE, color: 'white', fontSize: 16, fontFamily: 'Inter', fontWeight: 500 }}>Login</Link>
+            <Link href="/register" style={{ padding: '7px 28px', borderRadius: 38, border: '1px solid rgba(5,32,51,0.42)', color: DARK, fontSize: 16, fontFamily: 'Inter', fontWeight: 400 }}>Register College</Link>
+            <Link href="/login" style={{ padding: '7px 24px', borderRadius: 38, background: BLUE, color: 'white', fontSize: 16, fontFamily: 'Inter', fontWeight: 500 }}>Login</Link>
           </div>
         </nav>
       </div>
@@ -104,13 +215,14 @@ export default function LandingPage() {
           aria-hidden="true"
           style={{
             position: 'absolute',
-            top: 0, left: 0,
-            width: '100%', height: '100%',
+            top: '-5%', left: '-2%',
+            width: '104%', height: '110%',
             objectFit: 'cover',
             objectPosition: 'center',
             pointerEvents: 'none',
             userSelect: 'none',
             zIndex: 0,
+            animation: 'floatBooks 5s ease-in-out infinite',
           }}
         />
         <div style={{ maxWidth: 900, margin: '0 auto', position: 'relative', zIndex: 1 }}>
@@ -120,7 +232,7 @@ export default function LandingPage() {
           <h1 style={{ fontSize: 54, fontWeight: 700, fontFamily: 'Inter', lineHeight: 1.15, marginBottom: 24 }}>
             Smart Library Management for Modern{' '}<span style={{ color: BLUE }}>Institutions</span>
           </h1>
-          <p style={{ fontSize: 20, fontWeight: 400, fontFamily: 'Inter', color: 'rgba(0,0,0,0.60)', lineHeight: 1.6, maxWidth: 682, margin: '0 auto 40px' }}>
+          <p style={{ fontSize: 16, fontWeight: 400, fontFamily: 'Inter', color: 'rgba(0,0,0,0.60)', lineHeight: 1.6, maxWidth: 682, margin: '0 auto 40px' }}>
             Librix is an all-in-one library management system to manage books, members, requests, issue &amp; return, fines and reports — designed for colleges, universities, and modern libraries.
           </p>
           <div style={{ display: 'flex', gap: 15, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 48 }}>
@@ -155,27 +267,43 @@ export default function LandingPage() {
       </section>
 
       {/* MARKETPLACE */}
-      <section style={{ padding: '60px 24px', maxWidth: 1320, margin: '0 auto' }}>
+      <section style={{ padding: '90px 70px', maxWidth: 1320, margin: '0 auto' }}>
         <div style={{ display: 'flex', gap: 60, alignItems: 'flex-start', flexWrap: 'wrap' }}>
 
           {/* LEFT: Text + arrows */}
-          <div style={{ flex: '0 0 298px', minWidth: 240 }}>
+          <div ref={textRef} style={{ flex: '0 0 298px', minWidth: 240 }}>
             <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start', marginBottom: 20 }}>
-              <div style={{ width: 7, minHeight: 105, background: BLUE, borderRadius: 11, flexShrink: 0, marginTop: 4 }} />
+              {/* Blue line — grows downward */}
+              <div
+                className="line-hidden"
+                style={{ width: 7, minHeight: 72, background: BLUE, borderRadius: 11, flexShrink: 0, marginTop: 4, animationDelay: '0s' }}
+              />
               <div>
-                <div style={{ fontSize: 16, fontFamily: 'Inter', fontWeight: 400, marginBottom: 6 }}>
+                {/* GET MORE CLOSER */}
+                <div
+                  className="txt-hidden"
+                  style={{ fontSize: 16, fontFamily: 'Inter', fontWeight: 400, marginBottom: 6, animationDelay: '0.15s' }}
+                >
                   <span style={{ color: 'black' }}>GET MORE </span><span style={{ color: BLUE }}>CLOSER</span>
                 </div>
-                <div style={{ fontSize: 48, fontWeight: 500, fontFamily: 'Inter', lineHeight: 1.15 }}>
+                {/* Big heading */}
+                <div
+                  className="txt-hidden"
+                  style={{ fontSize: 48, fontWeight: 500, fontFamily: 'Inter', lineHeight: 1.15, animationDelay: '0.28s' }}
+                >
                   <span style={{ color: 'black' }}>Marketplace<br />for </span><span style={{ color: BLUE }}>Creativity</span>
                 </div>
               </div>
             </div>
-            <p style={{ color: 'rgba(0,0,0,0.60)', fontSize: 16, fontWeight: 400, fontFamily: 'Inter', lineHeight: 1.6, marginBottom: 32 }}>
+            {/* Description */}
+            <p
+              className="txt-hidden"
+              style={{ color: 'rgba(0,0,0,0.60)', fontSize: 16, fontWeight: 400, fontFamily: 'Inter', lineHeight: 1.6, marginBottom: 32, animationDelay: '0.42s' }}
+            >
               Organize books, track availability, manage members and simplify daily library operations.
             </p>
             {/* Navigation arrows */}
-            <div style={{ display: 'flex', gap: 8 }}>
+            <div className="txt-hidden" style={{ display: 'flex', gap: 8, animationDelay: '0.55s' }}>
               {['←', '→'].map((arrow, i) => (
                 <button key={i} style={{
                   width: 37, height: 37, borderRadius: '50%',
@@ -198,18 +326,24 @@ export default function LandingPage() {
               }}>View All</Link>
             </div>
 
-            {/* 3 Book cards */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16, marginBottom: 12 }}>
+            {/* 3 Book cards — staggered wave: down → up → down */}
+            <div ref={cardsRef} style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16, marginBottom: 12, alignItems: 'start' }}>
               {[
-                { title: 'Best Author', img1: 'https://res.cloudinary.com/dadiutcqh/image/upload/v1781966160/2b6bdc8890caf6725bac452d668983177171fe75_pd81vb.png', img2: 'https://res.cloudinary.com/dadiutcqh/image/upload/v1781966397/7dc2c9ce9f7e759580caf98f5b105fd21d5d57f4_t1sghw.png' },
-                { title: 'Deep Understanding', img1: 'https://res.cloudinary.com/dadiutcqh/image/upload/v1781966485/5d9d4ba558d3c5f069df8b6dba80b4871fe18641_aiv1sb.png', img2: 'https://res.cloudinary.com/dadiutcqh/image/upload/v1781966543/1b5dd1dc0ba2203d7616047bc3e67e2539ab5ebd_hoyhdt.png' },
-                { title: 'Educational books', img1: 'https://res.cloudinary.com/dadiutcqh/image/upload/v1781966564/e31e8b25a45e30befb5e8134306d7302e20e480f_pljnqm.png', img2: 'https://res.cloudinary.com/dadiutcqh/image/upload/v1781966160/2b6bdc8890caf6725bac452d668983177171fe75_pd81vb.png' },
-              ].map(({ title, img1, img2 }) => (
-                <div key={title} style={{
-                  background: 'white', borderRadius: 14,
-                  border: '1px solid rgba(0,0,0,0.19)',
-                  overflow: 'hidden',
-                }}>
+                { title: 'Best Author', img1: 'https://res.cloudinary.com/dadiutcqh/image/upload/v1781966160/2b6bdc8890caf6725bac452d668983177171fe75_pd81vb.png', img2: 'https://res.cloudinary.com/dadiutcqh/image/upload/v1781966397/7dc2c9ce9f7e759580caf98f5b105fd21d5d57f4_t1sghw.png', offset: 40 },
+                { title: 'Deep Understanding', img1: 'https://res.cloudinary.com/dadiutcqh/image/upload/v1781966485/5d9d4ba558d3c5f069df8b6dba80b4871fe18641_aiv1sb.png', img2: 'https://res.cloudinary.com/dadiutcqh/image/upload/v1781966543/1b5dd1dc0ba2203d7616047bc3e67e2539ab5ebd_hoyhdt.png', offset: 80 },
+                { title: 'Educational books', img1: 'https://res.cloudinary.com/dadiutcqh/image/upload/v1781966564/e31e8b25a45e30befb5e8134306d7302e20e480f_pljnqm.png', img2: 'https://res.cloudinary.com/dadiutcqh/image/upload/v1781966160/2b6bdc8890caf6725bac452d668983177171fe75_pd81vb.png', offset: 0 },
+              ].map(({ title, img1, img2, offset }, idx) => (
+                <div
+                  key={title}
+                  className="card-hidden"
+                  style={{
+                    background: 'white', borderRadius: 14,
+                    border: '1px solid rgba(0,0,0,0.19)',
+                    overflow: 'hidden',
+                    marginTop: offset,
+                    animationDelay: `${idx * 0.18}s`,
+                  }}
+                >
                   {/* Book covers side by side */}
                   <div style={{ display: 'flex', height: 209 }}>
                     <img src={img1} alt={title} style={{ width: '48%', height: '100%', objectFit: 'cover', borderTopLeftRadius: 7, borderBottomLeftRadius: 7 }} />
@@ -234,7 +368,7 @@ export default function LandingPage() {
 
 
       {/* VISION */}
-      <section id="about" style={{ background: 'rgba(26,115,232,0.05)', padding: '80px 24px' }}>
+      <section id="about" style={{ background: 'rgba(26,115,232,0.05)', padding: '80px 80px' }}>
         <div style={{ maxWidth: 1320, margin: '0 auto', display: 'flex', gap: 60, alignItems: 'flex-start', flexWrap: 'wrap' }}>
 
           {/* LEFT column */}
@@ -245,7 +379,7 @@ export default function LandingPage() {
             </div>
 
             <h2 style={{ fontSize: 48, fontWeight: 600, fontFamily: 'Inter', lineHeight: 1.2, marginBottom: 16 }}>
-              <span style={{ color: 'black' }}>Our vision<br />for Digital </span><span style={{ color: BLUE }}>Education</span>
+              <span style={{ color: 'black' }}>Our vision for Digital </span><span style={{ color: BLUE }}>Education</span>
             </h2>
             <p style={{ color: 'black', fontSize: 16, fontWeight: 400, fontFamily: 'Inter', lineHeight: 1.7, marginBottom: 28 }}>
               Building smarter campuses through simple and efficient library technology.
@@ -255,16 +389,16 @@ export default function LandingPage() {
             </a>
 
             {/* Scattered app/integration icons */}
-            <div style={{ position: 'relative', height: 160, width: '100%' }}>
+            <div style={{ position: 'relative', height: 140, width: '100%' }}>
               {[
-                { top: 0, left: 50, src: 'https://res.cloudinary.com/dadiutcqh/image/upload/v1782013762/b3a987cea2e498984971cfc2731b4913ef10fecb_dznqwa.png' },
-                { top: 10, left: 110, src: 'https://res.cloudinary.com/dadiutcqh/image/upload/v1782013761/2d38b483c75df2b40e70d9d424e08568cb14e0ad_wnmgub.png' },
-                { top: 0, left: 175, src: 'https://res.cloudinary.com/dadiutcqh/image/upload/v1782013758/ec070c4d0d94568b1dbac3768f7e6d115fbd7488_gqlkj4.png' },
-                { top: 55, left: 25, src: 'https://res.cloudinary.com/dadiutcqh/image/upload/v1782013756/146063117eebaaf335d7359721918fd29e27a8c2_mka5ay.png' },
-                { top: 60, left: 95, src: 'https://res.cloudinary.com/dadiutcqh/image/upload/v1782013755/6f8addfb06251431ead80835267843f16a8532e0_kqtzuh.png' },
-                { top: 55, left: 165, src: 'https://res.cloudinary.com/dadiutcqh/image/upload/v1782013746/52f2e660feb571c8566cfe781c4414c338d8602a_vm6llz.png' },
-                { top: 60, left: 235, src: 'https://res.cloudinary.com/dadiutcqh/image/upload/v1782013744/533bfd07bcaf92a339876fcb9c18ed03475f8094_ofuqlt.png' },
-                { top: 115, left: 50, src: 'https://res.cloudinary.com/dadiutcqh/image/upload/v1782013742/e406aef0637df5f89df3b5c916d8c59020092e25_mkem3z.png' },
+                { top: 0,   left: 20,  src: 'https://res.cloudinary.com/dadiutcqh/image/upload/v1782013762/b3a987cea2e498984971cfc2731b4913ef10fecb_dznqwa.png' },
+                { top: 10,  left: 100, src: 'https://res.cloudinary.com/dadiutcqh/image/upload/v1782013761/2d38b483c75df2b40e70d9d424e08568cb14e0ad_wnmgub.png' },
+                { top: 0,   left: 180, src: 'https://res.cloudinary.com/dadiutcqh/image/upload/v1782013758/ec070c4d0d94568b1dbac3768f7e6d115fbd7488_gqlkj4.png' },
+                { top: -20,  left: 260,   src: 'https://res.cloudinary.com/dadiutcqh/image/upload/v1782013756/146063117eebaaf335d7359721918fd29e27a8c2_mka5ay.png' },
+                { top: 70,  left: 50, src: 'https://res.cloudinary.com/dadiutcqh/image/upload/v1782013755/6f8addfb06251431ead80835267843f16a8532e0_kqtzuh.png' },
+                { top: 70,  left: 150, src: 'https://res.cloudinary.com/dadiutcqh/image/upload/v1782013746/52f2e660feb571c8566cfe781c4414c338d8602a_vm6llz.png' },
+                { top: 50,  left: 240, src: 'https://res.cloudinary.com/dadiutcqh/image/upload/v1782013744/533bfd07bcaf92a339876fcb9c18ed03475f8094_ofuqlt.png' },
+                { top: -70, left: 205,  src: 'https://res.cloudinary.com/dadiutcqh/image/upload/v1782013742/e406aef0637df5f89df3b5c916d8c59020092e25_mkem3z.png' },
               ].map((item, i) => (
                 <div key={i} style={{
                   position: 'absolute', top: item.top, left: item.left,
@@ -335,9 +469,15 @@ export default function LandingPage() {
 
       {/* BOOK SPINES — text sandwiched between two rows */}
       <section style={{ padding: '60px 0', overflow: 'hidden' }}>
-        {/* Top row */}
-        <div style={{ display: 'flex', gap: 30, overflowX: 'hidden', alignItems: 'flex-end', paddingBottom: 8 }}>
-          {TS.map((s, i) => <Sp key={`t${i}`} src={s.src} h={s.h} w={s.w} r={s.r} />)}
+        {/* Top row — infinite scroll right → left */}
+        <div style={{ overflow: 'hidden', paddingBottom: 8 }}>
+          <div style={{
+            display: 'flex', gap: 30, alignItems: 'flex-end',
+            width: 'max-content',
+            animation: 'scrollLeft 40s linear infinite',
+          }}>
+            {[...TS, ...TS].map((s, i) => <Sp key={`t${i}`} src={s.src} h={s.h} w={s.w} r={s.r} />)}
+          </div>
         </div>
 
         {/* Centre text */}
@@ -350,35 +490,62 @@ export default function LandingPage() {
           </p>
         </div>
 
-        {/* Bottom row */}
-        <div style={{ display: 'flex', gap: 30, overflowX: 'hidden', alignItems: 'flex-start', paddingTop: 8 }}>
-          {BS.map((s, i) => <Sp key={`b${i}`} src={s.src} h={s.h} w={s.w} r={s.r} />)}
+        {/* Bottom row — infinite scroll left → right */}
+        <div style={{ overflow: 'hidden', paddingTop: 8 }}>
+          <div style={{
+            display: 'flex', gap: 30, alignItems: 'flex-start',
+            width: 'max-content',
+            animation: 'scrollRight 40s linear infinite',
+          }}>
+            {[...BS, ...BS].map((s, i) => <Sp key={`b${i}`} src={s.src} h={s.h} w={s.w} r={s.r} />)}
+          </div>
         </div>
       </section>
 
       {/* TRUSTED */}
-      <section style={{ padding: '80px 24px' }}>
-        <div style={{ maxWidth: 1320, margin: '0 auto' }}>
+      <section style={{ padding: '80px 80px' }}>
+        <div ref={trustedRef} style={{ maxWidth: 1320, margin: '0 auto' }}>
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 16 }}>
-            <div style={{ width: 7, height: 61, background: BLUE, borderRadius: 11, flexShrink: 0, marginTop: 4 }} />
+            {/* Blue line grows down */}
+            <div
+              className="line-hidden"
+              style={{ width: 7, height: 61, background: BLUE, borderRadius: 11, flexShrink: 0, marginTop: 4, animationDelay: '0s' }}
+            />
             <div>
-              <h2 style={{ fontSize: 32, fontWeight: 600, fontFamily: 'Inter' }}>
+              <h2
+                className="txt-hidden"
+                style={{ fontSize: 32, fontWeight: 600, fontFamily: 'Inter', animationDelay: '0.15s' }}
+              >
                 <span style={{ color: 'black' }}>Trusted by the </span><span style={{ color: BLUE }}>best.</span>
               </h2>
-              <p style={{ fontSize: 16, fontWeight: 400, fontFamily: 'Inter', color: 'rgba(0,0,0,0.60)', marginTop: 8 }}>
+              <p
+                className="txt-hidden"
+                style={{ fontSize: 16, fontWeight: 400, fontFamily: 'Inter', color: 'rgba(0,0,0,0.60)', marginTop: 8, animationDelay: '0.28s' }}
+              >
                 Our growth hackers are experts in the identifying and capitalizing on the most
               </p>
             </div>
           </div>
+          {/* Logo cards — staggered pop-up */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 20, marginTop: 32 }}>
             {[
-              'https://www.shorttermprograms.com/images/cache/600_by_314/uploads/institution-logos/harvard-university.png',
-              'https://res.cloudinary.com/dadiutcqh/image/upload/v1782019390/857605ecf94c219c481aac1296e972aa71ae6f96_1_gtqj1y.png',
-              'https://res.cloudinary.com/dadiutcqh/image/upload/v1782018803/images_s87tb3.png',
+              'https://res.cloudinary.com/dadiutcqh/image/upload/v1782017261/2decbdfc393cbd31588216ba72e677316ba73125_tqtah5.png',
+              'https://res.cloudinary.com/dadiutcqh/image/upload/v1782017284/2f8c789ce17bd7ed3d26af13b68b51a32e6d69e1_p56sol.png',
+              'https://res.cloudinary.com/dadiutcqh/image/upload/v1782017261/2decbdfc393cbd31588216ba72e677316ba73125_tqtah5.png',
               'https://res.cloudinary.com/dadiutcqh/image/upload/v1782017284/2f8c789ce17bd7ed3d26af13b68b51a32e6d69e1_p56sol.png',
               'https://res.cloudinary.com/dadiutcqh/image/upload/v1782017261/2decbdfc393cbd31588216ba72e677316ba73125_tqtah5.png',
             ].map((src, i) => (
-              <div key={i} style={{ background: 'white', boxShadow: '0 4px 4px rgba(0,0,0,0.05)', borderRadius: 10, padding: '28px 20px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(0,0,0,0.06)' }}>
+              <div
+                key={i}
+                className="logo-hidden"
+                style={{
+                  background: 'white', boxShadow: '0 4px 4px rgba(0,0,0,0.05)',
+                  borderRadius: 10, padding: '28px 20px',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  border: '1px solid rgba(0,0,0,0.06)',
+                  animationDelay: `${0.35 + i * 0.1}s`,
+                }}
+              >
                 <img src={src} alt={`Partner ${i + 1}`} style={{ maxHeight: 40, maxWidth: '100%', objectFit: 'contain' }} />
               </div>
             ))}
@@ -387,30 +554,30 @@ export default function LandingPage() {
       </section>
 
       {/* FEATURES */}
-      <section id="features" style={{ padding: '100px 24px' }}>
+      <section id="features" style={{ padding: '50px 80px' }}>
         <div style={{ maxWidth: 1320, margin: '0 auto' }}>
-          <div style={{ display: 'flex', gap: 80, alignItems: 'center', marginBottom: 100, flexWrap: 'wrap' }}>
-            <div style={{ flex: 1, minWidth: 300, borderRadius: 20, overflow: 'hidden', boxShadow: '0 4px 30px rgba(26,115,232,0.1)' }}>
-              <img src="https://res.cloudinary.com/dadiutcqh/image/upload/v1782019559/84670e5cba4e54b72090eecb729579233879ad64_qakcu8.png" alt="Digital library experience" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+          <div style={{ display: 'flex', gap: 60, alignItems: 'center', marginBottom: 100, flexWrap: 'wrap', justifyContent: 'center' }}>
+            <div style={{ flex: '1 1 0', maxWidth: 500, borderRadius: 20, overflow: 'hidden', boxShadow: '0 4px 30px rgba(26,115,232,0.1)' }}>
+              <img src="https://res.cloudinary.com/dadiutcqh/image/upload/v1784617028/14d18450-1565-4045-b65b-4a3f94d8965f_kr8fct.png" alt="Digital library experience" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
             </div>
-            <div style={{ flex: 1, minWidth: 280 }}>
+            <div style={{ flex: '1 1 0', maxWidth: 500, minWidth: 260 }}>
               <h2 style={{ fontSize: 32, fontWeight: 600, fontFamily: 'Inter', color: 'black', marginBottom: 16 }}>Digital library experience</h2>
-              <p style={{ fontSize: 20, fontWeight: 500, fontFamily: 'Inter', color: 'rgba(0,0,0,0.60)', lineHeight: 1.6, marginBottom: 24 }}>
+              <p style={{ fontSize: 16, fontWeight: 500, fontFamily: 'Inter', color: 'rgba(0,0,0,0.60)', lineHeight: 1.6, marginBottom: 24 }}>
                 Librix makes it simple to search, explore, and access resources while giving colleges a smarter way to manage books, members, requests, and everyday library operations.
               </p>
               <Link href="/register" style={{ display: 'inline-flex', padding: '10px 24px', borderRadius: 38, background: BLUE, color: 'white', fontSize: 16, fontWeight: 500, fontFamily: 'Inter' }}>View All</Link>
             </div>
           </div>
-          <div style={{ display: 'flex', gap: 80, alignItems: 'center', flexWrap: 'wrap' }}>
-            <div style={{ flex: 1, minWidth: 280 }}>
+          <div style={{ display: 'flex', gap: 60, alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
+            <div style={{ flex: '1 1 0', maxWidth: 500, minWidth: 260 }}>
               <h2 style={{ fontSize: 32, fontWeight: 600, fontFamily: 'Inter', color: 'black', marginBottom: 16 }}>Complete library control</h2>
-              <p style={{ fontSize: 20, fontWeight: 500, fontFamily: 'Inter', color: 'rgba(0,0,0,0.60)', lineHeight: 1.6, marginBottom: 24 }}>
+              <p style={{ fontSize: 16, fontWeight: 500, fontFamily: 'Inter', color: 'rgba(0,0,0,0.60)', lineHeight: 1.6, marginBottom: 24 }}>
                 Librix provides colleges with a centralized library management system that simplifies book tracking, automates workflows, and helps librarians make smarter decisions with detailed insights.
               </p>
               <Link href="/register" style={{ display: 'inline-flex', padding: '10px 24px', borderRadius: 38, background: BLUE, color: 'white', fontSize: 16, fontWeight: 500, fontFamily: 'Inter' }}>View All</Link>
             </div>
-            <div style={{ flex: 1, minWidth: 300, borderRadius: 20, overflow: 'hidden', boxShadow: '0 4px 30px rgba(26,115,232,0.1)' }}>
-              <img src="https://res.cloudinary.com/dadiutcqh/image/upload/v1782019590/c23908cd7f6e2843bd0b728b52979a5291a5b749_qdvb33.png" alt="Complete library control" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+            <div style={{ flex: '1 1 0', maxWidth: 500, borderRadius: 20, overflow: 'hidden', boxShadow: '0 4px 30px rgba(26,115,232,0.1)' }}>
+              <img src="https://res.cloudinary.com/dadiutcqh/image/upload/v1784617837/afcbcb5b-40f5-4a4e-b590-cce3850eab54_ofaagn.png" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
             </div>
           </div>
         </div>
@@ -444,7 +611,7 @@ export default function LandingPage() {
 
       {/* FOOTER */}
       <footer style={{ background: DARK }}>
-        <div style={{ maxWidth: 1320, margin: '0 auto', padding: '60px 24px 40px' }}>
+        <div style={{ maxWidth: 1320, margin: '0 auto', padding: '60px 70px 40px' }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', gap: 40, marginBottom: 48 }}>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>

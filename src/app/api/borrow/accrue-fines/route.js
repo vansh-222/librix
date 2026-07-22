@@ -1,4 +1,4 @@
-﻿import connectDB from "@/lib/db";
+import connectDB from "@/lib/db";
 import BorrowRecord from "@/models/BorrowRecord";
 import College from "@/models/College";
 import { createNotification } from "@/lib/notifications";

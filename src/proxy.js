@@ -12,7 +12,7 @@ export default auth((req) => {
   const session = req.auth;
 
   // Public routes — no auth needed
-  const publicRoutes = ['/', '/login', '/register', '/signup', '/forgot-password', '/reset-password', '/librarian/setup'];
+  const publicRoutes = ['/', '/platform', '/login', '/register', '/signup', '/forgot-password', '/reset-password', '/librarian/setup'];
   if (
     publicRoutes.some(r => pathname === r) ||
     pathname.startsWith('/api/auth') ||
