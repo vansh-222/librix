@@ -36,7 +36,7 @@ export default function PlatformPage() {
             {NAV.map(l => (
               <Link
                 key={l}
-                href={l === 'Platform' ? '/platform' : l === 'Home' ? '/' : `/#${l.toLowerCase().replace(' ', '-')}`}
+                href={l === 'Platform' ? '/platform' : l === 'AI Features' ? '/ai-features' : l === 'Home' ? '/' : `/#${l.toLowerCase().replace(' ', '-')}`}
                 className="nl"
                 style={{ color: l === 'Platform' ? BLUE : 'black', fontSize: 16, fontFamily: 'Inter', fontWeight: l === 'Platform' ? 600 : 400, transition: 'color 0.2s' }}
               >
