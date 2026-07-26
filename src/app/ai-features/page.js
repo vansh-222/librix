@@ -109,8 +109,8 @@ export default function AIFeaturesPage() {
       <main style={{ position: 'relative', zIndex: 10, maxWidth: 1320, margin: '0 auto', padding: '60px 24px 80px' }}>
         
         {/* HERO SECTION */}
-        <section style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(440px, 1fr))', gap: 54, alignItems: 'center', marginBottom: 90 }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+        <section style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(440px, 1fr))', gap: 54, alignItems: 'center', marginBottom: 120 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 24, marginTop:50 }}>
             <div>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 16px', borderRadius: 30, background: 'rgba(0, 74, 198, 0.08)', border: '1px solid rgba(0, 74, 198, 0.2)' }}>
                 <Sparkles size={16} color={PRIMARY} />
@@ -118,11 +118,11 @@ export default function AIFeaturesPage() {
               </div>
             </div>
             
-            <h1 style={{ fontSize: 56, fontWeight: 800, fontFamily: 'Inter', letterSpacing: '-0.04em', lineHeight: 1.12, color: '#131B2E' }}>
+            <h1 style={{ fontSize: 54, fontWeight: 800, fontFamily: 'Inter', letterSpacing: '-0.04em', lineHeight: 1.12, color: '#131B2E' }}>
               AI That Works Inside Every Library.
             </h1>
             
-            <p style={{ fontSize: 17, color: '#434655', lineHeight: 1.6, maxWidth: 540 }}>
+            <p style={{ fontSize: 18, color: '#434655', lineHeight: 1.6, maxWidth: 540 }}>
               Transform your institution with a Smart Library Management Platform. Automate repetitive tasks, enhance resource discovery, and gain predictive insights with our enterprise-grade AI core.
             </p>
             
@@ -137,7 +137,7 @@ export default function AIFeaturesPage() {
           </div>
 
           <div style={{ position: 'relative' }}>
-            <div style={{ position: 'absolute', inset: '-16px', background: 'rgba(0, 74, 198, 0.12)', filter: 'blur(30px)', borderRadius: '50%', zIndex: 0 }} />
+            <div style={{ position: 'absolute', inset: '-10px', background: 'rgba(0, 74, 198, 0.12)', filter: 'blur(30px)', borderRadius: '50%', zIndex: 0 }} />
             <img 
               src="https://lh3.googleusercontent.com/aida-public/AB6AXuAnXe-S4cZituDvwDNFKLfFsqKHrZOW-s1ynnbUKj3qYrAhaJ5VLNf8wJLWEe2zIYTDNmGmahc2MJCmGsUyPZlNA7XX2nZgazO7HZe-IxWlG5gyx22DyTOkzJF6rcV711iW81LKWHe2FGxKA2LKwd1kmob2RNAVVsi80pEOS7g8hd0eqwxgr0I-q2Xci8RCH6RTIL0bKcYeboIvwg4Jbpvd0LBcI2FoiKFvZFwx-G9DIVtJ7OD_wNV4Lg" 
               alt="AI Library Management"
@@ -235,36 +235,6 @@ export default function AIFeaturesPage() {
           </div>
         </section>
 
-        {/* AI WORKFLOW SECTION */}
-        <section style={{ background: '#F2F3FF', borderRadius: 32, padding: '56px 36px', marginBottom: 100, position: 'relative', overflow: 'hidden', border: '1px solid #E2E7FF' }}>
-          <div style={{ textAlign: 'center', marginBottom: 54 }}>
-            <h2 style={{ fontSize: 38, fontWeight: 800, color: '#131B2E', letterSpacing: '-0.02em' }}>
-              How Librix AI Processes Knowledge
-            </h2>
-          </div>
-
-          <div style={{ position: 'relative', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 24, maxWidth: 1100, margin: '0 auto' }}>
-            {/* Horizontal Timeline Bar on Desktop */}
-            <div className="timeline-line" style={{ position: 'absolute', top: 36, left: 60, right: 60, height: 3, opacity: 0.25, zIndex: 0 }} />
-
-            {[
-              { icon: <Database size={28} />, label: "Library Data" },
-              { icon: <Cpu size={28} />, label: "AI Processing" },
-              { icon: <LineChart size={28} />, label: "Knowledge Extraction" },
-              { icon: <Sparkles size={28} />, label: "Smart Recommendations" },
-              { icon: <Settings size={28} />, label: "Automation" },
-              { icon: <Eye size={28} />, label: "Insights" }
-            ].map((step, idx) => (
-              <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 14, position: 'relative', zIndex: 1, flex: '1 1 140px' }}>
-                <div style={{ width: 72, height: 72, borderRadius: '50%', background: 'white', boxShadow: '0 10px 25px rgba(0, 74, 198, 0.12)', border: '1px solid rgba(0, 74, 198, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: PRIMARY }}>
-                  {step.icon}
-                </div>
-                <span style={{ fontSize: 15, fontWeight: 700, color: '#131B2E' }}>{step.label}</span>
-              </div>
-            ))}
-          </div>
-        </section>
-
 
         {/* USER PERSONAS SECTION */}
         <section style={{ marginBottom: 100 }}>
@@ -291,7 +261,7 @@ export default function AIFeaturesPage() {
         </section>
 
         {/* RESPONSIBLE AI BANNER */}
-        <section style={{ marginBottom: 100, padding: '56px 48px', background: 'linear-gradient(135deg, #004AC6 0%, #002674 100%)', color: 'white', borderRadius: 32, boxShadow: '0 25px 60px rgba(0, 74, 198, 0.25)', position: 'relative', overflow: 'hidden' }}>
+        <section style={{ marginBottom: 50, padding: '56px 48px', background: 'linear-gradient(135deg, #004AC6 0%, #002674 100%)', color: 'white', borderRadius: 32, boxShadow: '0 25px 60px rgba(0, 74, 198, 0.25)', position: 'relative', overflow: 'hidden' }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: 48, alignItems: 'center', position: 'relative', zIndex: 1 }}>
             <div>
               <h2 style={{ fontSize: 38, fontWeight: 800, marginBottom: 20, letterSpacing: '-0.02em', lineHeight: 1.15 }}>
