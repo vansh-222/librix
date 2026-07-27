@@ -1,7 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { BookOpen, Star, Play, CheckCircle2, BarChart2, Users, Clock, ShieldCheck, Sparkles, Layers, Zap, Search } from 'lucide-react';
+import { BookOpen, Star, Play, CheckCircle2, BarChart2, Users, Clock, ShieldCheck, Sparkles, Layers, Zap, Search, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const BLUE = '#1A73E8';
 const DARK = '#052033';
@@ -61,9 +61,9 @@ export default function PlatformPage() {
             {NAV.map(l => (
               <Link
                 key={l}
-                href={l === 'Platform' ? '/platform' : l === 'AI Features' ? '/ai-features' : l === 'Home' ? '/' : `/#${l.toLowerCase().replace(' ', '-')}`}
+                href={l === 'Platform' ? '/platform' : l === 'AI Features' ? '/ai-features' : l === 'Institutions' ? '/institutions' : '/'}
                 className="nl"
-                style={{ color: l === 'Platform' ? BLUE : 'black', fontSize: 16, fontFamily: 'Inter', fontWeight: l === 'Platform' ? 600 : 400, transition: 'color 0.2s' }}
+                style={{ color: l === 'Platform' ? BLUE : 'black', fontSize: 16, fontFamily: 'Inter', fontWeight: l === 'Platform' ? 600 : 400, transition: 'color 0.2s', borderBottom: l === 'Platform' ? `2px solid ${BLUE}` : 'none', paddingBottom: l === 'Platform' ? 2 : 0 }}
               >
                 {l}
               </Link>
@@ -273,8 +273,6 @@ export default function PlatformPage() {
           ))}
         </div>
       </section>
-        
-      
 
       {/* KEEP EVERYTHING IN ONE PLACE SECTION */}
       <section style={{ padding: '40px 24px 70px', background: '#FAFAFA', borderTop: '1px solid #F1F5F9', borderBottom: '1px solid #F1F5F9' }}>
@@ -380,9 +378,19 @@ export default function PlatformPage() {
       <section style={{ padding: '50px 24px 50px' }}>
         <div style={{ maxWidth: 1140, margin: '0 auto' }}>
 
-          <h2 style={{ fontSize: 44, fontWeight: 800, textAlign: 'left', color: '#0F172A', marginBottom: 50, letterSpacing: '-0.02em', lineHeight:"1.3em" }}>
-            People just like you<br />are already using <span style={{ color: '#6366F1' }}>Librix</span>
-          </h2>
+          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 50 }}>
+            <h2 style={{ fontSize: 44, fontWeight: 800, textAlign: 'left', color: '#0F172A', letterSpacing: '-0.02em', lineHeight:"1.3em", margin: 0 }}>
+              People just like you<br />are already using <span style={{ color: '#6366F1' }}>Librix</span>
+            </h2>
+            <div style={{ display: 'flex', gap: 12, paddingBottom: 10 }}>
+              <button style={{ width: 48, height: 48, borderRadius: '50%', background: '#FFFFFF', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s', boxShadow: '0 4px 12px rgba(0,0,0,0.03)' }}>
+                <ChevronLeft size={24} color="#94A3B8" />
+              </button>
+              <button style={{ width: 48, height: 48, borderRadius: '50%', background: '#6366F1', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s', boxShadow: '0 4px 16px rgba(99,102,241,0.25)' }}>
+                <ChevronRight size={24} color="#FFFFFF" />
+              </button>
+            </div>
+          </div>
 
           {/* Testimonials Grid */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: 24 }}>

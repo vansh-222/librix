@@ -91,9 +91,9 @@ export default function AIFeaturesPage() {
             {NAV.map(l => (
               <Link
                 key={l}
-                href={l === 'Platform' ? '/platform' : l === 'AI Features' ? '/ai-features' : l === 'Home' ? '/' : `/#${l.toLowerCase().replace(' ', '-')}`}
+                href={l === 'Platform' ? '/platform' : l === 'AI Features' ? '/ai-features' : l === 'Institutions' ? '/institutions' : '/'}
                 className="nl"
-                style={{ color: l === 'AI Features' ? BLUE : 'black', fontSize: 16, fontFamily: 'Inter', fontWeight: l === 'AI Features' ? 600 : 400, transition: 'color 0.2s' }}
+                style={{ color: l === 'AI Features' ? BLUE : 'black', fontSize: 16, fontFamily: 'Inter', fontWeight: l === 'AI Features' ? 600 : 400, transition: 'color 0.2s', borderBottom: l === 'AI Features' ? `2px solid ${BLUE}` : 'none', paddingBottom: l === 'AI Features' ? 2 : 0 }}
               >
                 {l}
               </Link>
@@ -261,7 +261,7 @@ export default function AIFeaturesPage() {
         </section>
 
         {/* RESPONSIBLE AI BANNER */}
-        <section style={{ marginBottom: 50, padding: '56px 48px', background: 'linear-gradient(135deg, #004AC6 0%, #002674 100%)', color: 'white', borderRadius: 32, boxShadow: '0 25px 60px rgba(0, 74, 198, 0.25)', position: 'relative', overflow: 'hidden' }}>
+        <section style={{ marginBottom: 30, padding: '56px 48px', background: 'linear-gradient(135deg, #004AC6 0%, #002674 100%)', color: 'white', borderRadius: 32, boxShadow: '0 25px 60px rgba(0, 74, 198, 0.25)', position: 'relative', overflow: 'hidden' }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: 48, alignItems: 'center', position: 'relative', zIndex: 1 }}>
             <div>
               <h2 style={{ fontSize: 38, fontWeight: 800, marginBottom: 20, letterSpacing: '-0.02em', lineHeight: 1.15 }}>

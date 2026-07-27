@@ -197,7 +197,7 @@ export default function LandingPage() {
             <img src="https://res.cloudinary.com/dadiutcqh/image/upload/v1784448482/e2d37f27-b9e1-484c-a59b-79e086b1aec2_rah6h8.png" alt="Librix Logo" style={{ height: 50, width: 'auto', objectFit: 'contain', transform: 'scale(1.3)' }} />
           </Link>
           <div style={{ display: 'flex', alignItems: 'center', gap: 44 }}>
-            {NAV.map(l => <Link key={l} href={l === 'Platform' ? '/platform' : l === 'AI Features' ? '/ai-features' : l === 'Home' ? '/' : `#${l.toLowerCase().replace(' ', '-')}`} className="nl" style={{ color: 'black', fontSize: 16, fontFamily: 'Inter', fontWeight: 400, transition: 'color 0.2s' }}>{l}</Link>)}
+            {NAV.map(l => <Link key={l} href={l === 'Platform' ? '/platform' : l === 'AI Features' ? '/ai-features' : l === 'Institutions' ? '/institutions' : '/'} className="nl" style={{ color: l === 'Home' ? BLUE : 'black', fontSize: 16, fontFamily: 'Inter', fontWeight: l === 'Home' ? 600 : 400, transition: 'color 0.2s', borderBottom: l === 'Home' ? `2px solid ${BLUE}` : 'none', paddingBottom: l === 'Home' ? 2 : 0 }}>{l}</Link>)}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <Link href="/register" style={{ padding: '7px 28px', borderRadius: 38, border: '1px solid rgba(5,32,51,0.42)', color: DARK, fontSize: 16, fontFamily: 'Inter', fontWeight: 400 }}>Register College</Link>
