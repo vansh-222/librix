@@ -84,8 +84,12 @@ export default function AIFeaturesPage() {
       {/* NAVBAR (Exact same consistent structure as Landing & Platform pages) */}
       <div style={{ position: 'sticky', top: 16, zIndex: 100, padding: '0 27px' }}>
         <nav style={{ maxWidth: 1386, margin: '0 auto', background: 'white', boxShadow: '0px 4px 25.3px rgba(26,115,232,0.23)', borderRadius: 40, border: '1px solid #D9D9D9', padding: '0 40px', height: 71, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <img src="https://res.cloudinary.com/dadiutcqh/image/upload/v1784448482/e2d37f27-b9e1-484c-a59b-79e086b1aec2_rah6h8.png" alt="Librix Logo" style={{ height: 50, width: 'auto', objectFit: 'contain', transform: 'scale(1.3)' }} />
+            <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1 }}>
+              <span style={{ fontSize: 20, fontWeight: 800, color: '#052033', fontFamily: 'Inter', letterSpacing: '-0.03em' }}>Librix</span>
+              <span style={{ fontSize: 10, fontWeight: 500, color: '#64748B', fontFamily: 'Inter', letterSpacing: '0.02em' }}>Smart Library Management</span>
+            </div>
           </Link>
           <div style={{ display: 'flex', alignItems: 'center', gap: 44 }}>
             {NAV.map(l => (
@@ -310,7 +314,7 @@ export default function AIFeaturesPage() {
               <img 
                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuDw7ltrH6jrT2YAQGP0T7EZ087j5zuqmeuO1lUeMZiE2hKyYRwwdtOZ545r2fsFGK_uEbrt_Q58O8WyRORv1W86SIvZKj7dX4shG02FBXFMQPbXQwkOfOU-IJ68ME2DTQwOCpyDdasA34KB_GvlJBXRU0QRzl4_EDqUm1CLrPnCMw7k7FAX58riYLgGl3thzYpoHtYsnMTo2WgPizfwTA4EyWaEPHyIhKPK09ju5O9U5UjZijXvIIcIHg" 
                 alt="Responsible AI Integrity"
-                style={{ width: '100%', maxWidth: 380, height: 'auto', display: 'block', filter: 'drop-shadow(0 25px 40px rgba(0, 0, 0, 0.4))' }}
+                style={{ borderRadius: 32, width: '100%', maxWidth: 380, height: 'auto', display: 'block', filter: 'drop-shadow(0 25px 40px rgba(0, 0, 0, 0.4))' }}
               />
             </div>
           </div>

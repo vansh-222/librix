@@ -50,7 +50,7 @@ export default function LibrarianMembersPage() {
 
   const getMembershipType = (role) => {
     if (role === 'student') return { label: 'Student', bg: '#DBEAFE', color: '#1D4ED8' };
-    if (role === 'teacher') return { label: 'Faculty', bg: '#E0E7FF', color: '#6366F1' };
+    if (role === 'teacher') return { label: 'Faculty', bg: '#EFF6FF', color: '#1A73E8' };
     return { label: 'Staff', bg: '#FEF3C7', color: '#D97706' };
   };
 
@@ -75,7 +75,7 @@ export default function LibrarianMembersPage() {
             {/* Stat cards */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
                 {[
-                  { label: 'Total Members', value: totalMembers, iconBg: '#EDE9FE', icon: <Users size={22} color="#6C5CE7" /> },
+                  { label: 'Total Members', value: totalMembers, iconBg: '#EFF6FF', icon: <Users size={22} color="#1A73E8" /> },
                   { label: 'Active ', value: activeMembers, iconBg: '#DCFCE7', icon: <UserCheck size={22} color="#16A34A" /> },
                   { label: 'New ', value: newThisMonth, iconBg: '#FFEDD5', icon: <UserPlus size={22} color="#EA580C" /> },
                   { label: 'Inactive ', value: inactiveMembers, iconBg: '#FEE2E2', icon: <UserX size={22} color="#DC2626" /> }
@@ -89,8 +89,8 @@ export default function LibrarianMembersPage() {
                         <div style={{ fontSize: 24, fontWeight: 700, color: '#111827', lineHeight: 1.1 }}>{s.value}</div>
                         <div style={{ fontSize: 12, color: '#6B7280', marginTop: 2 }}>{s.label}</div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 2, marginTop: 6 }}>
-                          <span style={{ fontSize: 12, fontWeight: 500, color: '#6C5CE7', cursor: 'pointer' }}>View all</span>
-                          <ChevronRight size={12} color="#6C5CE7" />
+                          <span style={{ fontSize: 12, fontWeight: 500, color: '#1A73E8', cursor: 'pointer' }}>View all</span>
+                          <ChevronRight size={12} color="#1A73E8" />
                         </div>
                       </div>
                     </div>
@@ -116,10 +116,10 @@ export default function LibrarianMembersPage() {
                   </div>
                 ))}
                 <button type="button" style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', border: '1px solid #E5E7EB', borderRadius: 8, background: 'white', fontSize: 13, color: '#374151', cursor: 'pointer', fontFamily: 'Inter' }}>
-                  <Filter size={14} color="#6C5CE7" />
+                  <Filter size={14} color="#1A73E8" />
                   Filters
                 </button>
-                <button type="button" style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 16px', border: 'none', borderRadius: 8, background: '#6C5CE7', color: 'white', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'Inter', marginLeft: 'auto' }}>
+                <button type="button" style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 16px', border: 'none', borderRadius: 8, background: '#1A73E8', color: 'white', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'Inter', marginLeft: 'auto' }}>
                   <Plus size={16} />
                   Add New Member
                 </button>
@@ -150,7 +150,7 @@ export default function LibrarianMembersPage() {
                                 width: 40,
                                 height: 40,
                                 borderRadius: '50%',
-                                background: '#6C5CE7',
+                                background: '#1A73E8',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
@@ -192,10 +192,10 @@ export default function LibrarianMembersPage() {
                           <td style={{ padding: '10px 16px' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 4, justifyContent: 'center' }}>
                               <button type="button" className="act-btn" style={{ padding: '6px', border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex' }}>
-                                <Eye size={16} color="#6C5CE7" />
+                                <Eye size={16} color="#1A73E8" />
                               </button>
                               <button type="button" className="act-btn" style={{ padding: '6px', border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex' }}>
-                                <Edit size={16} color="#6C5CE7" />
+                                <Edit size={16} color="#1A73E8" />
                               </button>
                               <button type="button" className="act-btn" style={{ padding: '6px', border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex' }}>
                                 <Trash2 size={16} color="#EF4444" />
@@ -220,7 +220,7 @@ export default function LibrarianMembersPage() {
                         minWidth: 32, height: 32, padding: '0 8px',
                         border: currentPage === i + 1 ? 'none' : '1px solid transparent',
                         borderRadius: 8,
-                        background: currentPage === i + 1 ? '#6C5CE7' : 'transparent',
+                        background: currentPage === i + 1 ? '#1A73E8' : 'transparent',
                         color: currentPage === i + 1 ? 'white' : '#374151',
                         fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'Inter',
                       }}>{i + 1}</button>
@@ -274,7 +274,7 @@ export default function LibrarianMembersPage() {
                     cy="90"
                     r="70"
                     fill="none"
-                    stroke="#6C5CE7"
+                    stroke="#1A73E8"
                     strokeWidth="28"
                     strokeDasharray={`${439.8 * 0.8713} 439.8`}
                     strokeDashoffset="0"
@@ -316,7 +316,7 @@ export default function LibrarianMembersPage() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#6C5CE7' }} />
+                    <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#1A73E8' }} />
                     <span style={{ fontSize: 12, color: '#6B7280' }}>Students</span>
                   </div>
                   <span style={{ fontSize: 12, fontWeight: 600, color: '#111827' }}>
@@ -351,7 +351,7 @@ export default function LibrarianMembersPage() {
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 {[
-                  { icon: <Users size={15} color="#6C5CE7" />, bg: '#F3F4F6', label: 'Student', count: users.filter(u => u.role === 'student').length },
+                  { icon: <Users size={15} color="#1A73E8" />, bg: '#F3F4F6', label: 'Student', count: users.filter(u => u.role === 'student').length },
                   { icon: <Users size={15} color="#3B82F6" />, bg: '#F3F4F6', label: 'Faculty', count: users.filter(u => u.role === 'teacher').length },
                   { icon: <Users size={15} color="#F97316" />, bg: '#F3F4F6', label: 'Staff', count: users.filter(u => u.role !== 'student' && u.role !== 'teacher').length },
                 ].map((t, i) => (
@@ -379,9 +379,9 @@ export default function LibrarianMembersPage() {
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {[
-                  { icon: <Upload size={15} color="#6C5CE7" />, label: 'Import Members' },
-                  { icon: <Upload size={15} color="#6C5CE7" />, label: 'Export Members' },
-                  { icon: <LayoutGrid size={15} color="#6C5CE7" />, label: 'Member Categories' },
+                  { icon: <Upload size={15} color="#1A73E8" />, label: 'Import Members' },
+                  { icon: <Upload size={15} color="#1A73E8" />, label: 'Export Members' },
+                  { icon: <LayoutGrid size={15} color="#1A73E8" />, label: 'Member Categories' },
                 ].map((action, i) => (
                   <button key={i} type="button" className="qa-row" style={{
                     display: 'flex',

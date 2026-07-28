@@ -49,7 +49,7 @@ export default function StudentDashboard() {
   }, [status, session?.user?.id, loadData]);
 
   const STAT_CARDS = [
-    { icon: BookOpen,       label: 'Books Borrowed',   value: stats?.activeBorrows ?? '—', bg: '#EEF2FF', color: '#6366F1', sub: 'Currently active' },
+    { icon: BookOpen,       label: 'Books Borrowed',   value: stats?.activeBorrows ?? '—', bg: '#EFF6FF', color: '#1A73E8', sub: 'Currently active' },
     { icon: Clock,          label: 'Overdue',           value: stats?.overdueBorrows ?? '—', bg: '#FEF2F2', color: '#EF4444', sub: 'Past due date' },
     { icon: BookMarked,     label: 'Books Completed',  value: stats?.completedBooks ?? '—', bg: '#F0FDF4', color: '#22C55E', sub: 'Returned books' },
     { icon: AlertTriangle,  label: 'Outstanding Fine', value: stats?.pendingFineTotal !== undefined ? `₹${stats.pendingFineTotal}` : '—', bg: '#FFFBEB', color: '#F59E0B', sub: 'Total pending' },
@@ -75,7 +75,7 @@ export default function StudentDashboard() {
     <div style={{ padding: '28px', fontFamily: 'Inter,sans-serif', background: '#F9FAFB', minHeight: '100%' }}>
       {loading && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(255,255,255,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 99 }}>
-          <Loader2 size={32} style={{ animation: 'spin 0.8s linear infinite', color: '#6366F1' }} />
+          <Loader2 size={32} style={{ animation: 'spin 0.8s linear infinite', color: '#1A73E8' }} />
         </div>
       )}
 
@@ -107,12 +107,12 @@ export default function StudentDashboard() {
           <div style={{ background: 'white', borderRadius: 12, border: '1px solid #E5E7EB', padding: '20px 24px', marginBottom: 16 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
               <h2 style={{ fontSize: 16, fontWeight: 700, color: '#111827', margin: 0 }}>Currently Borrowed</h2>
-              <Link href="/student/my-books" style={{ fontSize: 13, color: '#6366F1', fontWeight: 600, textDecoration: 'none' }}>View All →</Link>
+              <Link href="/student/my-books" style={{ fontSize: 13, color: '#1A73E8', fontWeight: 600, textDecoration: 'none' }}>View All →</Link>
             </div>
             {activeBooks.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '32px 0' }}>
                 <BookOpen size={36} style={{ margin: '0 auto 10px', color: '#D1D5DB' }} />
-                <p style={{ color: '#9CA3AF', fontSize: 14, margin: 0 }}>No active borrows. <Link href="/student/search" style={{ color: '#6366F1', textDecoration: 'none' }}>Search books</Link></p>
+                <p style={{ color: '#9CA3AF', fontSize: 14, margin: 0 }}>No active borrows. <Link href="/student/search" style={{ color: '#1A73E8', textDecoration: 'none' }}>Search books</Link></p>
               </div>
             ) : activeBooks.map(rec => {
               const days = daysUntil(rec.dueDate);
@@ -121,7 +121,7 @@ export default function StudentDashboard() {
                   <div style={{ width: 40, height: 54, borderRadius: 6, overflow: 'hidden', flexShrink: 0, background: '#F3F4F6' }}>
                     {rec.bookId?.cover
                       ? <img src={rec.bookId.cover} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                      : <div style={{ width: '100%', height: '100%', background: 'linear-gradient(135deg,#6366F1,#A78BFA)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><BookOpen size={14} color="white" /></div>
+                      : <div style={{ width: '100%', height: '100%', background: 'linear-gradient(135deg,#1A73E8,#93C5FD)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><BookOpen size={14} color="white" /></div>
                     }
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
@@ -149,11 +149,11 @@ export default function StudentDashboard() {
                 return (
                   <Link key={ql.href} href={ql.href}
                     style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, padding: '16px 10px', borderRadius: 10, background: '#F9FAFB', border: '1px solid #E5E7EB', textDecoration: 'none', transition: 'all 0.2s' }}
-                    onMouseEnter={e => { e.currentTarget.style.background = '#EEF2FF'; e.currentTarget.style.borderColor = '#C7D2FE'; }}
+                    onMouseEnter={e => { e.currentTarget.style.background = '#EFF6FF'; e.currentTarget.style.borderColor = '#BFDBFE'; }}
                     onMouseLeave={e => { e.currentTarget.style.background = '#F9FAFB'; e.currentTarget.style.borderColor = '#E5E7EB'; }}
                   >
-                    <div style={{ width: 40, height: 40, borderRadius: 10, background: '#EEF2FF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <Icon size={18} color="#6366F1" />
+                    <div style={{ width: 40, height: 40, borderRadius: 10, background: '#EFF6FF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Icon size={18} color="#1A73E8" />
                     </div>
                     <span style={{ fontSize: 12, fontWeight: 600, color: '#374151', textAlign: 'center' }}>{ql.label}</span>
                   </Link>
@@ -168,13 +168,13 @@ export default function StudentDashboard() {
           <div style={{ background: 'white', borderRadius: 12, border: '1px solid #E5E7EB', padding: '20px 20px', marginBottom: 16 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
               <h2 style={{ fontSize: 16, fontWeight: 700, color: '#111827', margin: 0 }}>Notifications</h2>
-              <Link href="/student/notifications" style={{ fontSize: 13, color: '#6366F1', fontWeight: 600, textDecoration: 'none' }}>See All →</Link>
+              <Link href="/student/notifications" style={{ fontSize: 13, color: '#1A73E8', fontWeight: 600, textDecoration: 'none' }}>See All →</Link>
             </div>
             {notifications.length === 0 ? (
               <p style={{ color: '#9CA3AF', fontSize: 13, textAlign: 'center', padding: '20px 0' }}>No notifications yet.</p>
             ) : notifications.map(n => (
               <div key={n._id} style={{ display: 'flex', gap: 10, padding: '10px 0', borderBottom: '1px solid #F3F4F6', alignItems: 'flex-start' }}>
-                <div style={{ width: 8, height: 8, borderRadius: '50%', background: n.read ? '#E5E7EB' : '#6366F1', marginTop: 5, flexShrink: 0 }} />
+                <div style={{ width: 8, height: 8, borderRadius: '50%', background: n.read ? '#E5E7EB' : '#1A73E8', marginTop: 5, flexShrink: 0 }} />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', marginBottom: 2 }}>{n.title}</div>
                   <div style={{ fontSize: 11, color: '#9CA3AF', marginBottom: 3 }}>{timeAgo(n.createdAt)}</div>

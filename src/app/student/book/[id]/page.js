@@ -89,7 +89,7 @@ export default function BookDetail() {
   if (loading) {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh', background: '#F9FAFB', fontFamily: 'Inter,sans-serif' }}>
-        <Loader2 size={36} style={{ animation: 'spin 0.8s linear infinite', color: '#6366F1' }} />
+        <Loader2 size={36} style={{ animation: 'spin 0.8s linear infinite', color: '#1A73E8' }} />
         <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
       </div>
     );
@@ -100,7 +100,7 @@ export default function BookDetail() {
       <div style={{ padding: 60, textAlign: 'center', fontFamily: 'Inter,sans-serif', background: '#F9FAFB', minHeight: '100%' }}>
         <BookOpen size={48} style={{ margin: '0 auto 16px', color: '#D1D5DB' }} />
         <h2 style={{ fontSize: 20, color: '#111827', marginBottom: 8 }}>{error || 'Book not found'}</h2>
-        <Link href="/student/search" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '10px 20px', background: '#6366F1', color: 'white', borderRadius: 8, textDecoration: 'none', fontWeight: 600, fontSize: 14 }}>
+        <Link href="/student/search" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '10px 20px', background: '#1A73E8', color: 'white', borderRadius: 8, textDecoration: 'none', fontWeight: 600, fontSize: 14 }}>
           <ArrowLeft size={16} /> Back to Search
         </Link>
       </div>
@@ -127,12 +127,12 @@ export default function BookDetail() {
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
         * { box-sizing: border-box; }
         .tab-btn { background: none; border: none; cursor: pointer; font-family: Inter, sans-serif; }
-        .sim-card:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.08); border-color: #6366F1 !important; }
+        .sim-card:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.08); border-color: #1A73E8 !important; }
         @keyframes spin{to{transform:rotate(360deg)}}
       `}</style>
 
       {toast && (
-        <div style={{ position: 'fixed', top: 20, right: 20, zIndex: 999, background: '#6366F1', color: '#fff', padding: '10px 20px', borderRadius: 10, fontSize: 14, fontWeight: 600, boxShadow: '0 4px 24px rgba(99,102,241,0.4)' }}>{toast}</div>
+        <div style={{ position: 'fixed', top: 20, right: 20, zIndex: 999, background: '#1A73E8', color: '#fff', padding: '10px 20px', borderRadius: 10, fontSize: 14, fontWeight: 600, boxShadow: '0 4px 24px rgba(26,115,232,0.4)' }}>{toast}</div>
       )}
 
       {/* Breadcrumb matching Image 2 */}
@@ -221,7 +221,7 @@ export default function BookDetail() {
                     ? (book.description.length > 200 ? book.description.slice(0, 200) + '...' : book.description)
                     : `${book.title} by ${book.author} is a highly regarded work in the field of ${book.category || 'literature'}, providing structured frameworks and essential knowledge for students and practitioners.`}
                   {' '}
-                  <span onClick={() => setTab('overview')} style={{ color: '#6366F1', fontWeight: 600, cursor: 'pointer' }}>Read More</span>
+                  <span onClick={() => setTab('overview')} style={{ color: '#1A73E8', fontWeight: 600, cursor: 'pointer' }}>Read More</span>
                 </p>
               </div>
             </div>
@@ -245,8 +245,8 @@ export default function BookDetail() {
                     padding: '12px 18px',
                     display: 'flex', alignItems: 'center', gap: 8,
                     fontSize: 14, fontWeight: active ? 700 : 500,
-                    color: active ? '#6366F1' : '#6B7280',
-                    borderBottom: active ? '2px solid #6366F1' : '2px solid transparent',
+                    color: active ? '#1A73E8' : '#6B7280',
+                    borderBottom: active ? '2px solid #1A73E8' : '2px solid transparent',
                     marginBottom: -2, transition: 'all 0.15s'
                   }}
                 >
@@ -268,7 +268,7 @@ export default function BookDetail() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 24 }}>
                 {learnPoints.map((pt, i) => (
                   <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, color: '#374151' }}>
-                    <CheckCircle size={17} color="#6366F1" fill="#EEF2FF" />
+                    <CheckCircle size={17} color="#1A73E8" fill="#EFF6FF" />
                     <span>{pt}</span>
                   </div>
                 ))}
@@ -320,7 +320,7 @@ export default function BookDetail() {
                 ].map((item, i) => (
                   <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: '#F9FAFB', borderRadius: 8, border: '1px solid #F3F4F6' }}>
                     <div>
-                      <span style={{ fontSize: 13, fontWeight: 700, color: '#6366F1', marginRight: 12 }}>{item.ch}</span>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: '#1A73E8', marginRight: 12 }}>{item.ch}</span>
                       <span style={{ fontSize: 14, fontWeight: 500, color: '#111827' }}>{item.title}</span>
                     </div>
                     <span style={{ fontSize: 13, color: '#6B7280' }}>{item.pages}</span>
@@ -335,7 +335,7 @@ export default function BookDetail() {
             <div style={{ background: 'white', borderRadius: 12, border: '1px solid #E5E7EB', padding: 24 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
                 <h3 style={{ fontSize: 16, fontWeight: 700, color: '#111827', margin: 0 }}>Reviews & Ratings</h3>
-                <span style={{ fontSize: 13, color: '#6366F1', fontWeight: 600 }}>{reviews.length} Total Reviews</span>
+                <span style={{ fontSize: 13, color: '#1A73E8', fontWeight: 600 }}>{reviews.length} Total Reviews</span>
               </div>
 
               {/* Rating Summary Box matching Image 2 */}
@@ -373,7 +373,7 @@ export default function BookDetail() {
                     <div key={r._id} style={{ padding: 16, border: '1px solid #F3F4F6', borderRadius: 10, background: '#F9FAFB' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                          <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#6366F1', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 14 }}>
+                          <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#1A73E8', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 14 }}>
                             {r.user?.charAt(0) || 'S'}
                           </div>
                           <div>
@@ -424,7 +424,7 @@ export default function BookDetail() {
             {/* Action Buttons Stack */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {isRequested ? (
-                <button disabled style={{ width: '100%', padding: '12px', background: '#EEF2FF', color: '#6366F1', border: '1px solid #C7D2FE', borderRadius: 8, fontSize: 14, fontWeight: 700, cursor: 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                <button disabled style={{ width: '100%', padding: '12px', background: '#EFF6FF', color: '#1A73E8', border: '1px solid #BFDBFE', borderRadius: 8, fontSize: 14, fontWeight: 700, cursor: 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
                   <CheckCircle size={17} /> Request Sent
                 </button>
               ) : (
@@ -432,10 +432,10 @@ export default function BookDetail() {
                   onClick={() => setShowModal(true)}
                   disabled={availCopies < 1}
                   style={{
-                    width: '100%', padding: '12px', background: availCopies < 1 ? '#F3F4F6' : '#6366F1', color: availCopies < 1 ? '#9CA3AF' : 'white', border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 700, cursor: availCopies < 1 ? 'not-allowed' : 'pointer', transition: 'all 0.2s', boxShadow: availCopies < 1 ? 'none' : '0 2px 8px rgba(99,102,241,0.3)'
+                    width: '100%', padding: '12px', background: availCopies < 1 ? '#F3F4F6' : '#1A73E8', color: availCopies < 1 ? '#9CA3AF' : 'white', border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 700, cursor: availCopies < 1 ? 'not-allowed' : 'pointer', transition: 'all 0.2s', boxShadow: availCopies < 1 ? 'none' : '0 2px 8px rgba(26,115,232,0.3)'
                   }}
-                  onMouseEnter={e => { if (availCopies >= 1) e.currentTarget.style.background = '#4F46E5'; }}
-                  onMouseLeave={e => { if (availCopies >= 1) e.currentTarget.style.background = '#6366F1'; }}
+                  onMouseEnter={e => { if (availCopies >= 1) e.currentTarget.style.background = '#1557B0'; }}
+                  onMouseLeave={e => { if (availCopies >= 1) e.currentTarget.style.background = '#1A73E8'; }}
                 >
                   {availCopies < 1 ? 'Join Waitlist' : '📚 Request Book'}
                 </button>
@@ -460,16 +460,16 @@ export default function BookDetail() {
                     localStorage.setItem('librix_wishlist', JSON.stringify(list));
                   } catch {}
                 }}
-                style={{ width: '100%', padding: '10px', background: wishlist ? '#FEF2F2' : 'white', color: wishlist ? '#EF4444' : '#6366F1', border: `1px solid ${wishlist ? '#FECACA' : '#E5E7EB'}`, borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, transition: 'all 0.15s' }}
+                style={{ width: '100%', padding: '10px', background: wishlist ? '#FEF2F2' : 'white', color: wishlist ? '#EF4444' : '#1A73E8', border: `1px solid ${wishlist ? '#FECACA' : '#E5E7EB'}`, borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, transition: 'all 0.15s' }}
               >
                 <Heart size={16} fill={wishlist ? '#EF4444' : 'none'} /> {wishlist ? 'In Wishlist' : 'Add to Wishlist'}
               </button>
 
               <button
                 onClick={() => { setNotified(!notified); showToast(notified ? 'Notification removed' : 'We will notify you when available! 🔔'); }}
-                style={{ width: '100%', padding: '10px', background: notified ? '#EEF2FF' : 'white', color: '#6366F1', border: '1px solid #E5E7EB', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, transition: 'all 0.15s' }}
+                style={{ width: '100%', padding: '10px', background: notified ? '#EFF6FF' : 'white', color: '#1A73E8', border: '1px solid #E5E7EB', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, transition: 'all 0.15s' }}
               >
-                <Bell size={16} fill={notified ? '#6366F1' : 'none'} /> {notified ? 'Notification Active' : 'Notify Me'}
+                <Bell size={16} fill={notified ? '#1A73E8' : 'none'} /> {notified ? 'Notification Active' : 'Notify Me'}
               </button>
             </div>
           </div>
@@ -498,7 +498,7 @@ export default function BookDetail() {
           <div style={{ background: 'white', borderRadius: 12, border: '1px solid #E5E7EB', padding: 22 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
               <span style={{ fontSize: 15, fontWeight: 700, color: '#111827' }}>Similar Books</span>
-              <Link href="/student/search" style={{ fontSize: 12, fontWeight: 600, color: '#6366F1', textDecoration: 'none' }}>View All</Link>
+              <Link href="/student/search" style={{ fontSize: 12, fontWeight: 600, color: '#1A73E8', textDecoration: 'none' }}>View All</Link>
             </div>
 
             {similar.length === 0 ? (
@@ -512,7 +512,7 @@ export default function BookDetail() {
                       {s.cover ? (
                         <img src={s.cover} alt={s.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                       ) : (
-                        <div style={{ width: '100%', height: '100%', background: 'linear-gradient(135deg,#6366F1,#A78BFA)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
+                        <div style={{ width: '100%', height: '100%', background: 'linear-gradient(135deg,#1A73E8,#93C5FD)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
                           <BookOpen size={16} />
                         </div>
                       )}
@@ -526,7 +526,7 @@ export default function BookDetail() {
 
                     <Link
                       href={`/student/book/${s._id}`}
-                      style={{ padding: '6px 12px', border: '1px solid #E5E7EB', borderRadius: 6, background: 'white', color: '#6366F1', fontSize: 12, fontWeight: 600, textDecoration: 'none', transition: 'all 0.15s' }}
+                      style={{ padding: '6px 12px', border: '1px solid #E5E7EB', borderRadius: 6, background: 'white', color: '#1A73E8', fontSize: 12, fontWeight: 600, textDecoration: 'none', transition: 'all 0.15s' }}
                     >
                       View
                     </Link>

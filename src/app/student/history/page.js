@@ -8,8 +8,8 @@ function fmtDate(d) {
 }
 
 const GENRE_COLORS = {
-  'Programming':  { bg: '#EEF2FF', color: '#6366F1' },
-  'Self Help':    { bg: '#EEF2FF', color: '#6366F1' },
+  'Programming':  { bg: '#EFF6FF', color: '#1A73E8' },
+  'Self Help':    { bg: '#EFF6FF', color: '#1A73E8' },
   'Productivity': { bg: '#ECFDF5', color: '#16A34A' },
   'Psychology':   { bg: '#FFF7ED', color: '#D97706' },
   'Finance':      { bg: '#FFF7ED', color: '#D97706' },
@@ -46,7 +46,7 @@ function BookCover({ cover, title }) {
     <div style={{ width: 52, height: 70, borderRadius: 6, overflow: 'hidden', flexShrink: 0, background: '#F3F4F6' }}>
       {cover && !err
         ? <img src={cover} alt={title} onError={() => setErr(true)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-        : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg,#6366F1,#A78BFA)' }}><BookOpen size={18} color="white" /></div>
+        : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg,#1A73E8,#93C5FD)' }}><BookOpen size={18} color="white" /></div>
       }
     </div>
   );
@@ -66,16 +66,16 @@ function LineChart({ data }) {
     <svg width="100%" viewBox={`0 0 ${W} ${H + 20}`} style={{ overflow: 'visible' }}>
       <defs>
         <linearGradient id="lg2" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#6366F1" stopOpacity="0.25" />
-          <stop offset="100%" stopColor="#6366F1" stopOpacity="0.02" />
+          <stop offset="0%" stopColor="#1A73E8" stopOpacity="0.25" />
+          <stop offset="100%" stopColor="#1A73E8" stopOpacity="0.02" />
         </linearGradient>
       </defs>
       <path d={areaD} fill="url(#lg2)" />
-      <path d={pathD} fill="none" stroke="#6366F1" strokeWidth="2" strokeLinejoin="round" />
+      <path d={pathD} fill="none" stroke="#1A73E8" strokeWidth="2" strokeLinejoin="round" />
       {pts.map((p, i) => (
         <g key={i}>
-          <circle cx={p.x} cy={p.y} r={4} fill="white" stroke="#6366F1" strokeWidth="2" />
-          <text x={p.x} y={p.y - 8} textAnchor="middle" fontSize="9" fill="#6366F1" fontWeight="700">{p.val}</text>
+          <circle cx={p.x} cy={p.y} r={4} fill="white" stroke="#1A73E8" strokeWidth="2" />
+          <text x={p.x} y={p.y - 8} textAnchor="middle" fontSize="9" fill="#1A73E8" fontWeight="700">{p.val}</text>
           <text x={p.x} y={H + 16} textAnchor="middle" fontSize="9" fill="#9CA3AF">{p.month}</text>
         </g>
       ))}
@@ -87,7 +87,7 @@ function GenreDonut({ genres }) {
   const r = 44, cx = 56, cy = 56, C = 2 * Math.PI * r;
   let offset = 0;
   const total = genres.reduce((s, g) => s + g.count, 0) || 1;
-  const COLORS = ['#6366F1','#22C55E','#F59E0B','#EF4444','#A78BFA'];
+  const COLORS = ['#1A73E8','#22C55E','#F59E0B','#EF4444','#93C5FD'];
   return (
     <svg width="112" height="112" viewBox="0 0 112 112" style={{ transform: 'rotate(-90deg)', flexShrink: 0 }}>
       <circle cx={cx} cy={cy} r={r} fill="none" stroke="#F3F4F6" strokeWidth="11" />
@@ -103,7 +103,7 @@ function GenreDonut({ genres }) {
 }
 
 const ITEMS_PER_PAGE = 5;
-const COLORS_LIST = ['#6366F1','#22C55E','#F59E0B','#EF4444','#A78BFA'];
+const COLORS_LIST = ['#1A73E8','#22C55E','#F59E0B','#EF4444','#93C5FD'];
 
 export default function ReadingHistory() {
   const [tab, setTab]     = useState('completed');
@@ -200,7 +200,7 @@ export default function ReadingHistory() {
   return (
     <div style={{ display: 'flex', height: '100%', fontFamily: 'Inter,sans-serif', background: '#F9FAFB', overflow: 'hidden' }}>
       {toast && (
-        <div style={{ position: 'fixed', top: 20, right: 20, zIndex: 999, background: '#6366F1', color: '#fff', padding: '10px 20px', borderRadius: 10, fontSize: 14, fontWeight: 600, boxShadow: '0 4px 24px rgba(99,102,241,0.4)' }}>{toast}</div>
+        <div style={{ position: 'fixed', top: 20, right: 20, zIndex: 999, background: '#1A73E8', color: '#fff', padding: '10px 20px', borderRadius: 10, fontSize: 14, fontWeight: 600, boxShadow: '0 4px 24px rgba(26,115,232,0.4)' }}>{toast}</div>
       )}
 
       {/* Rating Modal */}
@@ -227,8 +227,8 @@ export default function ReadingHistory() {
               <button key={t.key} onClick={() => { setTab(t.key); setPage(1); }} style={{
                 flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                 padding: '14px 20px', border: 'none', background: 'transparent', cursor: 'pointer',
-                fontSize: 14, fontWeight: isActive ? 600 : 500, color: isActive ? '#6366F1' : '#6B7280',
-                borderBottom: isActive ? '2px solid #6366F1' : '2px solid transparent',
+                fontSize: 14, fontWeight: isActive ? 600 : 500, color: isActive ? '#1A73E8' : '#6B7280',
+                borderBottom: isActive ? '2px solid #1A73E8' : '2px solid transparent',
                 borderRight: i < TABS.length - 1 ? '1px solid #E5E7EB' : 'none', transition: 'all 0.2s',
               }}>
                 <span>{t.icon}</span>{t.label}
@@ -257,7 +257,7 @@ export default function ReadingHistory() {
         <div style={{ background: 'white', border: '1px solid #E5E7EB', borderTop: 'none', borderRadius: '0 0 12px 12px', padding: '8px 20px' }}>
           {loading ? (
             <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 60 }}>
-              <Loader2 size={28} style={{ animation: 'spin 0.8s linear infinite', color: '#6366F1' }} />
+              <Loader2 size={28} style={{ animation: 'spin 0.8s linear infinite', color: '#1A73E8' }} />
             </div>
           ) : paged.length === 0 ? (
             <div style={{ padding: 60, textAlign: 'center' }}>
@@ -289,7 +289,7 @@ export default function ReadingHistory() {
                 <StarRating rating={rec.rating || 0} />
                 <button onClick={() => setRatingRec(rec)}
                   style={{ padding: '7px 14px', border: '1px solid #E5E7EB', borderRadius: 8, background: 'white', fontSize: 12, fontWeight: 600, color: '#374151', cursor: 'pointer', whiteSpace: 'nowrap' }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = '#6366F1'; e.currentTarget.style.color = '#6366F1'; }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = '#1A73E8'; e.currentTarget.style.color = '#1A73E8'; }}
                   onMouseLeave={e => { e.currentTarget.style.borderColor = '#E5E7EB'; e.currentTarget.style.color = '#374151'; }}>
                   {tab === 'inprogress' ? 'View Book' : rec.rating ? 'Review Again' : 'Rate Book'}
                 </button>
@@ -309,7 +309,7 @@ export default function ReadingHistory() {
                   <ChevronLeft size={14} color={page===1?'#D1D5DB':'#374151'} />
                 </button>
                 {Array.from({length:totalPages},(_,i)=>i+1).map(p=>(
-                  <button key={p} onClick={()=>setPage(p)} style={{ width:30,height:30,borderRadius:8,border:p===page?'none':'1px solid #E5E7EB',background:p===page?'#6366F1':'white',color:p===page?'white':'#374151',fontSize:13,fontWeight:600,cursor:'pointer' }}>{p}</button>
+                  <button key={p} onClick={()=>setPage(p)} style={{ width:30,height:30,borderRadius:8,border:p===page?'none':'1px solid #E5E7EB',background:p===page?'#1A73E8':'white',color:p===page?'white':'#374151',fontSize:13,fontWeight:600,cursor:'pointer' }}>{p}</button>
                 ))}
                 <button onClick={() => setPage(p => Math.min(totalPages,p+1))} disabled={page===totalPages}
                   style={{ width:30,height:30,borderRadius:8,border:'1px solid #E5E7EB',background:'white',cursor:page===totalPages?'not-allowed':'pointer',display:'flex',alignItems:'center',justifyContent:'center' }}>
@@ -328,10 +328,10 @@ export default function ReadingHistory() {
           <h3 style={{ fontSize: 14, fontWeight: 700, color: '#111827', marginBottom: 14 }}>Reading Statistics</h3>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
             {[
-              { icon: '📖', label: 'Books Completed', value: completed.length, bg: '#EEF2FF' },
+              { icon: '📖', label: 'Books Completed', value: completed.length, bg: '#EFF6FF' },
               { icon: '⏱',  label: 'Hours Read',      value: completed.length * 8, bg: '#ECFDF5' },
               { icon: '⭐', label: 'Average Rating',  value: avgRating, bg: '#FFFBEB' },
-              { icon: '📅', label: 'Streak (Days)',   value: stats?.streakDays || 8, bg: '#EEF2FF' },
+              { icon: '📅', label: 'Streak (Days)',   value: stats?.streakDays || 8, bg: '#EFF6FF' },
             ].map((s, i) => (
               <div key={i} style={{ background: s.bg, borderRadius: 10, padding: '12px 14px' }}>
                 <div style={{ fontSize: 18, marginBottom: 6 }}>{s.icon}</div>
@@ -375,11 +375,11 @@ export default function ReadingHistory() {
         </div>
 
         {/* Habit card */}
-        <div style={{ background: 'linear-gradient(135deg,#EEF2FF,#F5F3FF)', borderRadius: 12, border: '1px solid #C7D2FE', padding: 16, display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+        <div style={{ background: 'linear-gradient(135deg,#EFF6FF,#F5F3FF)', borderRadius: 12, border: '1px solid #BFDBFE', padding: 16, display: 'flex', alignItems: 'flex-start', gap: 12 }}>
           <div style={{ fontSize: 28, flexShrink: 0 }}>💡</div>
           <div>
             <div style={{ fontSize: 13, fontWeight: 700, color: '#4338CA', marginBottom: 4 }}>Keep the habit going!</div>
-            <div style={{ fontSize: 12, color: '#6366F1', lineHeight: 1.5 }}>You've read {completed.length} books so far.<br />Try reading 2 more this month.</div>
+            <div style={{ fontSize: 12, color: '#1A73E8', lineHeight: 1.5 }}>You've read {completed.length} books so far.<br />Try reading 2 more this month.</div>
           </div>
         </div>
       </div>

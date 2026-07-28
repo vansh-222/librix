@@ -12,7 +12,7 @@ function BookCover({ cover, title, size = 110 }) {
     <div style={{ width: size, height: h, borderRadius: 8, overflow: 'hidden', flexShrink: 0, background: '#F3F4F6', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
       {cover && !err
         ? <img src={cover} alt={title} onError={() => setErr(true)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-        : <div style={{ width: '100%', height: '100%', background: 'linear-gradient(135deg,#6366F1,#A78BFA)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        : <div style={{ width: '100%', height: '100%', background: 'linear-gradient(135deg,#1A73E8,#93C5FD)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <BookOpen size={size * 0.3} color="white" />
           </div>
       }
@@ -59,13 +59,13 @@ function BookCard({ book, isPending, onRequest }) {
             textAlign: 'center', transition: 'all 0.15s',
             marginBottom: 6,
           }}
-          onMouseEnter={e => { e.currentTarget.style.background = '#EEF2FF'; e.currentTarget.style.color = '#6366F1'; e.currentTarget.style.borderColor = '#C7D2FE'; }}
+          onMouseEnter={e => { e.currentTarget.style.background = '#EFF6FF'; e.currentTarget.style.color = '#1A73E8'; e.currentTarget.style.borderColor = '#BFDBFE'; }}
           onMouseLeave={e => { e.currentTarget.style.background = 'white'; e.currentTarget.style.color = '#374151'; e.currentTarget.style.borderColor = '#E5E7EB'; }}
         >
           View Details
         </Link>
         {isPending ? (
-          <div style={{ width: '100%', padding: '6px 0', borderRadius: 8, background: '#EEF2FF', color: '#6366F1', fontSize: 11, fontWeight: 700, textAlign: 'center', border: '1px solid #C7D2FE' }}>
+          <div style={{ width: '100%', padding: '6px 0', borderRadius: 8, background: '#EFF6FF', color: '#1A73E8', fontSize: 11, fontWeight: 700, textAlign: 'center', border: '1px solid #BFDBFE' }}>
             ✓ Requested
           </div>
         ) : (
@@ -73,7 +73,7 @@ function BookCard({ book, isPending, onRequest }) {
             onClick={() => onRequest(book)}
             style={{
               width: '100%', padding: '7px 0', border: 'none', borderRadius: 8,
-              background: avail > 0 ? 'linear-gradient(135deg,#6366F1,#8B5CF6)' : '#F3F4F6',
+              background: avail > 0 ? 'linear-gradient(135deg,#1A73E8,#1A73E8)' : '#F3F4F6',
               color: avail > 0 ? 'white' : '#9CA3AF',
               fontSize: 11, fontWeight: 700, cursor: avail > 0 ? 'pointer' : 'default',
               transition: 'all 0.15s',
@@ -128,7 +128,7 @@ function SectionHeader({ title, genre }) {
       <h2 style={{ fontSize: 16, fontWeight: 800, color: '#111827', margin: 0 }}>{title}</h2>
       <Link
         href={genre ? `/student/search?category=${encodeURIComponent(genre)}` : '/student/search'}
-        style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, fontWeight: 600, color: '#6366F1', textDecoration: 'none' }}
+        style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, fontWeight: 600, color: '#1A73E8', textDecoration: 'none' }}
       >
         View All <ChevronRight size={14} />
       </Link>
@@ -137,7 +137,7 @@ function SectionHeader({ title, genre }) {
 }
 
 // ─── Progress Bar ─────────────────────────────────────────────────────────────
-function ProgressBar({ pct, color = '#6366F1' }) {
+function ProgressBar({ pct, color = '#1A73E8' }) {
   return (
     <div style={{ height: 8, background: '#F3F4F6', borderRadius: 4, overflow: 'hidden', flex: 1 }}>
       <div style={{ height: '100%', background: color, width: `${pct}%`, borderRadius: 4, transition: 'width 0.6s ease' }} />
@@ -234,7 +234,7 @@ export default function RecommendationsPage() {
 
   // Top genres for sidebar — max pct relative to top category
   const maxCatCount = allCategories[0]?.[1] || 1;
-  const catColors = ['#6366F1', '#EC4899', '#22C55E', '#F59E0B', '#3B82F6'];
+  const catColors = ['#1A73E8', '#EC4899', '#22C55E', '#F59E0B', '#3B82F6'];
 
   const quote = QUOTES[new Date().getDay() % QUOTES.length];
 
@@ -252,29 +252,29 @@ export default function RecommendationsPage() {
 
       {/* Toast */}
       {toast && (
-        <div style={{ position: 'fixed', top: 20, right: 20, zIndex: 999, background: '#6366F1', color: '#fff', padding: '10px 20px', borderRadius: 10, fontSize: 14, fontWeight: 600, boxShadow: '0 4px 24px rgba(99,102,241,0.4)' }}>{toast}</div>
+        <div style={{ position: 'fixed', top: 20, right: 20, zIndex: 999, background: '#1A73E8', color: '#fff', padding: '10px 20px', borderRadius: 10, fontSize: 14, fontWeight: 600, boxShadow: '0 4px 24px rgba(26,115,232,0.4)' }}>{toast}</div>
       )}
 
       {/* ═══ MAIN CONTENT ═══ */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '28px 40px 28px 24px', minWidth: 0 }}>
         {loading ? (
           <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 100 }}>
-            <Loader2 size={32} style={{ animation: 'spin 0.8s linear infinite', color: '#6366F1' }} />
+            <Loader2 size={32} style={{ animation: 'spin 0.8s linear infinite', color: '#1A73E8' }} />
           </div>
         ) : (
           <>
             {/* Personalized banner */}
-            <div style={{ background: 'linear-gradient(135deg,#EEF2FF,#F5F3FF)', border: '1px solid #C7D2FE', borderRadius: 14, padding: '18px 24px', display: 'flex', alignItems: 'center', gap: 20, marginBottom: 32 }}>
-              <div style={{ width: 52, height: 52, borderRadius: 12, background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 2px 8px rgba(99,102,241,0.15)' }}>
+            <div style={{ background: 'linear-gradient(135deg,#EFF6FF,#F5F3FF)', border: '1px solid #BFDBFE', borderRadius: 14, padding: '18px 24px', display: 'flex', alignItems: 'center', gap: 20, marginBottom: 32 }}>
+              <div style={{ width: 52, height: 52, borderRadius: 12, background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 2px 8px rgba(26,115,232,0.15)' }}>
                 <span style={{ fontSize: 26 }}>🪄</span>
               </div>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 16, fontWeight: 800, color: '#4338CA', marginBottom: 4 }}>Personalized for You ✨</div>
-                <div style={{ fontSize: 13, color: '#6366F1', lineHeight: 1.5 }}>
+                <div style={{ fontSize: 13, color: '#1A73E8', lineHeight: 1.5 }}>
                   These recommendations are based on your reading history, favorite categories, and books you've borrowed.
                 </div>
               </div>
-              <button style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 16px', border: '1px solid #C7D2FE', borderRadius: 8, background: 'white', color: '#6366F1', fontSize: 13, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }}>
+              <button style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 16px', border: '1px solid #BFDBFE', borderRadius: 8, background: 'white', color: '#1A73E8', fontSize: 13, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }}>
                 <Info size={14} /> How it works
               </button>
             </div>
@@ -317,7 +317,7 @@ export default function RecommendationsPage() {
                 <BookOpen size={48} style={{ margin: '0 auto 16px', color: '#D1D5DB' }} />
                 <h3 style={{ fontSize: 16, color: '#374151', fontWeight: 600, margin: '0 0 8px' }}>No reading history yet</h3>
                 <p style={{ color: '#9CA3AF', fontSize: 14, marginBottom: 20 }}>Borrow and return some books to get personalised recommendations!</p>
-                <Link href="/student/search" style={{ display: 'inline-block', padding: '10px 24px', borderRadius: 8, background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white', fontSize: 14, fontWeight: 700, textDecoration: 'none' }}>
+                <Link href="/student/search" style={{ display: 'inline-block', padding: '10px 24px', borderRadius: 8, background: 'linear-gradient(135deg,#1A73E8,#1A73E8)', color: 'white', fontSize: 14, fontWeight: 700, textDecoration: 'none' }}>
                   Browse Library
                 </Link>
               </div>
@@ -333,7 +333,7 @@ export default function RecommendationsPage() {
         <div style={{ background: 'white', borderRadius: 12, border: '1px solid #E5E7EB', padding: 20 }}>
           <h3 style={{ fontSize: 14, fontWeight: 800, color: '#111827', marginBottom: 18, margin: '0 0 18px' }}>Why these recommendations?</h3>
           {[
-            { icon: '📚', color: '#EEF2FF', iconColor: '#6366F1', text: 'Based on your borrowed books and reading history' },
+            { icon: '📚', color: '#EFF6FF', iconColor: '#1A73E8', text: 'Based on your borrowed books and reading history' },
             { icon: '❤️', color: '#FFF1F2', iconColor: '#E11D48', text: `From categories you love: ${topGenres.slice(0, 3).map(g => g[0]).join(', ') || 'Start reading to personalize'}` },
             { icon: '📈', color: '#F0FDF4', iconColor: '#16A34A', text: 'Popular and trending books in our library' },
             { icon: '👥', color: '#FFFBEB', iconColor: '#D97706', text: 'Highly rated by students like you' },
@@ -375,10 +375,10 @@ export default function RecommendationsPage() {
         </div>
 
         {/* Quote card */}
-        <div style={{ background: 'linear-gradient(135deg,#F9FAFB,#EEF2FF)', border: '1px solid #E5E7EB', borderRadius: 12, padding: 20 }}>
-          <div style={{ fontSize: 32, color: '#6366F1', lineHeight: 1, marginBottom: 10, fontFamily: 'Georgia, serif', fontWeight: 900 }}>&ldquo;</div>
+        <div style={{ background: 'linear-gradient(135deg,#F9FAFB,#EFF6FF)', border: '1px solid #E5E7EB', borderRadius: 12, padding: 20 }}>
+          <div style={{ fontSize: 32, color: '#1A73E8', lineHeight: 1, marginBottom: 10, fontFamily: 'Georgia, serif', fontWeight: 900 }}>&ldquo;</div>
           <p style={{ fontSize: 13, color: '#374151', lineHeight: 1.6, fontStyle: 'italic', margin: '0 0 12px' }}>{quote.text}</p>
-          <div style={{ fontSize: 12, fontWeight: 700, color: '#6366F1' }}>— {quote.author}</div>
+          <div style={{ fontSize: 12, fontWeight: 700, color: '#1A73E8' }}>— {quote.author}</div>
         </div>
 
       </div>

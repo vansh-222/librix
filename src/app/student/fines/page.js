@@ -18,7 +18,7 @@ function BookCover({ cover, title }) {
     <div style={{ width: 44, height: 60, borderRadius: 6, overflow: 'hidden', flexShrink: 0, background: '#F3F4F6' }}>
       {cover && !err
         ? <img src={cover} alt={title} onError={() => setErr(true)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-        : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg,#6366F1,#A78BFA)' }}><BookOpen size={16} color="white" /></div>
+        : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg,#1A73E8,#93C5FD)' }}><BookOpen size={16} color="white" /></div>
       }
     </div>
   );
@@ -125,7 +125,7 @@ export default function StudentFines() {
           name:  orderData.name,
           email: orderData.email,
         },
-        theme: { color: '#6366F1' },
+        theme: { color: '#1A73E8' },
         modal: {
           ondismiss: () => { setPaying(''); },
         },
@@ -179,7 +179,7 @@ export default function StudentFines() {
     { icon: '🧾', label: 'Total Fine',   value: `₹${totalFine}`,   sub: 'Overall outstanding',  bg: '#FEF2F2' },
     { icon: '⏳', label: 'Pending Fine', value: `₹${pendingFine}`, sub: 'To be paid',            bg: '#FFFBEB' },
     { icon: '💰', label: 'Paid Fine',    value: `₹${paidFine}`,    sub: 'Confirmed via Razorpay', bg: '#F0FDF4' },
-    { icon: '📅', label: 'Last Payment', value: lastPaid ? fmtDate(lastPaid.finePaidAt || lastPaid.updatedAt) : '—', sub: lastPaid ? 'Last paid' : 'No payments yet', bg: '#EEF2FF' },
+    { icon: '📅', label: 'Last Payment', value: lastPaid ? fmtDate(lastPaid.finePaidAt || lastPaid.updatedAt) : '—', sub: lastPaid ? 'Last paid' : 'No payments yet', bg: '#EFF6FF' },
   ];
 
   return (
@@ -204,13 +204,13 @@ export default function StudentFines() {
       <div style={{ flex: 1, overflowY: 'auto', padding: '28px 24px', minWidth: 0 }}>
 
         {/* Razorpay info banner */}
-        <div style={{ background: 'linear-gradient(135deg,#EEF2FF,#F5F3FF)', border: '1px solid #C7D2FE', borderRadius: 12, padding: '14px 20px', marginBottom: 20, display: 'flex', alignItems: 'center', gap: 14 }}>
-          <div style={{ width: 40, height: 40, borderRadius: 10, background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 2px 8px rgba(99,102,241,0.15)' }}>
-            <CreditCard size={20} color="#6366F1" />
+        <div style={{ background: 'linear-gradient(135deg,#EFF6FF,#F5F3FF)', border: '1px solid #BFDBFE', borderRadius: 12, padding: '14px 20px', marginBottom: 20, display: 'flex', alignItems: 'center', gap: 14 }}>
+          <div style={{ width: 40, height: 40, borderRadius: 10, background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 2px 8px rgba(26,115,232,0.15)' }}>
+            <CreditCard size={20} color="#1A73E8" />
           </div>
           <div>
             <div style={{ fontSize: 13, fontWeight: 700, color: '#4338CA' }}>Secure Payments via Razorpay</div>
-            <div style={{ fontSize: 12, color: '#6366F1' }}>Pay using UPI, Debit/Credit card, Net Banking — payments are verified automatically.</div>
+            <div style={{ fontSize: 12, color: '#1A73E8' }}>Pay using UPI, Debit/Credit card, Net Banking — payments are verified automatically.</div>
           </div>
         </div>
 
@@ -237,7 +237,7 @@ export default function StudentFines() {
 
           {loading ? (
             <div style={{ display: 'flex', justifyContent: 'center', padding: '60px 0' }}>
-              <Loader2 size={28} style={{ animation: 'spin 0.8s linear infinite', color: '#6366F1' }} />
+              <Loader2 size={28} style={{ animation: 'spin 0.8s linear infinite', color: '#1A73E8' }} />
             </div>
           ) : fines.length === 0 ? (
             <div style={{ padding: 60, textAlign: 'center' }}>
@@ -338,7 +338,7 @@ export default function StudentFines() {
 
         {/* Pay All Pending */}
         {pendingFine > 0 && (
-          <div style={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', borderRadius: 12, padding: 18, color: 'white' }}>
+          <div style={{ background: 'linear-gradient(135deg,#1A73E8,#1A73E8)', borderRadius: 12, padding: 18, color: 'white' }}>
             <div style={{ fontSize: 13, fontWeight: 600, opacity: 0.85, marginBottom: 4 }}>Total Pending</div>
             <div style={{ fontSize: 30, fontWeight: 900, marginBottom: 4 }}>₹{pendingFine}</div>
             <div style={{ fontSize: 11, opacity: 0.7, marginBottom: 14 }}>
@@ -354,7 +354,7 @@ export default function StudentFines() {
                 width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                 padding: '12px', border: 'none', borderRadius: 10,
                 background: paying ? 'rgba(255,255,255,0.2)' : 'white',
-                color: paying ? 'rgba(255,255,255,0.7)' : '#6366F1',
+                color: paying ? 'rgba(255,255,255,0.7)' : '#1A73E8',
                 fontSize: 14, fontWeight: 800,
                 cursor: paying ? 'wait' : 'pointer',
                 transition: 'all 0.15s',
@@ -404,8 +404,8 @@ export default function StudentFines() {
         {/* Support */}
         <div style={{ background: 'white', borderRadius: 12, border: '1px solid #E5E7EB', padding: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-            <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#EEF2FF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <HeadphonesIcon size={15} color="#6366F1" />
+            <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#EFF6FF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <HeadphonesIcon size={15} color="#1A73E8" />
             </div>
             <h3 style={{ fontSize: 14, fontWeight: 700, color: '#111827', margin: 0 }}>Need Help?</h3>
           </div>

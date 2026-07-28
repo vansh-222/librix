@@ -1,7 +1,8 @@
 'use client';
 import { useState } from 'react';
 import { signOut, useSession } from 'next-auth/react';
-import { Search, Bell, ChevronDown, LogOut } from 'lucide-react';
+import Link from 'next/link';
+import { Search, Bell, ChevronDown, LogOut, User } from 'lucide-react';
 
 export default function LibrarianNavbar({ title, subtitle, searchPlaceholder = "Search books, members, ISBN...", unreadCount = 0 }) {
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -48,7 +49,7 @@ export default function LibrarianNavbar({ title, subtitle, searchPlaceholder = "
             onClick={() => setShowUserMenu(!showUserMenu)}
             style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}
           >
-            <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#6C5CE7', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 700, fontSize: 14 }}>
+            <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#1A73E8', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 700, fontSize: 14 }}>
               {userName.charAt(0).toUpperCase()}
             </div>
             <div>
@@ -77,6 +78,30 @@ export default function LibrarianNavbar({ title, subtitle, searchPlaceholder = "
                 <div style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>{userName}</div>
                 <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 2 }}>{userEmail}</div>
               </div>
+              <Link
+                href="/librarian/profile"
+                style={{
+                  width: '100%',
+                  padding: '10px 16px',
+                  borderBottom: '1px solid #F3F4F6',
+                  background: 'transparent',
+                  textAlign: 'left',
+                  fontSize: 13,
+                  color: '#374151',
+                  fontWeight: 500,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  fontFamily: 'Inter',
+                  textDecoration: 'none'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.background = '#F9FAFB'}
+                onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+              >
+                <User size={16} />
+                Profile
+              </Link>
               <button
                 onClick={() => signOut({ callbackUrl: '/login' })}
                 style={{

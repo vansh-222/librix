@@ -27,14 +27,14 @@ function LineChart({ data }) {
       ))}
       {data.length > 1 && (
         <>
-          <path d={path('issued')} fill="none" stroke="#6C5CE7" strokeWidth="2" strokeLinejoin="round" />
+          <path d={path('issued')} fill="none" stroke="#1A73E8" strokeWidth="2" strokeLinejoin="round" />
           <path d={path('returned')} fill="none" stroke="#22C55E" strokeWidth="2" strokeLinejoin="round" />
         </>
       )}
       {data.map((d, i) => (
         <g key={i}>
-          <circle cx={xs[i]} cy={yOf(d.issued)} r="4" fill="#6C5CE7" />
-          {d.issued > 0 && <text x={xs[i]} y={yOf(d.issued) - 8} fontSize="11" fill="#6C5CE7" fontWeight="600" textAnchor="middle">{d.issued}</text>}
+          <circle cx={xs[i]} cy={yOf(d.issued)} r="4" fill="#1A73E8" />
+          {d.issued > 0 && <text x={xs[i]} y={yOf(d.issued) - 8} fontSize="11" fill="#1A73E8" fontWeight="600" textAnchor="middle">{d.issued}</text>}
           <circle cx={xs[i]} cy={yOf(d.returned)} r="4" fill="#22C55E" />
           {d.returned > 0 && <text x={xs[i]} y={d.returned === d.issued ? yOf(d.returned) + 16 : yOf(d.returned) - 8} fontSize="11" fill="#22C55E" fontWeight="600" textAnchor="middle">{d.returned}</text>}
         </g>
@@ -60,7 +60,7 @@ function timeAgo(d) {
 
 const QUICK = [
   { icon: <Plus size={16} color="#2563EB" />, label: 'Add New Book',       href: '/librarian/books'    },
-  { icon: <UserPlus size={16} color="#6C5CE7" />, label: 'Add New Member', href: '/librarian/members'  },
+  { icon: <UserPlus size={16} color="#1A73E8" />, label: 'Add New Member', href: '/librarian/members'  },
   { icon: <ArrowLeftRight size={16} color="#2563EB" />, label: 'Issue Book', href: '/librarian/requests' },
   { icon: <RotateCcw size={16} color="#2563EB" />, label: 'Return Book',   href: '/librarian/returns'  },
   { icon: <FileText size={16} color="#4B5563" />, label: 'View All Requests', href: '/librarian/requests' },
@@ -114,7 +114,7 @@ export default function LibrarianDashboard() {
   }, []);
 
   const STATS = [
-    { icon: <BookOpen size={20} color="#6C5CE7" />, iconBg: '#F3E8FF', value: statsData.totalBooks,    label: 'Total Books'    },
+    { icon: <BookOpen size={20} color="#1A73E8" />, iconBg: '#F3E8FF', value: statsData.totalBooks,    label: 'Total Books'    },
     { icon: <Users size={20} color="#16A34A" />,    iconBg: '#DCFCE7', value: statsData.totalMembers,  label: 'Total Members'  },
     { icon: <ArrowLeftRight size={20} color="#CA8A04" />, iconBg: '#FEF9C3', value: statsData.activeBorrows, label: 'Books Issued' },
     { icon: <ClipboardList size={20} color="#DC2626" />, iconBg: '#FEE2E2', value: statsData.overdueCount,  label: 'Overdue Books' },
@@ -155,8 +155,8 @@ export default function LibrarianDashboard() {
                       </div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 12 }}>
-                      <span style={{ fontSize: 13, fontWeight: 500, color: '#6C5CE7', cursor: 'pointer' }}>View all</span>
-                      <ChevronRight size={13} color="#6C5CE7" />
+                      <span style={{ fontSize: 13, fontWeight: 500, color: '#1A73E8', cursor: 'pointer' }}>View all</span>
+                      <ChevronRight size={13} color="#1A73E8" />
                     </div>
                   </div>
                 ))}
@@ -169,7 +169,7 @@ export default function LibrarianDashboard() {
                   <div style={{ padding: '8px 20px', background: '#EFEFEF', border: '1px solid #E5E7EB', borderRadius: 8, fontSize: 14, color: '#4B5563' }}>Last 7 Days</div>
                 </div>
                 <div style={{ display: 'flex', gap: 24, marginBottom: 16 }}>
-                  {[['#6C5CE7', 'Issued'], ['#22C55E', 'Returned']].map(([c, l]) => (
+                  {[['#1A73E8', 'Issued'], ['#22C55E', 'Returned']].map(([c, l]) => (
                     <div key={l} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       <div style={{ width: 12, height: 12, borderRadius: '50%', background: c }} />
                       <span style={{ fontSize: 14, color: '#4B5563' }}>{l}</span>
@@ -185,7 +185,7 @@ export default function LibrarianDashboard() {
               <div style={{ background: 'white', borderRadius: 12, border: '1px solid #E5E7EB', overflow: 'hidden' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 24px 16px' }}>
                   <div style={{ fontSize: 16, fontWeight: 600, color: '#383838' }}>Recently Added Books</div>
-                  <Link href="/librarian/books" style={{ fontSize: 13, fontWeight: 500, color: '#6C5CE7', cursor: 'pointer', textDecoration: 'none' }}>View All</Link>
+                  <Link href="/librarian/books" style={{ fontSize: 13, fontWeight: 500, color: '#1A73E8', cursor: 'pointer', textDecoration: 'none' }}>View All</Link>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
                   {recentBooks.length === 0 ? (
@@ -228,7 +228,7 @@ export default function LibrarianDashboard() {
               <div style={{ background: 'white', borderRadius: 8, padding: 24, boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
                   <div style={{ fontSize: 18, fontWeight: 600, color: '#111827' }}>Recent Activities</div>
-                  <Link href="/librarian/notifications" style={{ fontSize: 14, fontWeight: 500, color: '#6C5CE7', cursor: 'pointer', textDecoration: 'none' }}>View All</Link>
+                  <Link href="/librarian/notifications" style={{ fontSize: 14, fontWeight: 500, color: '#1A73E8', cursor: 'pointer', textDecoration: 'none' }}>View All</Link>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                   {notifRecs.length === 0 ? (
@@ -265,7 +265,7 @@ export default function LibrarianDashboard() {
               {/* Library Timings */}
               <div style={{ background: 'white', borderRadius: 8, padding: 24, boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-                  <Clock size={18} color="#6C5CE7" />
+                  <Clock size={18} color="#1A73E8" />
                   <div style={{ fontSize: 18, fontWeight: 600, color: '#111827' }}>Library Timings</div>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -278,7 +278,7 @@ export default function LibrarianDashboard() {
                     <span style={{ fontSize: 14, fontWeight: 600, color: '#374151' }}>Closed</span>
                   </div>
                 </div>
-                <div style={{ fontSize: 12, color: '#6C5CE7', marginTop: 12 }}>Open on public holidays (10:00 AM - 4:00 PM)</div>
+                <div style={{ fontSize: 12, color: '#1A73E8', marginTop: 12 }}>Open on public holidays (10:00 AM - 4:00 PM)</div>
               </div>
             </div>
           </div>

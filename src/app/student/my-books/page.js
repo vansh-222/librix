@@ -30,7 +30,7 @@ function BookCover({ cover, title, size = 64 }) {
     <div style={{ width: size, height, borderRadius: 8, overflow: 'hidden', flexShrink: 0, background: '#F3F4F6', boxShadow: '0 4px 10px rgba(0,0,0,0.08)' }}>
       {cover && !err
         ? <img src={cover} alt={title} onError={() => setErr(true)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-        : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg,#6366F1,#A78BFA)', color: 'white', padding: 4, textAlign: 'center' }}>
+        : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg,#1A73E8,#93C5FD)', color: 'white', padding: 4, textAlign: 'center' }}>
             <BookOpen size={size * 0.35} />
           </div>
       }
@@ -98,7 +98,7 @@ function BookDetailModal({ rec, onClose, onReturnSuccess }) {
     <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: 20 }}>
       <div style={{ background: 'white', borderRadius: 20, width: '100%', maxWidth: 480, boxShadow: '0 24px 60px rgba(0,0,0,0.2)', overflow: 'hidden', animation: 'modalIn 0.2s ease' }}>
         {/* Header */}
-        <div style={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', padding: '20px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div style={{ background: 'linear-gradient(135deg,#1A73E8,#1A73E8)', padding: '20px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div style={{ color: 'white' }}>
             <div style={{ fontSize: 11, fontWeight: 600, opacity: 0.75, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 4 }}>Book Details</div>
             <div style={{ fontSize: 18, fontWeight: 800, lineHeight: 1.25 }}>{book.title || 'Book'}</div>
@@ -116,7 +116,7 @@ function BookDetailModal({ rec, onClose, onReturnSuccess }) {
             <BookCover cover={book.cover} title={book.title} size={80} />
             <div style={{ flex: 1 }}>
               {book.category && (
-                <span style={{ display: 'inline-block', padding: '3px 12px', borderRadius: 20, background: '#EEF2FF', color: '#6366F1', fontSize: 11, fontWeight: 700, marginBottom: 10 }}>
+                <span style={{ display: 'inline-block', padding: '3px 12px', borderRadius: 20, background: '#EFF6FF', color: '#1A73E8', fontSize: 11, fontWeight: 700, marginBottom: 10 }}>
                   {book.category}
                 </span>
               )}
@@ -173,9 +173,9 @@ function BookDetailModal({ rec, onClose, onReturnSuccess }) {
 
           {/* Status */}
           {rec.status === 'return_pending' ? (
-            <div style={{ padding: '16px', background: '#EEF2FF', border: '1px solid #C7D2FE', borderRadius: 12, textAlign: 'center', marginBottom: 16 }}>
+            <div style={{ padding: '16px', background: '#EFF6FF', border: '1px solid #BFDBFE', borderRadius: 12, textAlign: 'center', marginBottom: 16 }}>
               <div style={{ fontSize: 20, marginBottom: 6 }}>⏳</div>
-              <div style={{ fontSize: 14, fontWeight: 700, color: '#6366F1' }}>Return Pending</div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: '#1A73E8' }}>Return Pending</div>
               <div style={{ fontSize: 12, color: '#6B7280', marginTop: 4 }}>Waiting for librarian confirmation</div>
             </div>
           ) : (
@@ -184,10 +184,10 @@ function BookDetailModal({ rec, onClose, onReturnSuccess }) {
               disabled={returning}
               style={{
                 width: '100%', padding: '14px', borderRadius: 12, border: 'none',
-                background: returning ? '#9CA3AF' : 'linear-gradient(135deg,#6366F1,#8B5CF6)',
+                background: returning ? '#9CA3AF' : 'linear-gradient(135deg,#1A73E8,#1A73E8)',
                 color: 'white', fontSize: 15, fontWeight: 700, cursor: returning ? 'not-allowed' : 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
-                boxShadow: returning ? 'none' : '0 4px 16px rgba(99,102,241,0.35)',
+                boxShadow: returning ? 'none' : '0 4px 16px rgba(26,115,232,0.35)',
                 transition: 'all 0.2s',
               }}
             >
@@ -287,7 +287,7 @@ function FeedbackModal({ rec, onClose, onSubmit }) {
               disabled={submitting || rating === 0}
               style={{
                 flex: 2, padding: '12px', borderRadius: 10, border: 'none',
-                background: rating === 0 ? '#F3F4F6' : 'linear-gradient(135deg,#6366F1,#8B5CF6)',
+                background: rating === 0 ? '#F3F4F6' : 'linear-gradient(135deg,#1A73E8,#1A73E8)',
                 color: rating === 0 ? '#9CA3AF' : 'white',
                 fontSize: 14, fontWeight: 700, cursor: rating === 0 ? 'not-allowed' : 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8
@@ -414,7 +414,7 @@ export default function MyBooksPage() {
   let off = 0;
   const segs = [
     { color: '#22C55E', count: completedCount },
-    { color: '#6366F1', count: activeCount },
+    { color: '#1A73E8', count: activeCount },
     { color: '#EF4444', count: overdueCount },
   ].map(s => { const d = totalBooksRead ? (s.count / Math.max(totalBooksRead, 1)) * C : 0; const el = { ...s, dash: d, offset: off }; off += d; return el; });
 
@@ -429,14 +429,14 @@ export default function MyBooksPage() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
         * { box-sizing: border-box; }
-        .book-row:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.07); border-color: #C7D2FE !important; }
+        .book-row:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.07); border-color: #BFDBFE !important; }
         @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes modalIn { from { opacity:0; transform:scale(0.95); } to { opacity:1; transform:scale(1); } }
       `}</style>
 
       {/* Toast */}
       {toast && (
-        <div style={{ position: 'fixed', top: 20, right: 20, zIndex: 999, background: '#6366F1', color: '#fff', padding: '10px 20px', borderRadius: 10, fontSize: 14, fontWeight: 600, boxShadow: '0 4px 24px rgba(99,102,241,0.4)' }}>{toast}</div>
+        <div style={{ position: 'fixed', top: 20, right: 20, zIndex: 999, background: '#1A73E8', color: '#fff', padding: '10px 20px', borderRadius: 10, fontSize: 14, fontWeight: 600, boxShadow: '0 4px 24px rgba(26,115,232,0.4)' }}>{toast}</div>
       )}
 
       {/* ─── MODAL SYSTEM ─── */}
@@ -474,8 +474,8 @@ export default function MyBooksPage() {
                 flex: 1, padding: '14px 20px', border: 'none', background: 'transparent', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                 fontSize: 14, fontWeight: isActive ? 700 : 500,
-                color: isActive ? '#6366F1' : '#6B7280',
-                borderBottom: isActive ? '2px solid #6366F1' : '2px solid transparent',
+                color: isActive ? '#1A73E8' : '#6B7280',
+                borderBottom: isActive ? '2px solid #1A73E8' : '2px solid transparent',
                 borderRight: i < TABS.length - 1 ? '1px solid #E5E7EB' : 'none', transition: 'all 0.15s',
               }}>
                 {t.icon} {t.label} {t.key === 'wishlist' && wishlist.length > 0 && `(${wishlist.length})`}
@@ -505,7 +505,7 @@ export default function MyBooksPage() {
         {/* Book List */}
         {loading ? (
           <div style={{ display: 'flex', justifyContent: 'center', padding: '80px 0' }}>
-            <Loader2 size={32} style={{ animation: 'spin 0.8s linear infinite', color: '#6366F1' }} />
+            <Loader2 size={32} style={{ animation: 'spin 0.8s linear infinite', color: '#1A73E8' }} />
           </div>
         ) : (
           <>
@@ -523,7 +523,7 @@ export default function MyBooksPage() {
                     {tab === 'history' && 'Books that you return will be archived here for your reference.'}
                     {tab === 'wishlist' && 'Explore our catalog and save books you want to read!'}
                   </p>
-                  <Link href="/student/search" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '10px 20px', background: '#6366F1', color: 'white', borderRadius: 8, fontWeight: 600, fontSize: 14, textDecoration: 'none' }}>
+                  <Link href="/student/search" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '10px 20px', background: '#1A73E8', color: 'white', borderRadius: 8, fontWeight: 600, fontSize: 14, textDecoration: 'none' }}>
                     Explore Catalog <ArrowRight size={16} />
                   </Link>
                 </div>
@@ -535,10 +535,10 @@ export default function MyBooksPage() {
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontSize: 16, fontWeight: 700, color: '#111827', marginBottom: 4 }}>{book.title}</div>
                       <div style={{ fontSize: 13, color: '#6B7280', marginBottom: 8 }}>{book.author || 'Unknown Author'}</div>
-                      {book.category && <span style={{ padding: '3px 12px', borderRadius: 20, background: '#EEF2FF', color: '#6366F1', fontSize: 11, fontWeight: 700 }}>{book.category}</span>}
+                      {book.category && <span style={{ padding: '3px 12px', borderRadius: 20, background: '#EFF6FF', color: '#1A73E8', fontSize: 11, fontWeight: 700 }}>{book.category}</span>}
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                      <Link href={`/student/book/${book._id || book.id}`} style={{ padding: '8px 16px', borderRadius: 8, border: '1px solid #E5E7EB', background: 'white', color: '#6366F1', fontSize: 13, fontWeight: 600, textDecoration: 'none' }}>
+                      <Link href={`/student/book/${book._id || book.id}`} style={{ padding: '8px 16px', borderRadius: 8, border: '1px solid #E5E7EB', background: 'white', color: '#1A73E8', fontSize: 13, fontWeight: 600, textDecoration: 'none' }}>
                         View Details
                       </Link>
                       <button onClick={() => removeFromWishlist(book._id || book.id)} style={{ padding: '8px', borderRadius: 8, border: '1px solid #FECACA', background: '#FEF2F2', color: '#EF4444', cursor: 'pointer', display: 'flex' }}>
@@ -562,7 +562,7 @@ export default function MyBooksPage() {
                       <div style={{ flex: 1.2, minWidth: 160 }}>
                         <div style={{ fontSize: 16, fontWeight: 700, color: '#111827', marginBottom: 3, lineHeight: 1.3 }}>{book.title || 'Unknown Book'}</div>
                         <div style={{ fontSize: 13, color: '#6B7280', marginBottom: 8 }}>{book.author}</div>
-                        {book.category && <span style={{ padding: '4px 12px', borderRadius: 20, background: '#EEF2FF', color: '#6366F1', fontSize: 11, fontWeight: 700 }}>{book.category}</span>}
+                        {book.category && <span style={{ padding: '4px 12px', borderRadius: 20, background: '#EFF6FF', color: '#1A73E8', fontSize: 11, fontWeight: 700 }}>{book.category}</span>}
                       </div>
 
                       {/* Dates */}
@@ -595,16 +595,16 @@ export default function MyBooksPage() {
                         {tab === 'borrowed' ? (
                           <>
                             {isPending
-                              ? <span style={{ padding: '4px 12px', borderRadius: 20, background: '#EEF2FF', color: '#6366F1', fontSize: 12, fontWeight: 700, border: '1px solid #C7D2FE' }}>Return Pending</span>
+                              ? <span style={{ padding: '4px 12px', borderRadius: 20, background: '#EFF6FF', color: '#1A73E8', fontSize: 12, fontWeight: 700, border: '1px solid #BFDBFE' }}>Return Pending</span>
                               : <DueBadge days={days} />
                             }
                             {rec.fine > 0 && <span style={{ fontSize: 12, color: '#EF4444', fontWeight: 700 }}>Fine: ₹{rec.fine}</span>}
                             {/* View Details opens modal */}
                             <button
                               onClick={() => setModal({ step: 'detail', rec })}
-                              style={{ width: '100%', padding: '8px 16px', borderRadius: 8, border: '1px solid #C7D2FE', background: '#EEF2FF', color: '#6366F1', fontSize: 13, fontWeight: 700, cursor: 'pointer', textAlign: 'center', transition: 'all 0.15s' }}
-                              onMouseEnter={e => { e.currentTarget.style.background = '#6366F1'; e.currentTarget.style.color = 'white'; }}
-                              onMouseLeave={e => { e.currentTarget.style.background = '#EEF2FF'; e.currentTarget.style.color = '#6366F1'; }}
+                              style={{ width: '100%', padding: '8px 16px', borderRadius: 8, border: '1px solid #BFDBFE', background: '#EFF6FF', color: '#1A73E8', fontSize: 13, fontWeight: 700, cursor: 'pointer', textAlign: 'center', transition: 'all 0.15s' }}
+                              onMouseEnter={e => { e.currentTarget.style.background = '#1A73E8'; e.currentTarget.style.color = 'white'; }}
+                              onMouseLeave={e => { e.currentTarget.style.background = '#EFF6FF'; e.currentTarget.style.color = '#1A73E8'; }}
                             >
                               View Details
                             </button>
@@ -617,7 +617,7 @@ export default function MyBooksPage() {
                                 {[1,2,3,4,5].map(i => <Star key={i} size={12} fill={i <= rec.rating ? '#F59E0B' : 'none'} color={i <= rec.rating ? '#F59E0B' : '#D1D5DB'} />)}
                               </div>
                             )}
-                            <Link href="/student/history" style={{ width: '100%', padding: '8px 16px', borderRadius: 8, border: '1px solid #E5E7EB', background: 'white', color: '#6366F1', fontSize: 13, fontWeight: 600, textDecoration: 'none', textAlign: 'center' }}>
+                            <Link href="/student/history" style={{ width: '100%', padding: '8px 16px', borderRadius: 8, border: '1px solid #E5E7EB', background: 'white', color: '#1A73E8', fontSize: 13, fontWeight: 600, textDecoration: 'none', textAlign: 'center' }}>
                               View Details
                             </Link>
                           </>
@@ -636,7 +636,7 @@ export default function MyBooksPage() {
                   ‹ Previous
                 </button>
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
-                  <button key={p} onClick={() => setPage(p)} style={{ width: 36, height: 36, borderRadius: 8, border: p === page ? 'none' : '1px solid #E5E7EB', background: p === page ? '#6366F1' : 'white', color: p === page ? 'white' : '#374151', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>{p}</button>
+                  <button key={p} onClick={() => setPage(p)} style={{ width: 36, height: 36, borderRadius: 8, border: p === page ? 'none' : '1px solid #E5E7EB', background: p === page ? '#1A73E8' : 'white', color: p === page ? 'white' : '#374151', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>{p}</button>
                 ))}
                 <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} style={{ padding: '8px 16px', borderRadius: 8, border: '1px solid #E5E7EB', background: 'white', color: page === totalPages ? '#D1D5DB' : '#374151', fontSize: 13, fontWeight: 600, cursor: page === totalPages ? 'not-allowed' : 'pointer' }}>
                   Next ›
@@ -654,7 +654,7 @@ export default function MyBooksPage() {
         <div style={{ background: 'white', borderRadius: 12, border: '1px solid #E5E7EB', padding: 20 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
             <span style={{ fontSize: 15, fontWeight: 700, color: '#111827' }}>Upcoming Returns</span>
-            <Link href="/student/dashboard" style={{ fontSize: 12, fontWeight: 600, color: '#6366F1', textDecoration: 'none' }}>View Calendar</Link>
+            <Link href="/student/dashboard" style={{ fontSize: 12, fontWeight: 600, color: '#1A73E8', textDecoration: 'none' }}>View Calendar</Link>
           </div>
           {upcoming.length === 0 ? (
             <p style={{ fontSize: 13, color: '#9CA3AF', textAlign: 'center', padding: '8px 0' }}>No active borrowings</p>
@@ -671,7 +671,7 @@ export default function MyBooksPage() {
                   </div>
                   <div style={{ fontSize: 11, color: '#6B7280' }}>{fmtDate(rec.dueDate)}</div>
                 </div>
-                <button onClick={() => showToast(`Reminder set for "${book.title}"! 🔔`)} style={{ width: 34, height: 34, borderRadius: 8, border: '1px solid #E5E7EB', background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6366F1', cursor: 'pointer', flexShrink: 0 }}>
+                <button onClick={() => showToast(`Reminder set for "${book.title}"! 🔔`)} style={{ width: 34, height: 34, borderRadius: 8, border: '1px solid #E5E7EB', background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#1A73E8', cursor: 'pointer', flexShrink: 0 }}>
                   <Bell size={16} />
                 </button>
               </div>
@@ -683,7 +683,7 @@ export default function MyBooksPage() {
         <div style={{ background: 'white', borderRadius: 12, border: '1px solid #E5E7EB', padding: 20 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
             <span style={{ fontSize: 15, fontWeight: 700, color: '#111827' }}>Fine Summary</span>
-            <Link href="/student/fines" style={{ fontSize: 12, fontWeight: 600, color: '#6366F1', textDecoration: 'none' }}>View Details</Link>
+            <Link href="/student/fines" style={{ fontSize: 12, fontWeight: 600, color: '#1A73E8', textDecoration: 'none' }}>View Details</Link>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', textAlign: 'center', padding: '12px 0', borderTop: '1px solid #F3F4F6', borderBottom: '1px solid #F3F4F6', marginBottom: 16 }}>
             {[
@@ -697,7 +697,7 @@ export default function MyBooksPage() {
               </div>
             ))}
           </div>
-          <Link href="/student/fines" style={{ display: 'block', width: '100%', padding: '12px', background: '#6366F1', color: 'white', borderRadius: 8, fontSize: 14, fontWeight: 700, textAlign: 'center', textDecoration: 'none', boxShadow: '0 4px 12px rgba(99,102,241,0.25)' }}>
+          <Link href="/student/fines" style={{ display: 'block', width: '100%', padding: '12px', background: '#1A73E8', color: 'white', borderRadius: 8, fontSize: 14, fontWeight: 700, textAlign: 'center', textDecoration: 'none', boxShadow: '0 4px 12px rgba(26,115,232,0.25)' }}>
             Pay Fine Now
           </Link>
         </div>
@@ -722,7 +722,7 @@ export default function MyBooksPage() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {[
                 { color: '#22C55E', label: 'Completed', count: completedCount },
-                { color: '#6366F1', label: 'Borrowed',  count: activeCount },
+                { color: '#1A73E8', label: 'Borrowed',  count: activeCount },
                 { color: '#EF4444', label: 'Overdue',   count: overdueCount },
               ].map(item => (
                 <div key={item.label} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12 }}>

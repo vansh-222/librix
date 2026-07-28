@@ -12,7 +12,7 @@ function BookCover({ cover, title, size = 80 }) {
     <div style={{ width: size, height, borderRadius: 8, overflow: 'hidden', flexShrink: 0, background: '#F3F4F6', boxShadow: '0 2px 6px rgba(0,0,0,0.06)' }}>
       {cover && !err
         ? <img src={cover} alt={title} onError={() => setErr(true)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-        : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg,#6366F1,#A78BFA)' }}>
+        : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg,#1A73E8,#93C5FD)' }}>
             <BookOpen size={size * 0.3} color="white" />
           </div>
       }
@@ -184,7 +184,7 @@ export default function SearchBooksPage() {
   return (
     <div style={{ padding: '28px', fontFamily: 'Inter,sans-serif', background: '#F9FAFB', minHeight: '100%' }}>
       {toast && (
-        <div style={{ position: 'fixed', top: 20, right: 20, zIndex: 999, background: '#6366F1', color: '#fff', padding: '10px 20px', borderRadius: 10, fontSize: 14, fontWeight: 600, boxShadow: '0 4px 24px rgba(99,102,241,0.4)' }}>{toast}</div>
+        <div style={{ position: 'fixed', top: 20, right: 20, zIndex: 999, background: '#1A73E8', color: '#fff', padding: '10px 20px', borderRadius: 10, fontSize: 14, fontWeight: 600, boxShadow: '0 4px 24px rgba(26,115,232,0.4)' }}>{toast}</div>
       )}
 
       {/* Main 2-Column Container matching Screenshot */}
@@ -240,7 +240,7 @@ export default function SearchBooksPage() {
                   style={{
                     padding: 6, border: 'none', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
                     background: viewMode === 'grid' ? 'white' : 'transparent',
-                    color: viewMode === 'grid' ? '#6366F1' : '#6B7280',
+                    color: viewMode === 'grid' ? '#1A73E8' : '#6B7280',
                     boxShadow: viewMode === 'grid' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none', transition: 'all 0.15s'
                   }}
                 >
@@ -252,7 +252,7 @@ export default function SearchBooksPage() {
                   style={{
                     padding: 6, border: 'none', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
                     background: viewMode === 'list' ? 'white' : 'transparent',
-                    color: viewMode === 'list' ? '#6366F1' : '#6B7280',
+                    color: viewMode === 'list' ? '#1A73E8' : '#6B7280',
                     boxShadow: viewMode === 'list' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none', transition: 'all 0.15s'
                   }}
                 >
@@ -270,7 +270,7 @@ export default function SearchBooksPage() {
           {/* Results Area */}
           {loading ? (
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '80px 0' }}>
-              <Loader2 size={32} style={{ animation: 'spin 0.8s linear infinite', color: '#6366F1' }} />
+              <Loader2 size={32} style={{ animation: 'spin 0.8s linear infinite', color: '#1A73E8' }} />
             </div>
           ) : books.length === 0 ? (
             <div style={{ background: 'white', borderRadius: 12, border: '1px solid #E5E7EB', padding: 80, textAlign: 'center' }}>
@@ -306,7 +306,7 @@ export default function SearchBooksPage() {
                         
                         {book.category && (
                           <div style={{ marginBottom: 12 }}>
-                            <span style={{ display: 'inline-block', padding: '3px 12px', background: '#EEF2FF', color: '#6366F1', borderRadius: 20, fontSize: 12, fontWeight: 600 }}>
+                            <span style={{ display: 'inline-block', padding: '3px 12px', background: '#EFF6FF', color: '#1A73E8', borderRadius: 20, fontSize: 12, fontWeight: 600 }}>
                               {book.category}
                             </span>
                           </div>
@@ -340,24 +340,24 @@ export default function SearchBooksPage() {
                             padding: '8px 16px', border: '1px solid #E5E7EB', borderRadius: 8, background: '#F9FAFB', color: '#374151',
                             fontSize: 13, fontWeight: 600, textDecoration: 'none', transition: 'all 0.15s'
                           }}
-                          onMouseEnter={e => { e.currentTarget.style.background = '#EEF2FF'; e.currentTarget.style.color = '#6366F1'; e.currentTarget.style.borderColor = '#C7D2FE'; }}
+                          onMouseEnter={e => { e.currentTarget.style.background = '#EFF6FF'; e.currentTarget.style.color = '#1A73E8'; e.currentTarget.style.borderColor = '#BFDBFE'; }}
                           onMouseLeave={e => { e.currentTarget.style.background = '#F9FAFB'; e.currentTarget.style.color = '#374151'; e.currentTarget.style.borderColor = '#E5E7EB'; }}
                         >
                           View Details
                         </Link>
 
                         {isPending ? (
-                          <button disabled style={{ padding: '8px 16px', border: '1px solid #C7D2FE', borderRadius: 8, background: '#EEF2FF', color: '#6366F1', fontSize: 13, fontWeight: 600, cursor: 'not-allowed' }}>
+                          <button disabled style={{ padding: '8px 16px', border: '1px solid #BFDBFE', borderRadius: 8, background: '#EFF6FF', color: '#1A73E8', fontSize: 13, fontWeight: 600, cursor: 'not-allowed' }}>
                             ✓ Requested
                           </button>
                         ) : avail > 0 ? (
                           <button
                             onClick={() => openRequestModal(book)}
                             style={{
-                              padding: '8px 18px', border: '1px solid #818CF8', borderRadius: 8, background: 'white', color: '#6366F1',
+                              padding: '8px 18px', border: '1px solid #60A5FA', borderRadius: 8, background: 'white', color: '#1A73E8',
                               fontSize: 13, fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s'
                             }}
-                            onMouseEnter={e => e.currentTarget.style.background = '#EEF2FF'}
+                            onMouseEnter={e => e.currentTarget.style.background = '#EFF6FF'}
                             onMouseLeave={e => e.currentTarget.style.background = 'white'}
                           >
                             Request Book
@@ -401,7 +401,7 @@ export default function SearchBooksPage() {
                       <div style={{ fontSize: 12, color: '#6B7280', marginBottom: 10 }}>{book.author}</div>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
                         {book.category && (
-                          <span style={{ padding: '3px 8px', borderRadius: 20, background: '#EEF2FF', color: '#6366F1', fontSize: 11, fontWeight: 600 }}>{book.category}</span>
+                          <span style={{ padding: '3px 8px', borderRadius: 20, background: '#EFF6FF', color: '#1A73E8', fontSize: 11, fontWeight: 600 }}>{book.category}</span>
                         )}
                         <span style={{ fontSize: 11, fontWeight: 700, color: avail > 0 ? '#16A34A' : '#D97706' }}>
                           {avail > 0 ? 'Available' : 'Issued'}
@@ -418,12 +418,12 @@ export default function SearchBooksPage() {
                           Details
                         </Link>
                         {isPending ? (
-                          <button disabled style={{ flex: 1.2, padding: '8px 4px', border: '1px solid #C7D2FE', borderRadius: 8, background: '#EEF2FF', color: '#6366F1', fontSize: 12, fontWeight: 600, cursor: 'not-allowed' }}>✓ Requested</button>
+                          <button disabled style={{ flex: 1.2, padding: '8px 4px', border: '1px solid #BFDBFE', borderRadius: 8, background: '#EFF6FF', color: '#1A73E8', fontSize: 12, fontWeight: 600, cursor: 'not-allowed' }}>✓ Requested</button>
                         ) : (
                           <button onClick={() => openRequestModal(book)}
                             style={{
-                              flex: 1.2, padding: '8px 4px', border: '1px solid #818CF8', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'Inter',
-                              background: avail > 0 ? 'white' : '#F9FAFB', color: avail > 0 ? '#6366F1' : '#6B7280',
+                              flex: 1.2, padding: '8px 4px', border: '1px solid #60A5FA', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'Inter',
+                              background: avail > 0 ? 'white' : '#F9FAFB', color: avail > 0 ? '#1A73E8' : '#6B7280',
                             }}>
                             {avail > 0 ? 'Request Book' : 'Join Waitlist'}
                           </button>
@@ -445,7 +445,7 @@ export default function SearchBooksPage() {
               </button>
               {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => i + 1).map(p => (
                 <button key={p} onClick={() => setPage(p)}
-                  style={{ width: 36, height: 36, borderRadius: 8, border: p === page ? 'none' : '1px solid #E5E7EB', background: p === page ? '#6366F1' : 'white', color: p === page ? 'white' : '#374151', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                  style={{ width: 36, height: 36, borderRadius: 8, border: p === page ? 'none' : '1px solid #E5E7EB', background: p === page ? '#1A73E8' : 'white', color: p === page ? 'white' : '#374151', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
                   {p}
                 </button>
               ))}
@@ -483,7 +483,7 @@ export default function SearchBooksPage() {
                       type="checkbox"
                       checked={availFilter === opt.id}
                       onChange={() => { setAvailFilter(opt.id); setPage(1); }}
-                      style={{ width: 16, height: 16, accentColor: '#6366F1', cursor: 'pointer' }}
+                      style={{ width: 16, height: 16, accentColor: '#1A73E8', cursor: 'pointer' }}
                     />
                     {opt.label}
                   </label>
@@ -555,11 +555,11 @@ export default function SearchBooksPage() {
             <button
               onClick={() => doSearch(1)}
               style={{
-                width: '100%', padding: '11px', background: '#6366F1', color: 'white', border: 'none', borderRadius: 8,
-                fontSize: 13, fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s', boxShadow: '0 2px 6px rgba(99,102,241,0.25)'
+                width: '100%', padding: '11px', background: '#1A73E8', color: 'white', border: 'none', borderRadius: 8,
+                fontSize: 13, fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s', boxShadow: '0 2px 6px rgba(26,115,232,0.25)'
               }}
-              onMouseEnter={e => e.currentTarget.style.background = '#4F46E5'}
-              onMouseLeave={e => e.currentTarget.style.background = '#6366F1'}
+              onMouseEnter={e => e.currentTarget.style.background = '#1557B0'}
+              onMouseLeave={e => e.currentTarget.style.background = '#1A73E8'}
             >
               Apply Filters
             </button>
@@ -583,11 +583,11 @@ export default function SearchBooksPage() {
                       display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0',
                       borderBottom: '1px solid #F3F4F6', cursor: 'pointer', transition: 'color 0.15s'
                     }}
-                    onMouseEnter={e => e.currentTarget.style.color = '#6366F1'}
+                    onMouseEnter={e => e.currentTarget.style.color = '#1A73E8'}
                     onMouseLeave={e => e.currentTarget.style.color = '#374151'}
                   >
                     <span style={{ fontSize: 13, fontWeight: 500 }}>{c.name}</span>
-                    <span style={{ background: '#F3E8FF', color: '#6C5CE7', padding: '2px 8px', borderRadius: 12, fontSize: 11, fontWeight: 700 }}>
+                    <span style={{ background: '#F3E8FF', color: '#1A73E8', padding: '2px 8px', borderRadius: 12, fontSize: 11, fontWeight: 700 }}>
                       {c.count}
                     </span>
                   </div>
@@ -599,7 +599,7 @@ export default function SearchBooksPage() {
               <div
                 onClick={() => { setCategory(''); setPage(1); }}
                 style={{
-                  marginTop: 14, fontSize: 13, fontWeight: 600, color: '#6366F1', cursor: 'pointer',
+                  marginTop: 14, fontSize: 13, fontWeight: 600, color: '#1A73E8', cursor: 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between'
                 }}
               >

@@ -5,7 +5,7 @@ import { Bookmark, BookOpen, Loader2, XCircle, Clock } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
 
 const STATUS_CONFIG = {
-  waiting:  { label: 'In Queue',  color: '#6366F1', bg: 'rgba(99,102,241,0.1)'  },
+  waiting:  { label: 'In Queue',  color: '#1A73E8', bg: 'rgba(26,115,232,0.1)'  },
   notified: { label: 'Available!',color: '#22C55E', bg: 'rgba(34,197,94,0.12)' },
   expired:  { label: 'Expired',   color: '#EF4444', bg: 'rgba(239,68,68,0.1)'   },
   fulfilled:{ label: 'Fulfilled', color: '#6B7280', bg: 'rgba(107,114,128,0.1)' },
@@ -88,8 +88,8 @@ export default function StudentReservationsPage() {
                       <div style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 8 }}>{res.bookId?.author}</div>
                       {res.status === 'waiting' && (
                         <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13 }}>
-                          <Clock size={13} color="#6366F1" />
-                          <span style={{ color: '#6366F1', fontWeight: 700 }}>Queue position: #{res.position}</span>
+                          <Clock size={13} color="#1A73E8" />
+                          <span style={{ color: '#1A73E8', fontWeight: 700 }}>Queue position: #{res.position}</span>
                         </div>
                       )}
                       {res.status === 'notified' && res.expiresAt && (

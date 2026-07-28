@@ -37,7 +37,8 @@ export default function LibrarianSidebar({ unreadCount = 0 }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
           <img src="https://res.cloudinary.com/dadiutcqh/image/upload/v1784449649/c7205191-78c8-486e-9996-7894591bf72b_szzaji.png" alt="Librix Logo" style={{ height: 40, width: 'auto', objectFit: 'contain' }} />
           <div>
-            <div style={{ fontSize: 10, color: '#9CA3AF', lineHeight: '14px', marginTop: 4 }}>Library Management</div>
+            <span style={{ fontSize: 18, fontWeight: 800, color: '#052033', fontFamily: 'Inter', letterSpacing: '-0.03em' }}>Librix</span>
+            <div style={{ fontSize: 10, color: '#9CA3AF', lineHeight: '14px', marginTop: 1 }}>Library Management</div>
           </div>
         </div>
       </div>
@@ -50,7 +51,7 @@ export default function LibrarianSidebar({ unreadCount = 0 }) {
             <Link key={item.href} href={item.href} style={{ textDecoration: 'none', display: 'block', padding: '2px 8px' }}>
               <div className="nav-link" style={{
                 display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px',
-                background: active ? '#6C5CE7' : 'transparent',
+                background: active ? '#1A73E8' : 'transparent',
                 borderRadius: 8, cursor: 'pointer',
               }}>
                 <item.icon size={16} color={active ? 'white' : '#6B7280'} />
@@ -59,7 +60,7 @@ export default function LibrarianSidebar({ unreadCount = 0 }) {
                   <span style={{
                     minWidth: 20,
                     height: 20,
-                    background: '#0ea5e9',
+                    background: '#1A73E8',
                     color: 'white',
                     fontSize: 10,
                     fontWeight: 700,
@@ -80,16 +81,16 @@ export default function LibrarianSidebar({ unreadCount = 0 }) {
 
       {/* Help box */}
       <div style={{ padding: '12px 12px 16px' }}>
-        <div style={{ background: '#FAF5FF', borderRadius: 12, padding: '14px 12px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, border: '1px solid #EDE9FE' }}>
+        <div style={{ background: '#FAF5FF', borderRadius: 12, padding: '14px 12px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, border: '1px solid #EFF6FF' }}>
           {/* Book stack illustration */}
           <div style={{ width: 72, height: 48, position: 'relative', marginBottom: 2 }}>
             <div style={{ width: 24, height: 38, background: '#C4B5FD', position: 'absolute', left: 10, bottom: 0, borderRadius: '2px 2px 0 0' }} />
-            <div style={{ width: 24, height: 44, background: '#8B5CF6', position: 'absolute', left: 26, bottom: 0, borderRadius: '2px 2px 0 0' }} />
-            <div style={{ width: 20, height: 32, background: '#DDD6FE', position: 'absolute', left: 44, bottom: 0, borderRadius: '2px 2px 0 0' }} />
+            <div style={{ width: 24, height: 44, background: '#1A73E8', position: 'absolute', left: 26, bottom: 0, borderRadius: '2px 2px 0 0' }} />
+            <div style={{ width: 20, height: 32, background: '#BFDBFE', position: 'absolute', left: 44, bottom: 0, borderRadius: '2px 2px 0 0' }} />
           </div>
           <div style={{ fontSize: 12, fontWeight: 600, color: '#111827' }}>Need Help?</div>
           <div style={{ fontSize: 10, color: '#6B7280', textAlign: 'center', lineHeight: '14px' }}>If you need assistance, we're here to help.</div>
-          <button type="button" style={{ width: '100%', padding: '6px 10px', borderRadius: 8, border: '1px solid #6C5CE7', background: 'transparent', color: '#6C5CE7', fontSize: 12, fontWeight: 500, cursor: 'pointer', marginTop: 2 }}>
+          <button type="button" style={{ width: '100%', padding: '6px 10px', borderRadius: 8, border: '1px solid #1A73E8', background: 'transparent', color: '#1A73E8', fontSize: 12, fontWeight: 500, cursor: 'pointer', marginTop: 2 }}>
             Contact Support
           </button>
         </div>

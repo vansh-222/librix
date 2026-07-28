@@ -24,7 +24,7 @@ function fmtRelativeTime(d) {
   return `${date.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}, ${time}`;
 }
 
-const BOOK_COLORS = ['#E05252','#2B6CB0','#9C27B0','#F5F5F5','#D4A017','#26C6DA','#EA580C','#6C5CE7'];
+const BOOK_COLORS = ['#E05252','#2B6CB0','#9C27B0','#F5F5F5','#D4A017','#26C6DA','#EA580C','#1A73E8'];
 
 
 function BookCover({ color }) {
@@ -63,7 +63,7 @@ export default function RequestsPage() {
   const rejected = requests.filter(r => r.status === 'rejected').length;
 
   const STATS = [
-    { icon: <ClipboardList size={22} color="#6C5CE7" />, iconBg: '#EDE9FE', value: total,    label: 'Total Requests'    },
+    { icon: <ClipboardList size={22} color="#1A73E8" />, iconBg: '#EFF6FF', value: total,    label: 'Total Requests'    },
     { icon: <Clock size={22} color="#F59E0B" />,         iconBg: '#FEF3C7', value: pending,   label: 'Pending Requests'  },
     { icon: <CheckCircle size={22} color="#16A34A" />,   iconBg: '#DCFCE7', value: approved,  label: 'Approved Requests' },
     { icon: <XCircle size={22} color="#DC2626" />,       iconBg: '#FEE2E2', value: rejected,  label: 'Rejected Requests' },
@@ -116,7 +116,7 @@ export default function RequestsPage() {
       subtitle="Manage book requests from members"
       searchPlaceholder="Search books, members, ISBN..."
     >
-      {toast && <div style={{ position: 'fixed', top: 20, right: 20, zIndex: 999, background: '#6C5CE7', color: '#fff', padding: '10px 20px', borderRadius: 10, fontSize: 14, fontWeight: 600, boxShadow: '0 4px 24px rgba(108,92,231,0.4)' }}>{toast}</div>}
+      {toast && <div style={{ position: 'fixed', top: 20, right: 20, zIndex: 999, background: '#1A73E8', color: '#fff', padding: '10px 20px', borderRadius: 10, fontSize: 14, fontWeight: 600, boxShadow: '0 4px 24px rgba(26,115,232,0.4)' }}>{toast}</div>}
       <div style={{ padding: '24px 24px 32px' }}>
         {/* Two column layout */}
         <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start' }}>
@@ -136,7 +136,7 @@ export default function RequestsPage() {
                       <div style={{ fontSize: 24, fontWeight: 700, color: '#111827', lineHeight: 1.1 }}>{s.value}</div>
                       <div style={{ fontSize: 12, color: '#6B7280', marginTop: 2 }}>{s.label}</div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 6 }}>
-                        <span style={{ fontSize: 12, fontWeight: 500, color: '#6C5CE7', cursor: 'pointer' }}>View details →</span>
+                        <span style={{ fontSize: 12, fontWeight: 500, color: '#1A73E8', cursor: 'pointer' }}>View details →</span>
                       </div>
                     </div>
                   </div>
@@ -156,7 +156,7 @@ export default function RequestsPage() {
                       padding: '11px 24px',
                       border: 'none',
                       borderRadius: 8,
-                      background: activeTab === tab.id ? '#6C5CE7' : 'white',
+                      background: activeTab === tab.id ? '#1A73E8' : 'white',
                       color: activeTab === tab.id ? 'white' : '#374151',
                       fontSize: 13,
                       fontWeight: 500,
@@ -175,10 +175,10 @@ export default function RequestsPage() {
               {/* Actions */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                 <button type="button" style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 16px', border: '1px solid #E5E7EB', borderRadius: 8, background: 'white', fontSize: 13, color: '#374151', cursor: 'pointer', fontFamily: 'Inter', whiteSpace: 'nowrap', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
-                  <Filter size={15} color="#6C5CE7" />
+                  <Filter size={15} color="#1A73E8" />
                   Filters
                 </button>
-                <button type="button" style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 20px', border: 'none', borderRadius: 8, background: '#6C5CE7', color: 'white', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'Inter', whiteSpace: 'nowrap', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+                <button type="button" style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 20px', border: 'none', borderRadius: 8, background: '#1A73E8', color: 'white', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'Inter', whiteSpace: 'nowrap', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
                   <Plus size={16} />
                   New Request
                 </button>
@@ -227,7 +227,7 @@ export default function RequestsPage() {
                         </td>
                         <td style={{ padding: '10px 16px' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                            <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#6C5CE7', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: 12, fontWeight: 700 }}>
+                            <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#1A73E8', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: 12, fontWeight: 700 }}>
                               {(req.userId?.name || '?').split(' ').map(n => n[0]).join('')}
                             </div>
                             <div style={{ minWidth: 0 }}>
@@ -240,7 +240,7 @@ export default function RequestsPage() {
                           <div style={{ fontSize: 13, fontWeight: 500, color: '#111827' }}>{fmtDate(req.createdAt)}</div>
                           <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 2 }}>{fmtTime(req.createdAt)}</div>
                           {req.daysNeeded && (
-                            <div style={{ fontSize: 11, color: '#6C5CE7', marginTop: 6, fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 4, background: '#EDE9FE', padding: '2px 8px', borderRadius: 9999 }}>
+                            <div style={{ fontSize: 11, color: '#1A73E8', marginTop: 6, fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 4, background: '#EFF6FF', padding: '2px 8px', borderRadius: 9999 }}>
                               {req.daysNeeded} Days
                             </div>
                           )}
@@ -277,7 +277,7 @@ export default function RequestsPage() {
                               <button type="button"
                                 disabled={acting === req._id + 'issue'}
                                 onClick={() => doAction(req._id, 'issue')}
-                                style={{ padding: '7px 14px', border: '1px solid #6C5CE7', background: 'white', color: '#6C5CE7', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 500, fontFamily: 'Inter' }}
+                                style={{ padding: '7px 14px', border: '1px solid #1A73E8', background: 'white', color: '#1A73E8', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 500, fontFamily: 'Inter' }}
                               >
                                 Issue Book
                               </button>
@@ -301,7 +301,7 @@ export default function RequestsPage() {
                       minWidth: 32, height: 32, padding: '0 8px',
                       border: p === '1' ? 'none' : '1px solid transparent',
                       borderRadius: 8,
-                      background: p === '1' ? '#6C5CE7' : 'transparent',
+                      background: p === '1' ? '#1A73E8' : 'transparent',
                       color: p === '1' ? 'white' : (p === '‹' || p === '›' ? '#9CA3AF' : '#374151'),
                       fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'Inter',
                     }}>{p}</button>
@@ -329,7 +329,7 @@ export default function RequestsPage() {
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
                 <span style={{ fontSize: 14, fontWeight: 600, color: '#111827' }}>Recent Requests</span>
-                <span style={{ fontSize: 12, fontWeight: 500, color: '#6C5CE7', cursor: 'pointer' }}>View All</span>
+                <span style={{ fontSize: 12, fontWeight: 500, color: '#1A73E8', cursor: 'pointer' }}>View All</span>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 {(() => {
@@ -438,7 +438,7 @@ export default function RequestsPage() {
                 {[
                   { icon: <CheckCircle size={16} color="#16A34A" />, label: 'Approve All Pending', color: '#16A34A' },
                   { icon: <XCircle size={16} color="#DC2626" />, label: 'Reject All Pending', color: '#DC2626' },
-                  { icon: <ClipboardList size={16} color="#6C5CE7" />, label: 'View All Requests', color: '#6C5CE7' },
+                  { icon: <ClipboardList size={16} color="#1A73E8" />, label: 'View All Requests', color: '#1A73E8' },
                 ].map((action, i) => (
                   <button 
                     key={i} 

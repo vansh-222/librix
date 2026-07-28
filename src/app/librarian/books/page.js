@@ -88,7 +88,7 @@ function SearchBookCover({ cover, title }) {
     <div style={{ width: 60, height: 84, borderRadius: 6, overflow: 'hidden', flexShrink: 0, background: '#F3F4F6' }}>
       {cover && !err
         ? <img src={cover} alt={title} onError={() => setErr(true)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-        : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg,#6C5CE7,#a78bfa)' }}>
+        : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg,#1A73E8,#93C5FD)' }}>
             <BookOpen size={22} color="white" />
           </div>
       }
@@ -214,7 +214,7 @@ function AddBookModal({ onClose, onAdded }) {
                   style={{ ...INP, paddingLeft: 38, paddingRight: searching ? 38 : 12 }}
                 />
                 {searching && (
-                  <Loader2 size={16} color="#6C5CE7" style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', animation: 'spin 0.8s linear infinite' }} />
+                  <Loader2 size={16} color="#1A73E8" style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', animation: 'spin 0.8s linear infinite' }} />
                 )}
               </div>
             </div>
@@ -240,14 +240,14 @@ function AddBookModal({ onClose, onAdded }) {
                   {results.map((book, i) => (
                     <div key={book.googleBooksId || book.openLibraryId || i}
                       style={{ display: 'flex', gap: 14, padding: '14px', border: '1px solid #E5E7EB', borderRadius: 12, background: 'white', alignItems: 'flex-start', transition: 'all 0.15s' }}
-                      onMouseEnter={e => { e.currentTarget.style.borderColor = '#6C5CE7'; e.currentTarget.style.boxShadow = '0 2px 12px rgba(108,92,231,0.12)'; }}
+                      onMouseEnter={e => { e.currentTarget.style.borderColor = '#1A73E8'; e.currentTarget.style.boxShadow = '0 2px 12px rgba(26,115,232,0.12)'; }}
                       onMouseLeave={e => { e.currentTarget.style.borderColor = '#E5E7EB'; e.currentTarget.style.boxShadow = 'none'; }}>
                       <SearchBookCover cover={book.cover} title={book.title} />
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ fontSize: 14, fontWeight: 700, color: '#111827', marginBottom: 3, lineHeight: 1.3 }}>{book.title}</div>
                         <div style={{ fontSize: 12, color: '#6B7280', marginBottom: 6 }}>by {book.author}</div>
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 6 }}>
-                          {book.category && <span style={{ padding: '2px 8px', borderRadius: 20, background: '#EDE9FE', color: '#6C5CE7', fontSize: 11, fontWeight: 600 }}>{book.category}</span>}
+                          {book.category && <span style={{ padding: '2px 8px', borderRadius: 20, background: '#EFF6FF', color: '#1A73E8', fontSize: 11, fontWeight: 600 }}>{book.category}</span>}
                           {book.isbn     && <span style={{ padding: '2px 8px', borderRadius: 20, background: '#F3F4F6', color: '#6B7280', fontSize: 11 }}>ISBN: {book.isbn}</span>}
                           {book.publishedYear && <span style={{ padding: '2px 8px', borderRadius: 20, background: '#F3F4F6', color: '#6B7280', fontSize: 11 }}>{book.publishedYear}</span>}
                           {book.publisher && <span style={{ padding: '2px 8px', borderRadius: 20, background: '#F3F4F6', color: '#6B7280', fontSize: 11 }}>{book.publisher}</span>}
@@ -262,7 +262,7 @@ function AddBookModal({ onClose, onAdded }) {
                         )}
                       </div>
                       <button type="button" onClick={() => pickBook(book)}
-                        style={{ flexShrink: 0, padding: '8px 16px', borderRadius: 8, border: 'none', background: '#6C5CE7', color: 'white', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'Inter', whiteSpace: 'nowrap' }}>
+                        style={{ flexShrink: 0, padding: '8px 16px', borderRadius: 8, border: 'none', background: '#1A73E8', color: 'white', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'Inter', whiteSpace: 'nowrap' }}>
                         Add to Library
                       </button>
                     </div>
@@ -284,7 +284,7 @@ function AddBookModal({ onClose, onAdded }) {
                   <div style={{ fontSize: 14, fontWeight: 700, color: '#111827', marginBottom: 3 }}>{selected.title}</div>
                   <div style={{ fontSize: 12, color: '#6B7280', marginBottom: 6 }}>by {selected.author}</div>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
-                    {selected.category && <span style={{ padding: '2px 8px', borderRadius: 20, background: '#EDE9FE', color: '#6C5CE7', fontSize: 11, fontWeight: 600 }}>{selected.category}</span>}
+                    {selected.category && <span style={{ padding: '2px 8px', borderRadius: 20, background: '#EFF6FF', color: '#1A73E8', fontSize: 11, fontWeight: 600 }}>{selected.category}</span>}
                     {selected.isbn && <span style={{ padding: '2px 8px', borderRadius: 20, background: '#F3F4F6', color: '#6B7280', fontSize: 11 }}>ISBN: {selected.isbn}</span>}
                     {selected.publishedYear && <span style={{ padding: '2px 8px', borderRadius: 20, background: '#F3F4F6', color: '#6B7280', fontSize: 11 }}>{selected.publishedYear}</span>}
                   </div>
@@ -325,7 +325,7 @@ function AddBookModal({ onClose, onAdded }) {
                   Cancel
                 </button>
                 <button type="submit" disabled={saving}
-                  style={{ flex: 2, padding: '11px 0', borderRadius: 8, border: 'none', background: '#6C5CE7', color: 'white', fontSize: 13, fontWeight: 700, cursor: saving ? 'wait' : 'pointer', fontFamily: 'Inter', opacity: saving ? 0.75 : 1 }}>
+                  style={{ flex: 2, padding: '11px 0', borderRadius: 8, border: 'none', background: '#1A73E8', color: 'white', fontSize: 13, fontWeight: 700, cursor: saving ? 'wait' : 'pointer', fontFamily: 'Inter', opacity: saving ? 0.75 : 1 }}>
                   {saving ? '⏳ Saving…' : '✓ Add to Library'}
                 </button>
               </div>
@@ -391,7 +391,7 @@ export default function BooksManagement() {
   const issuedBooks    = (statsData.activeBorrows || 0);
 
   const STATS = [
-    { icon: <BookOpen size={22} color="#6C5CE7" />,   iconBg: '#EDE9FE', value: statsData.totalBooks ?? '…',  label: 'Total Books'      },
+    { icon: <BookOpen size={22} color="#1A73E8" />,   iconBg: '#EFF6FF', value: statsData.totalBooks ?? '…',  label: 'Total Books'      },
     { icon: <CheckCircle size={22} color="#16A34A" />, iconBg: '#DCFCE7', value: availableBooks || '…',         label: 'Available Books'  },
     { icon: <RefreshCw size={22} color="#EA580C" />,   iconBg: '#FFEDD5', value: issuedBooks || '…',            label: 'Issued Books'     },
     { icon: <LayoutGrid size={22} color="#DC2626" />,  iconBg: '#FEE2E2', value: statsData.totalMembers ?? '…', label: 'Active Members'   },
@@ -453,8 +453,8 @@ export default function BooksManagement() {
                       <div style={{ fontSize: 24, fontWeight: 700, color: '#111827', lineHeight: 1.1 }}>{s.value}</div>
                       <div style={{ fontSize: 12, color: '#6B7280', marginTop: 2 }}>{s.label}</div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 2, marginTop: 6 }}>
-                        <span style={{ fontSize: 12, fontWeight: 500, color: '#6C5CE7', cursor: 'pointer' }}>View all</span>
-                        <ChevronRight size={12} color="#6C5CE7" />
+                        <span style={{ fontSize: 12, fontWeight: 500, color: '#1A73E8', cursor: 'pointer' }}>View all</span>
+                        <ChevronRight size={12} color="#1A73E8" />
                       </div>
                     </div>
                   </div>
@@ -491,14 +491,14 @@ export default function BooksManagement() {
               </div>
 
               <button type="button" style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', border: '1px solid #E5E7EB', borderRadius: 8, background: 'white', fontSize: 13, color: '#374151', cursor: 'pointer', fontFamily: 'Inter' }}>
-                <Zap size={14} color="#6C5CE7" />
+                <Zap size={14} color="#1A73E8" />
                 Filters
               </button>
 
               <button
                 type="button"
                 onClick={() => setShowAddModal(true)}
-                style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 16px', border: 'none', borderRadius: 8, background: '#6C5CE7', color: 'white', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'Inter', marginLeft: 'auto' }}
+                style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 16px', border: 'none', borderRadius: 8, background: '#1A73E8', color: 'white', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'Inter', marginLeft: 'auto' }}
               >
                 Add New Book
               </button>
@@ -549,10 +549,10 @@ export default function BooksManagement() {
                       <td style={{ ...TD_STYLE, padding: '10px 16px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 2, justifyContent: 'center' }}>
                           <button type="button" className="act-btn" style={{ padding: '6px', border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex' }}>
-                            <Eye size={16} color="#6C5CE7" />
+                            <Eye size={16} color="#1A73E8" />
                           </button>
                           <button type="button" className="act-btn" style={{ padding: '6px', border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex' }}>
-                            <Pencil size={16} color="#6C5CE7" />
+                            <Pencil size={16} color="#1A73E8" />
                           </button>
                           <button type="button" className="act-btn" onClick={() => deleteBook(b._id)} disabled={deleting === b._id} style={{ padding: '6px', border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', opacity: deleting === b._id ? 0.4 : 1 }}>
                             <Trash2 size={16} color="#EF4444" />
@@ -570,7 +570,7 @@ export default function BooksManagement() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                   <button type="button" className="page-btn" onClick={() => setPage(p => Math.max(1, p-1))} style={{ minWidth: 32, height: 32, padding: '0 8px', border: '1px solid transparent', borderRadius: 8, background: 'transparent', color: '#9CA3AF', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'Inter' }}>‹</button>
                   {pagesArr.map((p) => (
-                    <button key={p} type="button" onClick={() => setPage(Number(p))} className={String(page) !== p ? 'page-btn' : ''} style={{ minWidth: 32, height: 32, padding: '0 8px', border: String(page) === p ? 'none' : '1px solid transparent', borderRadius: 8, background: String(page) === p ? '#6C5CE7' : 'transparent', color: String(page) === p ? 'white' : '#374151', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'Inter' }}>{p}</button>
+                    <button key={p} type="button" onClick={() => setPage(Number(p))} className={String(page) !== p ? 'page-btn' : ''} style={{ minWidth: 32, height: 32, padding: '0 8px', border: String(page) === p ? 'none' : '1px solid transparent', borderRadius: 8, background: String(page) === p ? '#1A73E8' : 'transparent', color: String(page) === p ? 'white' : '#374151', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'Inter' }}>{p}</button>
                   ))}
                   <button type="button" className="page-btn" onClick={() => setPage(p => Math.min(totalPages, p+1))} style={{ minWidth: 32, height: 32, padding: '0 8px', border: '1px solid transparent', borderRadius: 8, background: 'transparent', color: '#9CA3AF', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'Inter' }}>›</button>
                 </div>
@@ -605,7 +605,7 @@ export default function BooksManagement() {
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
               <span style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>Recently Added Books</span>
-              <span style={{ fontSize: 12, fontWeight: 500, color: '#6C5CE7', cursor: 'pointer' }}>View All</span>
+              <span style={{ fontSize: 12, fontWeight: 500, color: '#1A73E8', cursor: 'pointer' }}>View All</span>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {RECENT.map((r, i) => (
@@ -636,7 +636,7 @@ export default function BooksManagement() {
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
               <span style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>Categories</span>
-              <span style={{ fontSize: 12, fontWeight: 500, color: '#6C5CE7', cursor: 'pointer' }}>View All</span>
+              <span style={{ fontSize: 12, fontWeight: 500, color: '#1A73E8', cursor: 'pointer' }}>View All</span>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               {CATS.map((c, i) => (
@@ -666,7 +666,7 @@ export default function BooksManagement() {
                   onClick={q.onClick}
                   style={{ borderRadius: 8, padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', border: '1px solid #F3F4F6' }}
                 >
-                  <div style={{ width: 30, height: 30, background: '#6C5CE7', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <div style={{ width: 30, height: 30, background: '#1A73E8', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                     {q.icon}
                   </div>
                   <span style={{ fontSize: 13, fontWeight: 500, color: '#374151' }}>{q.label}</span>
@@ -678,7 +678,7 @@ export default function BooksManagement() {
 
       </div>
 
-      {toast && <div style={{ position: 'fixed', top: 20, right: 20, zIndex: 1001, background: '#6C5CE7', color: '#fff', padding: '10px 20px', borderRadius: 10, fontSize: 14, fontWeight: 600, boxShadow: '0 4px 24px rgba(108,92,231,0.4)' }}>{toast}</div>}
+      {toast && <div style={{ position: 'fixed', top: 20, right: 20, zIndex: 1001, background: '#1A73E8', color: '#fff', padding: '10px 20px', borderRadius: 10, fontSize: 14, fontWeight: 600, boxShadow: '0 4px 24px rgba(26,115,232,0.4)' }}>{toast}</div>}
       {showAddModal && <AddBookModal onClose={() => setShowAddModal(false)} onAdded={() => { loadBooks(); loadStats(); showToast('Book added! 📚'); }} />}
 
       <style jsx>{`

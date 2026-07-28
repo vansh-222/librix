@@ -13,7 +13,7 @@ function fmtDate(d) {
 const STATUS_CFG = {
   requested: { label: 'Pending',   color: '#F59E0B', bg: '#FFFBEB', border: '#FDE68A' },
   approved:  { label: 'Approved',  color: '#22C55E', bg: '#F0FDF4', border: '#BBF7D0' },
-  issued:    { label: 'Issued',    color: '#6366F1', bg: '#EEF2FF', border: '#C7D2FE' },
+  issued:    { label: 'Issued',    color: '#1A73E8', bg: '#EFF6FF', border: '#BFDBFE' },
   rejected:  { label: 'Rejected',  color: '#EF4444', bg: '#FEF2F2', border: '#FECACA' },
   cancelled: { label: 'Cancelled', color: '#9CA3AF', bg: '#F9FAFB', border: '#E5E7EB' },
   returned:  { label: 'Returned',  color: '#10B981', bg: '#ECFDF5', border: '#A7F3D0' },
@@ -25,7 +25,7 @@ function BookCover({ cover, title }) {
     <div style={{ width: 56, height: 76, borderRadius: 8, flexShrink: 0, overflow: 'hidden', background: '#F3F4F6' }}>
       {cover && !err
         ? <img src={cover} alt={title} onError={() => setErr(true)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-        : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg,#6366F1,#A78BFA)' }}><BookOpen size={20} color="white" /></div>
+        : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg,#1A73E8,#93C5FD)' }}><BookOpen size={20} color="white" /></div>
       }
     </div>
   );
@@ -37,7 +37,7 @@ function RequestDonut({ counts }) {
   const segs = [
     { color: '#F59E0B', count: counts.requested },
     { color: '#22C55E', count: counts.approved  },
-    { color: '#6366F1', count: counts.issued    },
+    { color: '#1A73E8', count: counts.issued    },
     { color: '#10B981', count: counts.returned  },
     { color: '#EF4444', count: counts.rejected  },
     { color: '#9CA3AF', count: counts.cancelled },
@@ -151,7 +151,7 @@ export default function StudentRequestsPage() {
   return (
     <div style={{ display: 'flex', height: '100%', fontFamily: 'Inter,sans-serif', background: '#F9FAFB', overflow: 'hidden' }}>
       {toast && (
-        <div style={{ position: 'fixed', top: 20, right: 20, zIndex: 999, background: '#6366F1', color: '#fff', padding: '10px 20px', borderRadius: 10, fontSize: 14, fontWeight: 600, boxShadow: '0 4px 24px rgba(99,102,241,0.4)' }}>
+        <div style={{ position: 'fixed', top: 20, right: 20, zIndex: 999, background: '#1A73E8', color: '#fff', padding: '10px 20px', borderRadius: 10, fontSize: 14, fontWeight: 600, boxShadow: '0 4px 24px rgba(26,115,232,0.4)' }}>
           {toast}
         </div>
       )}
@@ -169,8 +169,8 @@ export default function StudentRequestsPage() {
                 flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                 padding: '14px 20px', border: 'none', background: 'transparent', cursor: 'pointer',
                 fontSize: 14, fontWeight: isActive ? 600 : 500,
-                color: isActive ? '#6366F1' : '#6B7280',
-                borderBottom: isActive ? '2px solid #6366F1' : '2px solid transparent',
+                color: isActive ? '#1A73E8' : '#6B7280',
+                borderBottom: isActive ? '2px solid #1A73E8' : '2px solid transparent',
                 borderRight: i < TABS.length - 1 ? '1px solid #E5E7EB' : 'none',
                 transition: 'all 0.2s',
               }}>
@@ -205,7 +205,7 @@ export default function StudentRequestsPage() {
         {/* Cards */}
         {loading ? (
           <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 80 }}>
-            <Loader2 size={28} style={{ animation: 'spin 0.8s linear infinite', color: '#6366F1' }} />
+            <Loader2 size={28} style={{ animation: 'spin 0.8s linear infinite', color: '#1A73E8' }} />
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -264,7 +264,7 @@ export default function StudentRequestsPage() {
                     )}
                     {(req.status === 'approved' || req.status === 'issued') && (
                       <button style={{ width: '100%', padding: '8px 14px', border: '1px solid #E5E7EB', borderRadius: 8, background: 'white', fontSize: 13, fontWeight: 600, color: '#374151', cursor: 'pointer', fontFamily: 'Inter' }}
-                        onMouseEnter={e => { e.currentTarget.style.borderColor = '#6366F1'; e.currentTarget.style.color = '#6366F1'; }}
+                        onMouseEnter={e => { e.currentTarget.style.borderColor = '#1A73E8'; e.currentTarget.style.color = '#1A73E8'; }}
                         onMouseLeave={e => { e.currentTarget.style.borderColor = '#E5E7EB'; e.currentTarget.style.color = '#374151'; }}>
                         View Details
                       </button>
@@ -294,7 +294,7 @@ export default function StudentRequestsPage() {
                   <ChevronLeft size={14} color={page===1?'#D1D5DB':'#374151'} />
                 </button>
                 {Array.from({length:totalPages},(_,i)=>i+1).map(p=>(
-                  <button key={p} onClick={()=>setPage(p)} style={{ width:30,height:30,borderRadius:8,border:p===page?'none':'1px solid #E5E7EB',background:p===page?'#6366F1':'white',color:p===page?'white':'#374151',fontSize:13,fontWeight:600,cursor:'pointer' }}>{p}</button>
+                  <button key={p} onClick={()=>setPage(p)} style={{ width:30,height:30,borderRadius:8,border:p===page?'none':'1px solid #E5E7EB',background:p===page?'#1A73E8':'white',color:p===page?'white':'#374151',fontSize:13,fontWeight:600,cursor:'pointer' }}>{p}</button>
                 ))}
                 <button onClick={() => setPage(p => Math.min(totalPages,p+1))} disabled={page===totalPages}
                   style={{ width:30,height:30,borderRadius:8,border:'1px solid #E5E7EB',background:'white',cursor:page===totalPages?'not-allowed':'pointer',display:'flex',alignItems:'center',justifyContent:'center' }}>
@@ -324,7 +324,7 @@ export default function StudentRequestsPage() {
               {[
                 { color: '#F59E0B', label: 'Pending',   count: counts.requested },
                 { color: '#22C55E', label: 'Approved',  count: counts.approved  },
-                { color: '#6366F1', label: 'Issued',    count: counts.issued    },
+                { color: '#1A73E8', label: 'Issued',    count: counts.issued    },
                 { color: '#10B981', label: 'Returned',  count: counts.returned  },
                 { color: '#EF4444', label: 'Rejected',  count: counts.rejected  },
                 { color: '#9CA3AF', label: 'Cancelled', count: counts.cancelled },
@@ -354,8 +354,8 @@ export default function StudentRequestsPage() {
               const Icon = item.icon;
               return (
                 <div key={item.step} style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-                  <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#EEF2FF', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <Icon size={14} color="#6366F1" />
+                  <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#EFF6FF', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <Icon size={14} color="#1A73E8" />
                   </div>
                   <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
@@ -373,14 +373,14 @@ export default function StudentRequestsPage() {
         {/* Need Help */}
         <div style={{ background: 'white', borderRadius: 12, border: '1px solid #E5E7EB', padding: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-            <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#EEF2FF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <HeadphonesIcon size={15} color="#6366F1" />
+            <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#EFF6FF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <HeadphonesIcon size={15} color="#1A73E8" />
             </div>
             <h3 style={{ fontSize: 14, fontWeight: 700, color: '#111827' }}>Need Help?</h3>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             <p style={{ fontSize: 13, color: '#374151', margin: 0 }}>Contact librarian</p>
-            <a href="mailto:library@college.edu.in" style={{ fontSize: 13, color: '#6366F1', textDecoration: 'none', fontWeight: 500 }}>library@college.edu.in</a>
+            <a href="mailto:library@college.edu.in" style={{ fontSize: 13, color: '#1A73E8', textDecoration: 'none', fontWeight: 500 }}>library@college.edu.in</a>
             <a href="tel:+919876543210" style={{ fontSize: 13, color: '#374151', textDecoration: 'none' }}>+91 98765 43210</a>
           </div>
         </div>

@@ -8,15 +8,15 @@ import {
 } from 'lucide-react';
 
 const SETTINGS_CATEGORIES = [
-  { id: 'general', label: 'General', icon: <SettingsIcon size={16} color="#6C5CE7" /> },
-  { id: 'library', label: 'Library Information', icon: <Building2 size={16} color="#6C5CE7" /> },
-  { id: 'members', label: 'Members & Access', icon: <Users size={16} color="#6C5CE7" /> },
-  { id: 'circulation', label: 'Circulation Rules', icon: <RotateCcw size={16} color="#6C5CE7" /> },
-  { id: 'fines', label: 'Fines & Payments', icon: <DollarSign size={16} color="#6C5CE7" /> },
-  { id: 'email', label: 'Email Notifications', icon: <Mail size={16} color="#6C5CE7" /> },
-  { id: 'backup', label: 'Backup & Restore', icon: <Cloud size={16} color="#6C5CE7" /> },
-  { id: 'integrations', label: 'Integrations', icon: <Zap size={16} color="#6C5CE7" /> },
-  { id: 'activity', label: 'Activity Logs', icon: <FileText size={16} color="#6C5CE7" /> },
+  { id: 'general', label: 'General', icon: <SettingsIcon size={16} color="#1A73E8" /> },
+  { id: 'library', label: 'Library Information', icon: <Building2 size={16} color="#1A73E8" /> },
+  { id: 'members', label: 'Members & Access', icon: <Users size={16} color="#1A73E8" /> },
+  { id: 'circulation', label: 'Circulation Rules', icon: <RotateCcw size={16} color="#1A73E8" /> },
+  { id: 'fines', label: 'Fines & Payments', icon: <DollarSign size={16} color="#1A73E8" /> },
+  { id: 'email', label: 'Email Notifications', icon: <Mail size={16} color="#1A73E8" /> },
+  { id: 'backup', label: 'Backup & Restore', icon: <Cloud size={16} color="#1A73E8" /> },
+  { id: 'integrations', label: 'Integrations', icon: <Zap size={16} color="#1A73E8" /> },
+  { id: 'activity', label: 'Activity Logs', icon: <FileText size={16} color="#1A73E8" /> },
 ];
 
 export default function SettingsPage() {
@@ -92,8 +92,8 @@ export default function SettingsPage() {
 
                   {/* Date Format */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                    <div style={{ width: 44, height: 44, background: '#EDE9FE', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <Calendar size={20} color="#6C5CE7" />
+                    <div style={{ width: 44, height: 44, background: '#EFF6FF', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <Calendar size={20} color="#1A73E8" />
                     </div>
                     <div style={{ flex: 1 }}>
                       <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', marginBottom: 2 }}>Date Format</div>
@@ -124,7 +124,7 @@ export default function SettingsPage() {
                         onClick={() => setTheme('light')}
                         style={{
                           padding: '8px 16px',
-                          border: theme === 'light' ? '2px solid #6C5CE7' : '1px solid #E5E7EB',
+                          border: theme === 'light' ? '2px solid #1A73E8' : '1px solid #E5E7EB',
                           borderRadius: 8,
                           background: 'white',
                           fontSize: 13,
@@ -140,7 +140,7 @@ export default function SettingsPage() {
                         onClick={() => setTheme('dark')}
                         style={{
                           padding: '8px 16px',
-                          border: theme === 'dark' ? '2px solid #6C5CE7' : '1px solid #E5E7EB',
+                          border: theme === 'dark' ? '2px solid #1A73E8' : '1px solid #E5E7EB',
                           borderRadius: 8,
                           background: 'white',
                           fontSize: 13,
@@ -165,8 +165,8 @@ export default function SettingsPage() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
                   {/* Auto Issue ID */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                    <div style={{ width: 44, height: 44, background: '#EDE9FE', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <FileText size={20} color="#6C5CE7" />
+                    <div style={{ width: 44, height: 44, background: '#EFF6FF', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <FileText size={20} color="#1A73E8" />
                     </div>
                     <div style={{ flex: 1 }}>
                       <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', marginBottom: 2 }}>Auto Issue ID</div>
@@ -178,7 +178,7 @@ export default function SettingsPage() {
                         width: 48,
                         height: 26,
                         borderRadius: 13,
-                        background: autoIssueID ? '#6C5CE7' : '#E5E7EB',
+                        background: autoIssueID ? '#1A73E8' : '#E5E7EB',
                         border: 'none',
                         cursor: 'pointer',
                         position: 'relative',
@@ -213,7 +213,7 @@ export default function SettingsPage() {
                         width: 48,
                         height: 26,
                         borderRadius: 13,
-                        background: emailAlerts ? '#6C5CE7' : '#E5E7EB',
+                        background: emailAlerts ? '#1A73E8' : '#E5E7EB',
                         border: 'none',
                         cursor: 'pointer',
                         position: 'relative',
@@ -248,7 +248,7 @@ export default function SettingsPage() {
                         width: 48,
                         height: 26,
                         borderRadius: 13,
-                        background: autoBackup ? '#6C5CE7' : '#E5E7EB',
+                        background: autoBackup ? '#1A73E8' : '#E5E7EB',
                         border: 'none',
                         cursor: 'pointer',
                         position: 'relative',
@@ -320,8 +320,8 @@ export default function SettingsPage() {
                     onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                      <div style={{ width: 36, height: 36, background: '#EDE9FE', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                        <Lock size={16} color="#6C5CE7" />
+                      <div style={{ width: 36, height: 36, background: '#EFF6FF', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        <Lock size={16} color="#1A73E8" />
                       </div>
                       <span style={{ fontSize: 13, fontWeight: 500, color: '#374151' }}>Change Password</span>
                     </div>
@@ -473,7 +473,7 @@ export default function SettingsPage() {
                 padding: '12px 32px',
                 border: 'none',
                 borderRadius: 8,
-                background: '#6C5CE7',
+                background: '#1A73E8',
                 color: 'white',
                 fontSize: 14,
                 fontWeight: 600,
@@ -483,7 +483,7 @@ export default function SettingsPage() {
                 transition: 'all 0.15s ease'
               }}
               onMouseEnter={(e) => e.currentTarget.style.background = '#5B4BC6'}
-              onMouseLeave={(e) => e.currentTarget.style.background = '#6C5CE7'}
+              onMouseLeave={(e) => e.currentTarget.style.background = '#1A73E8'}
             >
               <Check size={18} />
               Save Changes

@@ -110,11 +110,11 @@ export default function ReportsPage() {
   ];
 
   const STATS = [
-    { icon: <BookOpen size={22} color="#6C5CE7" />, iconBg: '#EDE9FE', value: activeBorrows || '…', label: 'Total Books Issued', change: '—', isPositive: true, subtitle: 'currently' },
+    { icon: <BookOpen size={22} color="#1A73E8" />, iconBg: '#EFF6FF', value: activeBorrows || '…', label: 'Total Books Issued', change: '—', isPositive: true, subtitle: 'currently' },
     { icon: <Users size={22} color="#16A34A" />,   iconBg: '#DCFCE7', value: totalMembers  || '…', label: 'Active Members',    change: '—', isPositive: true, subtitle: 'registered' },
     { icon: <ArrowLeftRight size={22} color="#F59E0B" />, iconBg: '#FEF3C7', value: pendingReturns || '…', label: 'Pending Returns', change: '—', isPositive: true, subtitle: 'in queue' },
     { icon: <Clock size={22} color="#DC2626" />,   iconBg: '#FEE2E2', value: overdueCount  || '…', label: 'Overdue Books',    change: overdueCount > 5 ? '⚠️' : '✔️', isPositive: overdueCount <= 5, subtitle: 'books' },
-    { icon: <TrendingUp size={22} color="#6C5CE7" />, iconBg: '#EDE9FE', value: `₹${finesCollected}`, label: 'Fines Collected', change: '—', isPositive: true, subtitle: 'total' },
+    { icon: <TrendingUp size={22} color="#1A73E8" />, iconBg: '#EFF6FF', value: `₹${finesCollected}`, label: 'Fines Collected', change: '—', isPositive: true, subtitle: 'total' },
   ];
 
   const exportCSV = () => {
@@ -173,10 +173,10 @@ export default function ReportsPage() {
 
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                 <button type="button" onClick={() => showToast('Filters applied.')} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 16px', border: '1px solid #E5E7EB', borderRadius: 8, background: 'white', fontSize: 13, color: '#374151', cursor: 'pointer', fontFamily: 'Inter', whiteSpace: 'nowrap', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
-                  <Filter size={15} color="#6C5CE7" />
+                  <Filter size={15} color="#1A73E8" />
                   Filters
                 </button>
-                <button type="button" onClick={exportCSV} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 20px', border: 'none', borderRadius: 8, background: '#6C5CE7', color: 'white', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'Inter', whiteSpace: 'nowrap', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+                <button type="button" onClick={exportCSV} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 20px', border: 'none', borderRadius: 8, background: '#1A73E8', color: 'white', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'Inter', whiteSpace: 'nowrap', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
                   <Download size={16} />
                   Export Report
                 </button>
@@ -223,7 +223,7 @@ export default function ReportsPage() {
                     const height = (d.issued / maxV) * 100;
                     return (
                     <div key={i} style={{ flex: 1, height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', gap: 4 }}>
-                      <div style={{ width: '100%', height: `${Math.max(2, height)}%`, background: 'linear-gradient(180deg, rgba(108,92,231,0.2) 0%, rgba(108,92,231,0.05) 100%)', border: '2px solid #6C5CE7', borderRadius: '4px 4px 0 0', position: 'relative' }}>
+                      <div style={{ width: '100%', height: `${Math.max(2, height)}%`, background: 'linear-gradient(180deg, rgba(26,115,232,0.2) 0%, rgba(26,115,232,0.05) 100%)', border: '2px solid #1A73E8', borderRadius: '4px 4px 0 0', position: 'relative' }}>
                         <div style={{ position: 'absolute', top: -20, left: '50%', transform: 'translateX(-50%)', fontSize: 10, color: '#6B7280', fontWeight: 600 }}>{d.issued}</div>
                       </div>
                       <span style={{ fontSize: 10, color: '#9CA3AF', marginTop: 4 }}>{d.label}</span>
@@ -231,7 +231,7 @@ export default function ReportsPage() {
                   )})}
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 16, justifyContent: 'center' }}>
-                  <div style={{ width: 10, height: 10, background: '#6C5CE7', borderRadius: 2 }} />
+                  <div style={{ width: 10, height: 10, background: '#1A73E8', borderRadius: 2 }} />
                   <span style={{ fontSize: 11, color: '#6B7280' }}>Books Issued</span>
                 </div>
               </div>
@@ -240,7 +240,7 @@ export default function ReportsPage() {
               <div style={{ background: 'white', border: '1px solid #E5E7EB', borderRadius: 12, padding: '20px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
                   <span style={{ fontSize: 14, fontWeight: 600, color: '#111827' }}>Top Borrowed Books</span>
-                  <span onClick={() => showToast('Viewing all top books.')} style={{ fontSize: 12, fontWeight: 500, color: '#6C5CE7', cursor: 'pointer' }}>View All</span>
+                  <span onClick={() => showToast('Viewing all top books.')} style={{ fontSize: 12, fontWeight: 500, color: '#1A73E8', cursor: 'pointer' }}>View All</span>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                   {TOP_BORROWED.map((book, i) => (
@@ -250,7 +250,7 @@ export default function ReportsPage() {
                         <div style={{ fontSize: 12, fontWeight: 600, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{book.title}</div>
                         <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 2 }}>{book.author}</div>
                       </div>
-                      <div style={{ fontSize: 14, fontWeight: 700, color: '#6C5CE7', flexShrink: 0 }}>{book.count}</div>
+                      <div style={{ fontSize: 14, fontWeight: 700, color: '#1A73E8', flexShrink: 0 }}>{book.count}</div>
                     </div>
                   ))}
                 </div>
@@ -279,7 +279,7 @@ export default function ReportsPage() {
                     return (
                     <div key={i} style={{ flex: 1, height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', gap: 4 }}>
                       <div style={{ width: '100%', display: 'flex', gap: 2, alignItems: 'flex-end', height: '100%' }}>
-                        <div style={{ flex: 1, height: `${hI > 0 ? Math.max(4, hI) : 0}%`, background: '#6C5CE7', borderRadius: '3px 3px 0 0', position: 'relative' }}>
+                        <div style={{ flex: 1, height: `${hI > 0 ? Math.max(4, hI) : 0}%`, background: '#1A73E8', borderRadius: '3px 3px 0 0', position: 'relative' }}>
                           {d.issued > 0 && <div style={{ position: 'absolute', top: -18, left: '50%', transform: 'translateX(-50%)', fontSize: 10, color: '#6B7280', fontWeight: 600 }}>{d.issued}</div>}
                         </div>
                         <div style={{ flex: 1, height: `${hR > 0 ? Math.max(4, hR) : 0}%`, background: '#16A34A', borderRadius: '3px 3px 0 0', position: 'relative' }}>
@@ -292,7 +292,7 @@ export default function ReportsPage() {
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 16, justifyContent: 'center' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <div style={{ width: 10, height: 10, background: '#6C5CE7', borderRadius: 2 }} />
+                    <div style={{ width: 10, height: 10, background: '#1A73E8', borderRadius: 2 }} />
                     <span style={{ fontSize: 11, color: '#6B7280' }}>Issued</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -317,7 +317,7 @@ export default function ReportsPage() {
                     <svg width="140" height="140" viewBox="0 0 140 140" style={{ transform: 'rotate(-90deg)' }}>
                       <circle cx="70" cy="70" r="50" fill="none" stroke="#F3F4F6" strokeWidth="20" />
                       {/* Active Members - Purple */}
-                      <circle cx="70" cy="70" r="50" fill="none" stroke="#6C5CE7" strokeWidth="20"
+                      <circle cx="70" cy="70" r="50" fill="none" stroke="#1A73E8" strokeWidth="20"
                         strokeDasharray={`${314 * (totalMembers > 0 ? activeBorrows / totalMembers : 0.6)} 314`}
                         strokeDashoffset="0"
                       />
@@ -340,7 +340,7 @@ export default function ReportsPage() {
 
                   <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 10 }}>
                     {[
-                      { color: '#6C5CE7', label: 'Active Borrows',   value: `${activeBorrows}`, bg: '#EDE9FE' },
+                      { color: '#1A73E8', label: 'Active Borrows',   value: `${activeBorrows}`, bg: '#EFF6FF' },
                       { color: '#F59E0B', label: 'Overdue Books',    value: `${overdueCount}`,  bg: '#FEF3C7' },
                       { color: '#16A34A', label: 'Pending Requests', value: `${pendingRequests}`, bg: '#DCFCE7' },
                     ].map((item, i) => (
@@ -380,7 +380,7 @@ export default function ReportsPage() {
 
             {/* Note */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 16px', background: '#F9FAFB', border: '1px solid #E5E7EB', borderRadius: 8 }}>
-              <div style={{ width: 6, height: 6, background: '#6C5CE7', borderRadius: '50%', flexShrink: 0 }} />
+              <div style={{ width: 6, height: 6, background: '#1A73E8', borderRadius: '50%', flexShrink: 0 }} />
               <span style={{ fontSize: 12, color: '#6B7280' }}>Reports are generated based on the selected date range and filters.</span>
             </div>
 
@@ -404,13 +404,13 @@ export default function ReportsPage() {
               <div style={{ fontSize: 14, fontWeight: 600, color: '#111827', marginBottom: 12 }}>Library Summary (This Month)</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 {[
-                  { icon: <Users size={16} color="#6C5CE7" />,        label: 'Total Members',    value: totalMembers    || '…' },
-                  { icon: <BookOpen size={16} color="#6C5CE7" />,      label: 'Total Books',      value: totalBooks      || '…' },
+                  { icon: <Users size={16} color="#1A73E8" />,        label: 'Total Members',    value: totalMembers    || '…' },
+                  { icon: <BookOpen size={16} color="#1A73E8" />,      label: 'Total Books',      value: totalBooks      || '…' },
                   { icon: <BookOpen size={16} color="#EA580C" />,      label: 'Books Issued',     value: activeBorrows   || '…' },
                   { icon: <ArrowLeftRight size={16} color="#16A34A" />,label: 'Pending Returns',  value: pendingReturns  || '…' },
                   { icon: <Clock size={16} color="#DC2626" />,         label: 'Overdue Books',    value: overdueCount    || '…' },
                   { icon: <Activity size={16} color="#F59E0B" />,      label: 'Pending Requests', value: pendingRequests || '…' },
-                  { icon: <TrendingUp size={16} color="#6C5CE7" />,    label: 'Fines Collected',  value: `₹${finesCollected}` },
+                  { icon: <TrendingUp size={16} color="#1A73E8" />,    label: 'Fines Collected',  value: `₹${finesCollected}` },
                 ].map((item, i) => (
                   <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px', background: '#F9FAFB', borderRadius: 8 }}>
                     <div style={{ width: 32, height: 32, background: 'white', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, border: '1px solid #E5E7EB' }}>
@@ -432,11 +432,11 @@ export default function ReportsPage() {
               <div style={{ fontSize: 14, fontWeight: 600, color: '#111827', marginBottom: 12 }}>Report Categories</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                 {[
-                  { icon: <BarChart3 size={16} color="#6C5CE7" />, label: 'Circulation Reports' },
-                  { icon: <Users size={16} color="#6C5CE7" />, label: 'Member Reports' },
-                  { icon: <BookOpen size={16} color="#6C5CE7" />, label: 'Books Reports' },
-                  { icon: <TrendingUp size={16} color="#6C5CE7" />, label: 'Fines Reports' },
-                  { icon: <Activity size={16} color="#6C5CE7" />, label: 'Activity Reports' },
+                  { icon: <BarChart3 size={16} color="#1A73E8" />, label: 'Circulation Reports' },
+                  { icon: <Users size={16} color="#1A73E8" />, label: 'Member Reports' },
+                  { icon: <BookOpen size={16} color="#1A73E8" />, label: 'Books Reports' },
+                  { icon: <TrendingUp size={16} color="#1A73E8" />, label: 'Fines Reports' },
+                  { icon: <Activity size={16} color="#1A73E8" />, label: 'Activity Reports' },
                 ].map((item, i) => (
                   <button 
                     key={i} 
@@ -457,7 +457,7 @@ export default function ReportsPage() {
                     onClick={() => showToast(`Opening ${item.label}...`)}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.background = '#F9FAFB';
-                      e.currentTarget.style.borderColor = '#6C5CE7';
+                      e.currentTarget.style.borderColor = '#1A73E8';
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.background = 'white';
@@ -465,7 +465,7 @@ export default function ReportsPage() {
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                      <div style={{ width: 28, height: 28, background: '#EDE9FE', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <div style={{ width: 28, height: 28, background: '#EFF6FF', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         {item.icon}
                       </div>
                       <span style={{ fontSize: 13, fontWeight: 500, color: '#374151' }}>{item.label}</span>
@@ -483,10 +483,10 @@ export default function ReportsPage() {
               <div style={{ fontSize: 14, fontWeight: 600, color: '#111827', marginBottom: 12 }}>Quick Actions</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {[
-                  { icon: <Plus size={16} color="#6C5CE7" />, label: 'Generate Custom Report' },
-                  { icon: <Calendar size={16} color="#6C5CE7" />, label: 'Schedule Report' },
-                  { icon: <Download size={16} color="#6C5CE7" />, label: 'Download Reports' },
-                  { icon: <FileText size={16} color="#6C5CE7" />, label: 'Report Settings' },
+                  { icon: <Plus size={16} color="#1A73E8" />, label: 'Generate Custom Report' },
+                  { icon: <Calendar size={16} color="#1A73E8" />, label: 'Schedule Report' },
+                  { icon: <Download size={16} color="#1A73E8" />, label: 'Download Reports' },
+                  { icon: <FileText size={16} color="#1A73E8" />, label: 'Report Settings' },
                 ].map((action, i) => (
                   <button 
                     key={i} 
@@ -506,7 +506,7 @@ export default function ReportsPage() {
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.background = '#F9FAFB';
-                      e.currentTarget.style.borderColor = '#6C5CE7';
+                      e.currentTarget.style.borderColor = '#1A73E8';
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.background = 'white';
@@ -532,7 +532,7 @@ export default function ReportsPage() {
                 {[
                   { label: 'PDF', color: '#DC2626', bg: '#FEE2E2' },
                   { label: 'Excel', color: '#16A34A', bg: '#DCFCE7' },
-                  { label: 'CSV', color: '#6C5CE7', bg: '#EDE9FE' },
+                  { label: 'CSV', color: '#1A73E8', bg: '#EFF6FF' },
                   { label: 'Print', color: '#2563EB', bg: '#DBEAFE' },
                 ].map((format, i) => (
                   <button 

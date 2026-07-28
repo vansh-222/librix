@@ -55,7 +55,7 @@ export default function StudentNavbar({ searchPlaceholder = "Search books, autho
             <div style={{ fontSize: 12, color: '#9CA3AF', display: 'flex', alignItems: 'center', gap: 4 }}>
               <span>Home</span>
               <span>›</span>
-              <span style={{ color: '#6366F1' }}>{pageTitle}</span>
+              <span style={{ color: '#1A73E8' }}>{pageTitle}</span>
             </div>
           </>
         )}
@@ -100,7 +100,7 @@ export default function StudentNavbar({ searchPlaceholder = "Search books, autho
             onClick={() => setShowUserMenu(!showUserMenu)}
             style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}
           >
-            <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#6C5CE7', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 700, fontSize: 14 }}>
+            <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#1A73E8', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 700, fontSize: 14 }}>
               {userName.charAt(0).toUpperCase()}
             </div>
             <div>

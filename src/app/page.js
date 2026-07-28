@@ -193,8 +193,12 @@ export default function LandingPage() {
       {/* NAVBAR */}
       <div style={{ position: 'sticky', top: 16, zIndex: 100, padding: '0 27px' }}>
         <nav style={{ maxWidth: 1386, margin: '0 auto', background: 'white', boxShadow: '0px 4px 25.3px rgba(26,115,232,0.23)', borderRadius: 40, border: '1px solid #D9D9D9', padding: '0 40px', height: 71, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <img src="https://res.cloudinary.com/dadiutcqh/image/upload/v1784448482/e2d37f27-b9e1-484c-a59b-79e086b1aec2_rah6h8.png" alt="Librix Logo" style={{ height: 50, width: 'auto', objectFit: 'contain', transform: 'scale(1.3)' }} />
+            <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1 }}>
+              <span style={{ fontSize: 20, fontWeight: 800, color: '#052033', fontFamily: 'Inter', letterSpacing: '-0.03em' }}>Librix</span>
+              <span style={{ fontSize: 10, fontWeight: 500, color: '#64748B', fontFamily: 'Inter', letterSpacing: '0.02em' }}>Smart Library Management</span>
+            </div>
           </Link>
           <div style={{ display: 'flex', alignItems: 'center', gap: 44 }}>
             {NAV.map(l => <Link key={l} href={l === 'Platform' ? '/platform' : l === 'AI Features' ? '/ai-features' : l === 'Institutions' ? '/institutions' : '/'} className="nl" style={{ color: l === 'Home' ? BLUE : 'black', fontSize: 16, fontFamily: 'Inter', fontWeight: l === 'Home' ? 600 : 400, transition: 'color 0.2s', borderBottom: l === 'Home' ? `2px solid ${BLUE}` : 'none', paddingBottom: l === 'Home' ? 2 : 0 }}>{l}</Link>)}

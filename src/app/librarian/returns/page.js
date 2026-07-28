@@ -89,7 +89,7 @@ export default function IssueReturnPage() {
   const displayRecs  = activeTab === 'issued' ? issuedRecs : returnedRecs;
 
   const STATS = [
-    { icon: <BookOpen size={22} color="#6C5CE7" />,      iconBg: '#EDE9FE', value: issuedRecs.length,   label: 'Books Issued'   },
+    { icon: <BookOpen size={22} color="#1A73E8" />,      iconBg: '#EFF6FF', value: issuedRecs.length,   label: 'Books Issued'   },
     { icon: <ArrowLeftRight size={22} color="#16A34A" />, iconBg: '#DCFCE7', value: returnedRecs.length, label: 'Pending Returns' },
     { icon: <Clock size={22} color="#F59E0B" />,          iconBg: '#FEF3C7', value: overdueRecs.length,  label: 'Overdue Books'  },
     { icon: <AlertCircle size={22} color="#DC2626" />,    iconBg: '#FEE2E2', value: dueTodayRecs.length, label: 'Due Today'      },
@@ -107,7 +107,7 @@ export default function IssueReturnPage() {
       subtitle="Issue new books or manage return transactions"
       searchPlaceholder="Search books, members, ISBN..."
     >
-      {toast && <div style={{ position: 'fixed', top: 20, right: 20, zIndex: 999, background: '#6C5CE7', color: '#fff', padding: '10px 20px', borderRadius: 10, fontSize: 14, fontWeight: 600, boxShadow: '0 4px 24px rgba(108,92,231,0.4)' }}>{toast}</div>}
+      {toast && <div style={{ position: 'fixed', top: 20, right: 20, zIndex: 999, background: '#1A73E8', color: '#fff', padding: '10px 20px', borderRadius: 10, fontSize: 14, fontWeight: 600, boxShadow: '0 4px 24px rgba(26,115,232,0.4)' }}>{toast}</div>}
       <div style={{ padding: '24px 24px 32px' }}>
         {/* Two column layout */}
         <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start' }}>
@@ -127,7 +127,7 @@ export default function IssueReturnPage() {
                       <div style={{ fontSize: 24, fontWeight: 700, color: '#111827', lineHeight: 1.1 }}>{s.value}</div>
                       <div style={{ fontSize: 12, color: '#6B7280', marginTop: 2 }}>{s.label}</div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 6 }}>
-                        <span style={{ fontSize: 12, fontWeight: 500, color: '#6C5CE7', cursor: 'pointer' }}>View details →</span>
+                        <span style={{ fontSize: 12, fontWeight: 500, color: '#1A73E8', cursor: 'pointer' }}>View details →</span>
                       </div>
                     </div>
                   </div>
@@ -147,7 +147,7 @@ export default function IssueReturnPage() {
                       padding: '11px 24px',
                       border: 'none',
                       borderRadius: 8,
-                      background: activeTab === tab.id ? '#6C5CE7' : 'white',
+                      background: activeTab === tab.id ? '#1A73E8' : 'white',
                       color: activeTab === tab.id ? 'white' : '#374151',
                       fontSize: 13,
                       fontWeight: 500,
@@ -183,7 +183,7 @@ export default function IssueReturnPage() {
                     onClick={() => setShowFilterMenu(!showFilterMenu)}
                     style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 16px', border: '1px solid #E5E7EB', borderRadius: 8, background: 'white', fontSize: 13, color: '#374151', cursor: 'pointer', fontFamily: 'Inter', whiteSpace: 'nowrap', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}
                   >
-                    <Filter size={15} color="#6C5CE7" />
+                    <Filter size={15} color="#1A73E8" />
                     Filters
                     <ChevronDown size={14} color="#9CA3AF" />
                   </button>
@@ -252,7 +252,7 @@ export default function IssueReturnPage() {
                 </div>
 
                 {/* Issue New Book Button */}
-                <button type="button" style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 20px', border: 'none', borderRadius: 8, background: '#6C5CE7', color: 'white', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'Inter', whiteSpace: 'nowrap', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+                <button type="button" style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 20px', border: 'none', borderRadius: 8, background: '#1A73E8', color: 'white', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'Inter', whiteSpace: 'nowrap', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
                   <Plus size={16} />
                   Issue New Book
                 </button>
@@ -292,7 +292,7 @@ export default function IssueReturnPage() {
                       </td>
                       <td style={{ padding: '10px 16px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                          <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#6C5CE7', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: 12, fontWeight: 700 }}>
+                          <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#1A73E8', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: 12, fontWeight: 700 }}>
                             {(book.userId?.name || '?').split(' ').map(n => n[0]).join('')}
                           </div>
                           <div style={{ minWidth: 0 }}>
@@ -319,11 +319,11 @@ export default function IssueReturnPage() {
                           <button type="button" title="Confirm Return" className="act-btn"
                             onClick={() => confirmReturn(book._id)}
                             disabled={acting === book._id}
-                            style={{ padding: '7px 12px', border: '1px solid #6C5CE7', background: 'white', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, transition: 'all 0.15s ease' }}
-                            onMouseEnter={e => { e.currentTarget.style.background = '#6C5CE7'; }}
+                            style={{ padding: '7px 12px', border: '1px solid #1A73E8', background: 'white', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, transition: 'all 0.15s ease' }}
+                            onMouseEnter={e => { e.currentTarget.style.background = '#1A73E8'; }}
                             onMouseLeave={e => { e.currentTarget.style.background = 'white'; }}
                           >
-                            <CheckCircle size={15} color="#6C5CE7" style={{ transition: 'color 0.15s ease' }} />
+                            <CheckCircle size={15} color="#1A73E8" style={{ transition: 'color 0.15s ease' }} />
                           </button>
                           <button type="button" title="More Options" className="act-btn"
                             style={{ padding: '7px', border: '1px solid #E5E7EB', background: 'white', borderRadius: 6, cursor: 'pointer', display: 'flex', transition: 'all 0.15s ease' }}
@@ -349,7 +349,7 @@ export default function IssueReturnPage() {
                       minWidth: 32, height: 32, padding: '0 8px',
                       border: p === '1' ? 'none' : '1px solid transparent',
                       borderRadius: 8,
-                      background: p === '1' ? '#6C5CE7' : 'transparent',
+                      background: p === '1' ? '#1A73E8' : 'transparent',
                       color: p === '1' ? 'white' : (p === '‹' || p === '›' ? '#9CA3AF' : '#374151'),
                       fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'Inter',
                     }}>{p}</button>
@@ -360,8 +360,8 @@ export default function IssueReturnPage() {
             </div>
 
             {/* Policy Reminder */}
-            <div style={{ background: '#EEF2FF', border: '1px solid #C7D2FE', borderRadius: 12, padding: '16px 20px', display: 'flex', gap: 14, alignItems: 'flex-start' }}>
-              <div style={{ width: 40, height: 40, background: '#6C5CE7', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <div style={{ background: '#EFF6FF', border: '1px solid #BFDBFE', borderRadius: 12, padding: '16px 20px', display: 'flex', gap: 14, alignItems: 'flex-start' }}>
+              <div style={{ width: 40, height: 40, background: '#1A73E8', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                 <FileText size={20} color="white" />
               </div>
               <div style={{ flex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16 }}>
@@ -373,7 +373,7 @@ export default function IssueReturnPage() {
                     <li>Handle library books with care.</li>
                   </ul>
                 </div>
-                <button type="button" style={{ padding: '8px 16px', border: '1px solid #6C5CE7', background: 'white', color: '#6C5CE7', borderRadius: 6, fontSize: 12, fontWeight: 500, cursor: 'pointer', fontFamily: 'Inter', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                <button type="button" style={{ padding: '8px 16px', border: '1px solid #1A73E8', background: 'white', color: '#1A73E8', borderRadius: 6, fontSize: 12, fontWeight: 500, cursor: 'pointer', fontFamily: 'Inter', whiteSpace: 'nowrap', flexShrink: 0 }}>
                   View All Policies
                 </button>
               </div>
@@ -420,7 +420,7 @@ export default function IssueReturnPage() {
                     style={{ width: '100%', padding: '8px 12px', border: '1px solid #E5E7EB', borderRadius: 8, fontSize: 13, color: '#374151', background: 'white', fontFamily: 'Inter' }}
                   />
                 </div>
-                <button type="button" style={{ width: '100%', padding: '10px', border: 'none', borderRadius: 8, background: '#6C5CE7', color: 'white', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'Inter', marginTop: 4 }}>
+                <button type="button" style={{ width: '100%', padding: '10px', border: 'none', borderRadius: 8, background: '#1A73E8', color: 'white', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'Inter', marginTop: 4 }}>
                   Issue Book
                 </button>
               </div>
@@ -432,7 +432,7 @@ export default function IssueReturnPage() {
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
                 <span style={{ fontSize: 14, fontWeight: 600, color: '#111827' }}>Recent Returns</span>
-                <span style={{ fontSize: 12, fontWeight: 500, color: '#6C5CE7', cursor: 'pointer' }}>View All</span>
+                <span style={{ fontSize: 12, fontWeight: 500, color: '#1A73E8', cursor: 'pointer' }}>View All</span>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 {[
@@ -461,7 +461,7 @@ export default function IssueReturnPage() {
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {[
-                  { icon: <BookOpen size={16} color="#6C5CE7" />, label: 'Books Issued', value: '326', bg: '#F3F4F6' },
+                  { icon: <BookOpen size={16} color="#1A73E8" />, label: 'Books Issued', value: '326', bg: '#F3F4F6' },
                   { icon: <ArrowLeftRight size={16} color="#16A34A" />, label: 'Books Returned', value: '298', bg: '#F3F4F6' },
                   { icon: <Clock size={16} color="#F59E0B" />, label: 'Overdue Books', value: '12', bg: '#F3F4F6' },
                   { icon: <AlertCircle size={16} color="#DC2626" />, label: 'Pending Returns', value: '28', bg: '#F3F4F6' },

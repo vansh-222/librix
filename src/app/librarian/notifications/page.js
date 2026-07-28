@@ -25,12 +25,12 @@ const TYPE_ICON = {
 const TYPE_BG = {
   return_reminder: '#DCFCE7', request_approved: '#DCFCE7', book_issued: '#DBEAFE',
   fine_added: '#FEE2E2', overdue_alert: '#FEF3C7', new_member: '#DBEAFE',
-  request_rejected: '#FEE2E2', reservation_available: '#DBEAFE', general: '#EDE9FE',
+  request_rejected: '#FEE2E2', reservation_available: '#DBEAFE', general: '#EFF6FF',
 };
 const TYPE_COLOR = {
   return_reminder: '#15803D', request_approved: '#15803D', book_issued: '#1D4ED8',
   fine_added: '#DC2626', overdue_alert: '#D97706', new_member: '#1D4ED8',
-  request_rejected: '#DC2626', reservation_available: '#1D4ED8', general: '#6C5CE7',
+  request_rejected: '#DC2626', reservation_available: '#1D4ED8', general: '#1A73E8',
 };
 const TYPE_LABEL = {
   return_reminder: 'Reminder', request_approved: 'Request', book_issued: 'System',
@@ -95,7 +95,7 @@ export default function NotificationsPage() {
   const reminders = notifications.filter(n => n.type === 'return_reminder').length;
 
   const STATS = [
-    { icon: <Bell size={22} color="#6C5CE7" />, iconBg: '#EDE9FE', value: total,  label: 'Total Notifications',  link: 'View all →' },
+    { icon: <Bell size={22} color="#1A73E8" />, iconBg: '#EFF6FF', value: total,  label: 'Total Notifications',  link: 'View all →' },
     { icon: <CheckCircle size={22} color="#16A34A" />, iconBg: '#DCFCE7', value: unread, label: 'Unread Notifications', link: 'View all →' },
     { icon: <Bell size={22} color="#F59E0B" />, iconBg: '#FEF3C7', value: system, label: 'System Notifications',  link: 'View all →' },
     { icon: <AlertTriangle size={22} color="#DC2626" />, iconBg: '#FEE2E2', value: alerts, label: 'Important Alerts',     link: 'View all →' },
@@ -112,12 +112,12 @@ export default function NotificationsPage() {
   const NOTIFICATIONS = notifications.map(n => ({
     id:        n._id,
     icon:      TYPE_ICON[n.type] || '🔔',
-    iconBg:    TYPE_BG[n.type]   || '#EDE9FE',
+    iconBg:    TYPE_BG[n.type]   || '#EFF6FF',
     title:     n.title,
     message:   n.message,
     type:      TYPE_LABEL[n.type] || 'System',
-    typeBg:    TYPE_BG[n.type]   || '#EDE9FE',
-    typeColor: TYPE_COLOR[n.type] || '#6C5CE7',
+    typeBg:    TYPE_BG[n.type]   || '#EFF6FF',
+    typeColor: TYPE_COLOR[n.type] || '#1A73E8',
     relatedTo: '',
     member:    '',
     date:      new Date(n.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }),
@@ -161,7 +161,7 @@ export default function NotificationsPage() {
                     <div style={{ fontSize: 28, fontWeight: 700, color: '#111827', lineHeight: 1 }}>{s.value}</div>
                   </div>
                   <div style={{ fontSize: 12, color: '#6B7280', marginBottom: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.label}</div>
-                  <div style={{ fontSize: 12, fontWeight: 500, color: '#6C5CE7', cursor: 'pointer' }}>{s.link}</div>
+                  <div style={{ fontSize: 12, fontWeight: 500, color: '#1A73E8', cursor: 'pointer' }}>{s.link}</div>
                 </div>
               ))}
             </div>
@@ -178,7 +178,7 @@ export default function NotificationsPage() {
                       padding: '10px 20px',
                       border: 'none',
                       borderRadius: 8,
-                      background: activeTab === tab.id ? '#6C5CE7' : 'white',
+                      background: activeTab === tab.id ? '#1A73E8' : 'white',
                       color: activeTab === tab.id ? 'white' : '#374151',
                       fontSize: 13,
                       fontWeight: 500,
@@ -197,7 +197,7 @@ export default function NotificationsPage() {
               {/* Actions */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                 <button type="button" onClick={() => {}} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 16px', border: '1px solid #E5E7EB', borderRadius: 8, background: 'white', fontSize: 13, color: '#374151', cursor: 'pointer', fontFamily: 'Inter', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
-                  <Check size={15} color="#6C5CE7" />
+                  <Check size={15} color="#1A73E8" />
                   Filters
                 </button>
                 <button type="button" onClick={markAllRead} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 16px', border: '1px solid #E5E7EB', borderRadius: 8, background: 'white', fontSize: 13, color: '#374151', cursor: 'pointer', fontFamily: 'Inter', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
@@ -257,8 +257,8 @@ export default function NotificationsPage() {
                       </td>
                       <td style={{ padding: '12px 16px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                          <div style={{ width: 6, height: 6, borderRadius: '50%', background: notif.status === 'Unread' ? '#6C5CE7' : '#9CA3AF', flexShrink: 0 }} />
-                          <span style={{ fontSize: 12, fontWeight: 500, color: notif.status === 'Unread' ? '#6C5CE7' : '#6B7280' }}>{notif.status}</span>
+                          <div style={{ width: 6, height: 6, borderRadius: '50%', background: notif.status === 'Unread' ? '#1A73E8' : '#9CA3AF', flexShrink: 0 }} />
+                          <span style={{ fontSize: 12, fontWeight: 500, color: notif.status === 'Unread' ? '#1A73E8' : '#6B7280' }}>{notif.status}</span>
                         </div>
                       </td>
                       <td style={{ padding: '12px 16px' }}>
@@ -279,7 +279,7 @@ export default function NotificationsPage() {
                               onMouseEnter={(e) => { if (!notif._read) e.currentTarget.style.background = '#F9FAFB'; }}
                               onMouseLeave={(e) => { if (!notif._read) e.currentTarget.style.background = 'white'; }}
                             >
-                              <Eye size={15} color={notif._read ? '#9CA3AF' : '#6C5CE7'} />
+                              <Eye size={15} color={notif._read ? '#9CA3AF' : '#1A73E8'} />
                             </button>
                             <button 
                               type="button"
@@ -333,7 +333,7 @@ export default function NotificationsPage() {
               {(() => {
                 const C = 2 * Math.PI * 50;
                 const cats = [
-                  { color: '#6C5CE7', label: 'Unread',    count: unread },
+                  { color: '#1A73E8', label: 'Unread',    count: unread },
                   { color: '#2563EB', label: 'System',    count: system },
                   { color: '#16A34A', label: 'Reminders', count: reminders },
                   { color: '#F59E0B', label: 'Alerts',    count: alerts },
@@ -388,8 +388,8 @@ export default function NotificationsPage() {
                 {[
                   { icon: <Check size={16} color="#16A34A" />, label: 'Mark all as read', color: '#16A34A', action: markAllRead },
                   { icon: <Trash2 size={16} color="#DC2626" />, label: 'Delete all read', color: '#DC2626', action: deleteAllRead },
-                  { icon: <Settings size={16} color="#6C5CE7" />, label: 'Notification Settings', color: '#6C5CE7', action: null },
-                  { icon: <Mail size={16} color="#6C5CE7" />, label: 'Email Preferences', color: '#6C5CE7', action: null },
+                  { icon: <Settings size={16} color="#1A73E8" />, label: 'Notification Settings', color: '#1A73E8', action: null },
+                  { icon: <Mail size={16} color="#1A73E8" />, label: 'Email Preferences', color: '#1A73E8', action: null },
                 ].map((action, i) => (
                   <button 
                     key={i} 
@@ -438,15 +438,15 @@ export default function NotificationsPage() {
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                   {notifications.slice(0, 4).map((n, i) => (
-                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px', background: n.read ? '#F9FAFB' : '#EEF2FF', borderRadius: 8 }}>
-                      <div style={{ width: 36, height: 36, background: TYPE_BG[n.type] || '#EDE9FE', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 16 }}>
+                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px', background: n.read ? '#F9FAFB' : '#EFF6FF', borderRadius: 8 }}>
+                      <div style={{ width: 36, height: 36, background: TYPE_BG[n.type] || '#EFF6FF', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 16 }}>
                         {TYPE_ICON[n.type] || '🔔'}
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ fontSize: 12, fontWeight: 600, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{n.title}</div>
                         <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 2 }}>{timeAgo(n.createdAt)}</div>
                       </div>
-                      {!n.read && <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#6C5CE7', flexShrink: 0 }} />}
+                      {!n.read && <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#1A73E8', flexShrink: 0 }} />}
                     </div>
                   ))}
                 </div>

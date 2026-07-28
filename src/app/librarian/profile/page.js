@@ -2,7 +2,9 @@
 import { useState, useEffect } from 'react';
 import { User, Mail, Phone, Building2, Hash, Save, Lock, Eye, EyeOff, Loader2, CheckCircle2 } from 'lucide-react';
 
-export default function ProfilePage() {
+import LibrarianLayout from '@/components/librarian/LibrarianLayout';
+
+export default function LibrarianProfilePage() {
   const [user, setUser]       = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving]   = useState(false);
@@ -72,15 +74,18 @@ export default function ProfilePage() {
   );
 
   if (loading) return (
+    <LibrarianLayout title="Profile" subtitle="Manage your librarian profile details">
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
       <Loader2 size={32} style={{ animation: 'spin 0.8s linear infinite', color: '#1A73E8' }} />
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </div>
+    </LibrarianLayout>
   );
 
   const initials = user?.name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'U';
 
   return (
+    <LibrarianLayout title="Profile" subtitle="Manage your librarian profile details">
     <div style={{ padding: '28px', fontFamily: 'Inter,sans-serif', background: '#F9FAFB', minHeight: '100%' }}>
       {toast.msg && (
         <div style={{ position: 'fixed', top: 20, right: 20, zIndex: 999, background: toast.type === 'error' ? '#EF4444' : '#22C55E', color: '#fff', padding: '10px 20px', borderRadius: 10, fontSize: 14, fontWeight: 600, boxShadow: '0 4px 24px rgba(0,0,0,0.15)', display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -139,7 +144,7 @@ export default function ProfilePage() {
                 <label style={labelStyle}><Building2 size={12} style={{ marginRight: 4, verticalAlign: 'middle' }} />Department</label>
                 <input value={form.department} onChange={e => setForm(f => ({ ...f, department: e.target.value }))} style={inputStyle} placeholder="Computer Science" />
               </div>
-              {(user?.role === 'student') && <>
+              {(false) && <>
                 <div>
                   <label style={labelStyle}><Hash size={12} style={{ marginRight: 4, verticalAlign: 'middle' }} />Student ID</label>
                   <input value={form.studentId} onChange={e => setForm(f => ({ ...f, studentId: e.target.value }))} style={inputStyle} />
@@ -211,5 +216,7 @@ export default function ProfilePage() {
       </div>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </div>
+    </LibrarianLayout>
   );
 }
+

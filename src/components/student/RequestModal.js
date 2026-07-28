@@ -60,7 +60,7 @@ export default function RequestModal({ book, onClose, onSuccess }) {
         <style>{`@keyframes modalIn{from{opacity:0;transform:scale(0.95) translateY(-10px)}to{opacity:1;transform:scale(1) translateY(0)}}`}</style>
 
         {/* Header */}
-        <div style={{ flexShrink: 0, background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', padding: '22px 24px', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+        <div style={{ flexShrink: 0, background: 'linear-gradient(135deg,#1A73E8,#1A73E8)', padding: '22px 24px', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', gap: 14, alignItems: 'center' }}>
             <div style={{ width: 48, height: 48, borderRadius: 12, background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
               {book.cover
@@ -83,15 +83,15 @@ export default function RequestModal({ book, onClose, onSuccess }) {
           {/* ── Days Needed ── */}
           <div style={{ marginBottom: 22 }}>
             <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, fontWeight: 700, color: '#111827', marginBottom: 12 }}>
-              <Calendar size={15} color="#6366F1" /> How many days do you need this book?
+              <Calendar size={15} color="#1A73E8" /> How many days do you need this book?
             </label>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 8, marginBottom: 10 }}>
               {DAY_OPTIONS.map(d => (
                 <button key={d} onClick={() => { setDaysNeeded(d); setUseCustom(false); }}
                   style={{ padding: '10px 0', borderRadius: 10, fontSize: 13, fontWeight: 700, cursor: 'pointer', border: '2px solid',
-                    borderColor: !useCustom && daysNeeded === d ? '#6366F1' : '#E5E7EB',
-                    background: !useCustom && daysNeeded === d ? '#EEF2FF' : 'white',
-                    color: !useCustom && daysNeeded === d ? '#6366F1' : '#6B7280',
+                    borderColor: !useCustom && daysNeeded === d ? '#1A73E8' : '#E5E7EB',
+                    background: !useCustom && daysNeeded === d ? '#EFF6FF' : 'white',
+                    color: !useCustom && daysNeeded === d ? '#1A73E8' : '#6B7280',
                     transition: 'all 0.15s',
                   }}>
                   {d} days
@@ -107,7 +107,7 @@ export default function RequestModal({ book, onClose, onSuccess }) {
                 value={customDays}
                 onFocus={() => setUseCustom(true)}
                 onChange={e => { setCustomDays(e.target.value); setUseCustom(true); }}
-                style={{ flex: 1, padding: '9px 12px', border: `2px solid ${useCustom ? '#6366F1' : '#E5E7EB'}`, borderRadius: 10, fontSize: 13, color: '#111827', background: 'white', outline: 'none', fontFamily: 'Inter' }}
+                style={{ flex: 1, padding: '9px 12px', border: `2px solid ${useCustom ? '#1A73E8' : '#E5E7EB'}`, borderRadius: 10, fontSize: 13, color: '#111827', background: 'white', outline: 'none', fontFamily: 'Inter' }}
               />
               <span style={{ fontSize: 12, color: '#9CA3AF', whiteSpace: 'nowrap' }}>max 60 days</span>
             </div>
@@ -116,15 +116,15 @@ export default function RequestModal({ book, onClose, onSuccess }) {
           {/* ── Reason ── */}
           <div style={{ marginBottom: 20 }}>
             <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, fontWeight: 700, color: '#111827', marginBottom: 12 }}>
-              <FileText size={15} color="#6366F1" /> Reason for request
+              <FileText size={15} color="#1A73E8" /> Reason for request
             </label>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 10 }}>
               {REASON_PRESETS.map(r => (
                 <button key={r} onClick={() => { setReason(r); setUseCustomReason(false); }}
                   style={{ padding: '9px 14px', borderRadius: 10, fontSize: 12, fontWeight: 600, cursor: 'pointer', textAlign: 'left', border: '2px solid',
-                    borderColor: !useCustomReason && reason === r ? '#6366F1' : '#E5E7EB',
-                    background: !useCustomReason && reason === r ? '#EEF2FF' : 'white',
-                    color: !useCustomReason && reason === r ? '#6366F1' : '#6B7280',
+                    borderColor: !useCustomReason && reason === r ? '#1A73E8' : '#E5E7EB',
+                    background: !useCustomReason && reason === r ? '#EFF6FF' : 'white',
+                    color: !useCustomReason && reason === r ? '#1A73E8' : '#6B7280',
                     transition: 'all 0.15s',
                   }}>
                   {!useCustomReason && reason === r ? '✓ ' : ''}{r}
@@ -137,7 +137,7 @@ export default function RequestModal({ book, onClose, onSuccess }) {
               onFocus={() => setUseCustomReason(true)}
               onChange={e => { setCustomReason(e.target.value); setUseCustomReason(true); }}
               rows={2}
-              style={{ width: '100%', padding: '10px 12px', border: `2px solid ${useCustomReason ? '#6366F1' : '#E5E7EB'}`, borderRadius: 10, fontSize: 13, color: '#111827', background: 'white', outline: 'none', fontFamily: 'Inter', resize: 'none', boxSizing: 'border-box' }}
+              style={{ width: '100%', padding: '10px 12px', border: `2px solid ${useCustomReason ? '#1A73E8' : '#E5E7EB'}`, borderRadius: 10, fontSize: 13, color: '#111827', background: 'white', outline: 'none', fontFamily: 'Inter', resize: 'none', boxSizing: 'border-box' }}
             />
           </div>
 
@@ -166,7 +166,7 @@ export default function RequestModal({ book, onClose, onSuccess }) {
               Cancel
             </button>
             <button onClick={handleSubmit} disabled={loading}
-              style={{ flex: 2, padding: '12px', border: 'none', borderRadius: 12, background: loading ? '#A78BFA' : 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white', fontSize: 14, fontWeight: 700, cursor: loading ? 'wait' : 'pointer', fontFamily: 'Inter', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+              style={{ flex: 2, padding: '12px', border: 'none', borderRadius: 12, background: loading ? '#93C5FD' : 'linear-gradient(135deg,#1A73E8,#1A73E8)', color: 'white', fontSize: 14, fontWeight: 700, cursor: loading ? 'wait' : 'pointer', fontFamily: 'Inter', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
               {loading ? <><Loader2 size={16} style={{ animation: 'spin 0.8s linear infinite' }} /> Sending...</> : <><CheckCircle2 size={16} /> Send Request</>}
             </button>
           </div>

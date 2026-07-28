@@ -149,10 +149,10 @@ export default function ProfilePageClient({ user }) {
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: 24 }}>
             <div style={{
               width: 96, height: 96, borderRadius: '50%',
-              background: 'linear-gradient(135deg, #6366F1, #8B5CF6)',
+              background: 'linear-gradient(135deg, #1A73E8, #1A73E8)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: 32, fontWeight: 800, color: '#fff', flexShrink: 0,
-              boxShadow: '0 8px 24px rgba(99,102,241,0.25)',
+              boxShadow: '0 8px 24px rgba(26,115,232,0.25)',
             }}>
               {initials}
             </div>
@@ -165,7 +165,7 @@ export default function ProfilePageClient({ user }) {
                   </div>
                 </div>
                 <span style={{
-                  background: 'rgba(99,102,241,0.12)', color: '#6366F1',
+                  background: 'rgba(26,115,232,0.12)', color: '#1A73E8',
                   padding: '6px 14px', borderRadius: 20, fontSize: 13, fontWeight: 700, textTransform: 'capitalize',
                   display: 'flex', alignItems: 'center', gap: 6,
                 }}>
@@ -222,14 +222,14 @@ export default function ProfilePageClient({ user }) {
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
                 <div style={{
                   width: 40, height: 40, borderRadius: 10,
-                  background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.2)',
+                  background: 'rgba(26,115,232,0.1)', border: '1px solid rgba(26,115,232,0.2)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}>
-                  <BookOpen size={18} color="#6366F1" />
+                  <BookOpen size={18} color="#1A73E8" />
                 </div>
                 <div>
                   <div style={{ fontSize: 11, color: 'var(--muted)', marginBottom: 2 }}>Currently Borrowed</div>
-                  <div style={{ fontSize: 24, fontWeight: 800, color: '#6366F1' }}>{stats.borrowedBooks || 0}</div>
+                  <div style={{ fontSize: 24, fontWeight: 800, color: '#1A73E8' }}>{stats.borrowedBooks || 0}</div>
                 </div>
               </div>
               <div style={{ fontSize: 12, color: 'var(--muted)' }}>Books in your possession</div>
