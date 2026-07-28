@@ -139,10 +139,10 @@ export default function AIFeaturesPage() {
           <div style={{ position: 'relative' }}>
             <div style={{ position: 'absolute', inset: '-10px', background: 'rgba(0, 74, 198, 0.12)', filter: 'blur(30px)', borderRadius: '50%', zIndex: 0 }} />
             <img 
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuAnXe-S4cZituDvwDNFKLfFsqKHrZOW-s1ynnbUKj3qYrAhaJ5VLNf8wJLWEe2zIYTDNmGmahc2MJCmGsUyPZlNA7XX2nZgazO7HZe-IxWlG5gyx22DyTOkzJF6rcV711iW81LKWHe2FGxKA2LKwd1kmob2RNAVVsi80pEOS7g8hd0eqwxgr0I-q2Xci8RCH6RTIL0bKcYeboIvwg4Jbpvd0LBcI2FoiKFvZFwx-G9DIVtJ7OD_wNV4Lg" 
-              alt="AI Library Management"
+              src="https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=900&q=85" 
+              alt="AI Library Intelligence Platform"
               className="animate-float"
-              style={{ width: '100%', height: 'auto', borderRadius: 24, boxShadow: '0 25px 60px rgba(0, 0, 0, 0.15)', position: 'relative', zIndex: 1, display: 'block' }}
+              style={{ width: '100%', height: 'auto', borderRadius: 24, boxShadow: '0 25px 60px rgba(0, 74, 198, 0.18)', position: 'relative', zIndex: 1, display: 'block', objectFit: 'cover' }}
             />
           </div>
         </section>

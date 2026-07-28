@@ -36,7 +36,7 @@ const INSTITUTIONS = [
     logo: 'https://res.cloudinary.com/dadiutcqh/image/upload/v1781966564/e31e8b25a45e30befb5e8134306d7302e20e480f_pljnqm.png',
     stats: [],
     tag: 'AI-Powered Library',
-    tagColor: '#6366F1',
+    tagColor: '#1A73E8',
   },
   {
     name: 'Punjab Technical University',
@@ -126,7 +126,7 @@ const INSTITUTIONS = [
     logo: 'https://res.cloudinary.com/dadiutcqh/image/upload/v1781967270/587a99a4b332f8a653f7020f2f5b4655e03686ef_niq00b.png',
     stats: [],
     tag: 'AI-Powered Library',
-    tagColor: '#6366F1',
+    tagColor: '#1A73E8',
   },
 ];
 
@@ -334,11 +334,11 @@ export default function InstitutionsPage() {
                     {inst.tag && (
                       <div style={{ marginBottom: 10 }}>
                         <span style={{
-                          background: inst.tagColor ? '#EDE9FE' : '#F0FDF4',
+                          background: inst.tagColor ? '#EFF6FF' : '#F0FDF4',
                           color: inst.tagColor || '#16A34A',
                           fontSize: 11, fontWeight: 600,
                           padding: '4px 12px', borderRadius: 20,
-                          border: `1px solid ${inst.tagColor ? '#DDD6FE' : '#DCFCE7'}`,
+                          border: `1px solid ${inst.tagColor ? '#BFDBFE' : '#DCFCE7'}`,
                           display: 'inline-flex', alignItems: 'center', gap: 4
                         }}>
                           {inst.tagColor ? '⚡' : '📚'} {inst.tag}
@@ -375,16 +375,16 @@ export default function InstitutionsPage() {
               {/* Modern gradient button */}
               <button style={{
                 display: 'inline-flex', alignItems: 'center', gap: 10,
-                background: 'linear-gradient(135deg, #1A73E8, #6366F1)',
+                background: 'linear-gradient(135deg, #1A73E8, #1A73E8)',
                 color: 'white', border: 'none', cursor: 'pointer',
                 padding: '14px 36px', borderRadius: 40,
                 fontSize: 15, fontWeight: 700, fontFamily: 'Inter',
-                boxShadow: '0 8px 24px rgba(99,102,241,0.28)',
+                boxShadow: '0 8px 24px rgba(26,115,232,0.28)',
                 transition: 'transform 0.2s, box-shadow 0.2s',
                 letterSpacing: '-0.01em',
               }}
-                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 32px rgba(99,102,241,0.38)'; }}
-                onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(99,102,241,0.28)'; }}
+                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 32px rgba(26,115,232,0.38)'; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(26,115,232,0.28)'; }}
               >
                 Explore All Institutions
                 <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 26, height: 26, borderRadius: '50%', background: 'rgba(255,255,255,0.2)' }}>

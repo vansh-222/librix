@@ -18,12 +18,12 @@ const THEME = `
     padding: 0 44px 0 44px; font-size: 14px; font-family: inherit;
     color: #0F172A; outline: none; transition: border-color 0.15s, box-shadow 0.15s;
   }
-  .rp-input:focus { border-color: #6366F1; box-shadow: 0 0 0 3px rgba(99,102,241,0.12); background: #fff; }
+  .rp-input:focus { border-color: #1A73E8; box-shadow: 0 0 0 3px rgba(26,115,232,0.12); background: #fff; }
   .rp-btn {
     width: 100%; height: 48px; border-radius: 10px; border: none; cursor: pointer;
-    background: linear-gradient(135deg, #6366F1, #8B5CF6);
+    background: linear-gradient(135deg, #1A73E8, #1A73E8);
     color: #fff; font-size: 15px; font-weight: 700; font-family: inherit;
-    box-shadow: 0 4px 14px rgba(99,102,241,0.35);
+    box-shadow: 0 4px 14px rgba(26,115,232,0.35);
     transition: opacity 0.15s, transform 0.15s;
     display: flex; align-items: center; justify-content: center; gap: 8px;
   }
@@ -85,14 +85,14 @@ function ResetPasswordContent() {
       {/* Header */}
       <header style={{ padding: '18px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#fff', borderBottom: '1px solid #E2E8F0' }}>
         <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 9, textDecoration: 'none' }}>
-          <div style={{ width: 34, height: 34, borderRadius: 9, background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ width: 34, height: 34, borderRadius: 9, background: 'linear-gradient(135deg,#1A73E8,#1A73E8)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <BookOpen size={17} color="#fff" />
           </div>
           <span style={{ fontSize: 18, fontWeight: 800, color: '#0F172A' }}>
-            Librar<span style={{ color: '#6366F1' }}>ium</span>
+            Librar<span style={{ color: '#1A73E8' }}>ium</span>
           </span>
         </Link>
-        <Link href="/login" style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, color: '#6366F1', textDecoration: 'none' }}>
+        <Link href="/login" style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, color: '#1A73E8', textDecoration: 'none' }}>
           <ArrowLeft size={14} /> Back to Login
         </Link>
       </header>
@@ -111,7 +111,7 @@ function ResetPasswordContent() {
               <p style={{ fontSize: 14, color: '#64748B', lineHeight: 1.7, marginBottom: 24 }}>
                 This password reset link is missing required information. Please request a new reset link.
               </p>
-              <Link href="/forgot-password" style={{ display: 'block', textAlign: 'center', padding: '13px', borderRadius: 10, background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: '#fff', fontWeight: 700, fontSize: 14, textDecoration: 'none' }}>
+              <Link href="/forgot-password" style={{ display: 'block', textAlign: 'center', padding: '13px', borderRadius: 10, background: 'linear-gradient(135deg,#1A73E8,#1A73E8)', color: '#fff', fontWeight: 700, fontSize: 14, textDecoration: 'none' }}>
                 Request New Link
               </Link>
             </div>
@@ -128,15 +128,15 @@ function ResetPasswordContent() {
                 Your password has been updated successfully.<br />
                 Redirecting you to login…
               </p>
-              <div style={{ width: 36, height: 36, border: '3px solid #E2E8F0', borderTop: '3px solid #6366F1', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto' }} />
+              <div style={{ width: 36, height: 36, border: '3px solid #E2E8F0', borderTop: '3px solid #1A73E8', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto' }} />
             </div>
           )}
 
           {/* Form */}
           {!invalid && !success && (
             <>
-              <div style={{ width: 56, height: 56, borderRadius: 14, background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 20 }}>
-                <ShieldCheck size={24} color="#6366F1" />
+              <div style={{ width: 56, height: 56, borderRadius: 14, background: 'rgba(26,115,232,0.08)', border: '1px solid rgba(26,115,232,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 20 }}>
+                <ShieldCheck size={24} color="#1A73E8" />
               </div>
 
               <h1 style={{ fontSize: 24, fontWeight: 800, color: '#0F172A', marginBottom: 8 }}>Set new password</h1>
@@ -208,7 +208,7 @@ function ResetPasswordContent() {
               </form>
 
               <div style={{ textAlign: 'center', marginTop: 24 }}>
-                <Link href="/forgot-password" style={{ fontSize: 13, color: '#6366F1', fontWeight: 600, textDecoration: 'none' }}>
+                <Link href="/forgot-password" style={{ fontSize: 13, color: '#1A73E8', fontWeight: 600, textDecoration: 'none' }}>
                   Request a new link
                 </Link>
               </div>
@@ -229,7 +229,7 @@ export default function ResetPasswordPage() {
   return (
     <Suspense fallback={
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#F8FAFC' }}>
-        <div style={{ width: 36, height: 36, border: '3px solid #E2E8F0', borderTop: '3px solid #6366F1', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+        <div style={{ width: 36, height: 36, border: '3px solid #E2E8F0', borderTop: '3px solid #1A73E8', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
       </div>
     }>
       <ResetPasswordContent />

@@ -182,7 +182,7 @@ export default function ForgotPasswordPage() {
               </form>
 
               <div style={{ textAlign: 'center', marginTop: 24 }}>
-                <Link href="/login" style={{ fontSize: 13, color: '#6366F1', fontWeight: 600, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+                <Link href="/login" style={{ fontSize: 13, color: '#1A73E8', fontWeight: 600, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 5 }}>
                   <ArrowLeft size={13} /> Back to Login
                 </Link>
               </div>

@@ -43,7 +43,7 @@ const BookMock = () => (
       {['#DD4D4D', '#D3DB58', '#0D725D'].map(c => <div key={c} style={{ width: 10, height: 10, borderRadius: '50%', background: c }} />)}
     </div>
     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
-      {[BLUE, DARK, '#8B5CF6', '#10B981', '#E8341A', '#F59E0B'].map((c, i) => <div key={i} style={{ height: 90, background: c, borderRadius: 8 }} />)}
+      {[BLUE, DARK, '#1A73E8', '#10B981', '#E8341A', '#F59E0B'].map((c, i) => <div key={i} style={{ height: 90, background: c, borderRadius: 8 }} />)}
     </div>
   </div>
 );
@@ -55,7 +55,7 @@ const RecordMock = () => (
     </div>
     {['Atomic Habits', 'Clean Code', 'Sapiens'].map((t, i) => (
       <div key={t} style={{ display: 'flex', gap: 12, marginBottom: 14, alignItems: 'center' }}>
-        <div style={{ width: 40, height: 56, background: [BLUE, DARK, '#8B5CF6'][i], borderRadius: 6, flexShrink: 0 }} />
+        <div style={{ width: 40, height: 56, background: [BLUE, DARK, '#1A73E8'][i], borderRadius: 6, flexShrink: 0 }} />
         <div style={{ flex: 1 }}>
           <div style={{ height: 11, background: 'rgba(0,0,0,0.12)', borderRadius: 6, marginBottom: 6, width: '65%' }} />
           <div style={{ height: 9, background: 'rgba(0,0,0,0.07)', borderRadius: 6, width: '40%' }} />

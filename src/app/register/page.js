@@ -40,7 +40,7 @@ function OTPInput({ value, onChange }) {
           style={{
             width: 48, height: 56, textAlign: 'center', fontSize: 22, fontWeight: 800,
             fontFamily: 'monospace', borderRadius: 10,
-            border: value[i] ? '2px solid #4F46E5' : '2px solid #E2E8F0',
+            border: value[i] ? '2px solid #1557B0' : '2px solid #E2E8F0',
             background: '#FFFFFF', color: '#0F172A',
             outline: 'none', transition: 'border 0.15s',
           }}
@@ -262,8 +262,8 @@ export default function RegisterCollegePage() {
       --border: #E2E8F0;
       --text: #0F172A;
       --muted: #475569;
-      --brand: #4F46E5;
-      --brand-2: #7C3AED;
+      --brand: #1557B0;
+      --brand-2: #1A73E8;
       --success: #16A34A;
       --warning: #D97706;
       --danger: #DC2626;
@@ -289,16 +289,16 @@ export default function RegisterCollegePage() {
       color: #0F172A;
     }
     .reg-page .input::placeholder { color: #94A3B8; }
-    .reg-page .input:focus { border-color: #4F46E5; box-shadow: 0 0 0 3px rgba(79,70,229,0.1); }
+    .reg-page .input:focus { border-color: #1557B0; box-shadow: 0 0 0 3px rgba(79,70,229,0.1); }
     .reg-page .input:disabled { background: #F1F5F9; opacity: 0.7; }
     .reg-page .badge-success { background: rgba(22,163,74,0.1); color: #16A34A; }
-    .reg-page .badge-brand   { background: rgba(79,70,229,0.1); color: #4F46E5; }
+    .reg-page .badge-brand   { background: rgba(79,70,229,0.1); color: #1557B0; }
     .aishe-input {
       background: #F8FAFC !important;
       border: 1px solid #E2E8F0 !important;
       color: #0F172A !important;
     }
-    .aishe-input:focus { border-color: #4F46E5 !important; box-shadow: 0 0 0 3px rgba(79,70,229,0.1) !important; }
+    .aishe-input:focus { border-color: #1557B0 !important; box-shadow: 0 0 0 3px rgba(79,70,229,0.1) !important; }
     .search-drop  { background: #FFFFFF !important; border-color: #E2E8F0 !important; box-shadow: 0 8px 24px rgba(0,0,0,0.10) !important; }
     .search-drop-item:hover { background: #F1F5F9 !important; }
     .trust-badge { background: #F8FAFC !important; border-color: #E2E8F0 !important; }
@@ -311,13 +311,13 @@ export default function RegisterCollegePage() {
         <style>{SCROLL}</style>
         <div style={{ textAlign: 'center', maxWidth: 400, padding: 24 }}>
           <div style={{ width: 72, height: 72, borderRadius: '50%', background: 'rgba(79,70,229,0.10)', border: '2px solid rgba(79,70,229,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', animation: 'pulse 2s infinite' }}>
-            <Shield size={32} color="#4F46E5" />
+            <Shield size={32} color="#1557B0" />
           </div>
           <h2 style={{ fontSize: 20, fontWeight: 800, marginBottom: 10, color: '#0F172A' }}>Submitting Application</h2>
           <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12, padding: 18, textAlign: 'left', boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
             {['Validating AISHE code…', 'Checking email domain…', 'Creating institution record…', 'Sending verification code…'].map((s, i) => (
               <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'center', padding: '6px 0', fontSize: 13, color: '#64748B' }}>
-                <Loader2 size={13} color="#4F46E5" style={{ animation: 'spin 1.2s linear infinite', animationDelay: `${i * 0.15}s` }} />
+                <Loader2 size={13} color="#1557B0" style={{ animation: 'spin 1.2s linear infinite', animationDelay: `${i * 0.15}s` }} />
                 {s}
               </div>
             ))}
@@ -336,7 +336,7 @@ export default function RegisterCollegePage() {
         <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
         <div style={{ width: '100%', maxWidth: 420, color: '#0F172A' }}>
           <div style={{ textAlign: 'center', marginBottom: 28 }}>
-            <div style={{ width: 60, height: 60, borderRadius: '50%', background: 'rgba(99,102,241,0.12)', border: '2px solid rgba(99,102,241,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}>
+            <div style={{ width: 60, height: 60, borderRadius: '50%', background: 'rgba(26,115,232,0.12)', border: '2px solid rgba(26,115,232,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}>
               <Mail size={26} color="var(--brand)" />
             </div>
             <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 6 }}>Check Your Email</h2>
@@ -421,24 +421,24 @@ export default function RegisterCollegePage() {
             <p style={{ fontSize: 13, color: 'var(--muted)' }}>{result.university}</p>
           </div>
           <div className="card" style={{ padding: '24px 28px' }}>
-            <div style={{ background: 'linear-gradient(135deg,#EEF2FF,#F5F3FF)', border: '1px solid rgba(79,70,229,0.25)', borderRadius: 12, padding: '16px 18px', marginBottom: 14 }}>
+            <div style={{ background: 'linear-gradient(135deg,#EFF6FF,#F5F3FF)', border: '1px solid rgba(79,70,229,0.25)', borderRadius: 12, padding: '16px 18px', marginBottom: 14 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 10 }}>
-                <Key size={14} color="#4F46E5" />
-                <span style={{ fontSize: 12, fontWeight: 700, color: '#4F46E5', textTransform: 'uppercase', letterSpacing: 1 }}>Institution Key</span>
+                <Key size={14} color="#1557B0" />
+                <span style={{ fontSize: 12, fontWeight: 700, color: '#1557B0', textTransform: 'uppercase', letterSpacing: 1 }}>Institution Key</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <code style={{ fontSize: 22, fontWeight: 900, letterSpacing: 3, color: '#3730A3' }}>{result.institutionKey}</code>
-                <button onClick={() => copy(result.institutionKey, 'ikey')} style={{ padding: '7px 12px', borderRadius: 7, border: '1px solid rgba(79,70,229,0.3)', background: 'rgba(79,70,229,0.08)', color: '#4F46E5', fontSize: 11, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}>
+                <button onClick={() => copy(result.institutionKey, 'ikey')} style={{ padding: '7px 12px', borderRadius: 7, border: '1px solid rgba(79,70,229,0.3)', background: 'rgba(79,70,229,0.08)', color: '#1557B0', fontSize: 11, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}>
                   {copied === 'ikey' ? <><Check size={11} /> Copied!</> : <><Copy size={11} /> Copy</>}
                 </button>
               </div>
-              <p style={{ fontSize: 11, color: '#7C3AED', marginTop: 8 }}>Permanent institution identity key</p>
+              <p style={{ fontSize: 11, color: '#1A73E8', marginTop: 8 }}>Permanent institution identity key</p>
             </div>
-            <div style={{ background: 'rgba(99,102,241,0.07)', border: '1px solid rgba(99,102,241,0.25)', borderRadius: 12, padding: '14px 16px', marginBottom: 14 }}>
+            <div style={{ background: 'rgba(26,115,232,0.07)', border: '1px solid rgba(26,115,232,0.25)', borderRadius: 12, padding: '14px 16px', marginBottom: 14 }}>
               <div style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>🔐 Librarian Setup Key <span style={{ color: '#EF4444' }}>(shown once!)</span></div>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <code style={{ fontSize: 18, fontWeight: 800, letterSpacing: 2, color: 'var(--brand)' }}>{result.setupKey}</code>
-                <button onClick={() => copy(result.setupKey, 'skey')} style={{ padding: '7px 12px', borderRadius: 7, border: '1px solid rgba(99,102,241,0.3)', background: 'rgba(99,102,241,0.1)', color: 'var(--brand)', fontSize: 11, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}>
+                <button onClick={() => copy(result.setupKey, 'skey')} style={{ padding: '7px 12px', borderRadius: 7, border: '1px solid rgba(26,115,232,0.3)', background: 'rgba(26,115,232,0.1)', color: 'var(--brand)', fontSize: 11, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}>
                   {copied === 'skey' ? <><Check size={11} /> Copied!</> : <><Copy size={11} /> Copy</>}
                 </button>
               </div>
@@ -516,7 +516,7 @@ export default function RegisterCollegePage() {
           <Link href="/login" style={{ padding: '7px 16px', borderRadius: 8, border: '1px solid #E2E8F0', background: 'transparent', color: '#0F172A', fontSize: 13, fontWeight: 600, textDecoration: 'none' }}>
             Login
           </Link>
-          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 16px', borderRadius: 8, background: '#4F46E5', color: '#fff', fontSize: 13, fontWeight: 600, textDecoration: 'none' }}>
+          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 16px', borderRadius: 8, background: '#1A73E8', color: '#fff', fontSize: 13, fontWeight: 600, textDecoration: 'none' }}>
             <Home size={13} /> Back to Home
           </Link>
         </div>
@@ -557,7 +557,7 @@ export default function RegisterCollegePage() {
                   {idx < 3 && (
                     <div style={{
                       position: 'absolute', top: 14, left: '50%', right: 0,
-                      height: 2, background: done ? '#4F46E5' : '#E2E8F0',
+                      height: 2, background: done ? '#1557B0' : '#E2E8F0',
                       transition: 'background 0.3s',
                     }} />
                   )}
@@ -565,14 +565,14 @@ export default function RegisterCollegePage() {
                     <div style={{
                       width: 28, height: 28, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
                       fontSize: done ? 13 : 12, fontWeight: 700, marginBottom: 6,
-                      background: done ? '#22C55E' : active ? '#4F46E5' : '#F1F5F9',
-                      border: `2px solid ${done ? '#22C55E' : active ? '#4F46E5' : '#E2E8F0'}`,
+                      background: done ? '#22C55E' : active ? '#1557B0' : '#F1F5F9',
+                      border: `2px solid ${done ? '#22C55E' : active ? '#1557B0' : '#E2E8F0'}`,
                       color: done || active ? '#fff' : '#64748B',
                       transition: 'all 0.25s',
                     }}>
                       {done ? <Check size={13} /> : s.n}
                     </div>
-                    <div style={{ fontSize: 11, fontWeight: active || done ? 700 : 600, color: active ? '#4F46E5' : done ? '#22C55E' : '#475569', textAlign: 'center', lineHeight: 1.3 }}>
+                    <div style={{ fontSize: 11, fontWeight: active || done ? 700 : 600, color: active ? '#1557B0' : done ? '#22C55E' : '#475569', textAlign: 'center', lineHeight: 1.3 }}>
                       {s.label}
                     </div>
                     <div style={{ fontSize: 10, color: '#64748B', textAlign: 'center', marginTop: 2, lineHeight: 1.3 }}>{s.sub}</div>
@@ -590,11 +590,11 @@ export default function RegisterCollegePage() {
           )}
 
           {/* ── SECTION 1 — Institution Verification ────────────────────────── */}
-          <div className="card sec-card" style={{ marginBottom: 16, padding: '24px 26px', border: `1px solid ${step1Done ? 'rgba(34,197,94,0.35)' : 'rgba(99,102,241,0.4)'}` }}>
+          <div className="card sec-card" style={{ marginBottom: 16, padding: '24px 26px', border: `1px solid ${step1Done ? 'rgba(34,197,94,0.35)' : 'rgba(26,115,232,0.4)'}` }}>
             {/* Section header */}
             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 18 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <div style={{ width: 26, height: 26, borderRadius: '50%', background: step1Done ? '#22C55E' : '#4F46E5', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 800, color: '#fff', flexShrink: 0 }}>
+                <div style={{ width: 26, height: 26, borderRadius: '50%', background: step1Done ? '#22C55E' : '#1557B0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 800, color: '#fff', flexShrink: 0 }}>
                   {step1Done ? <Check size={13} /> : '1'}
                 </div>
                 <div>
@@ -659,7 +659,7 @@ export default function RegisterCollegePage() {
                       style={{
                         display: 'flex', alignItems: 'center', gap: 7, padding: '10px 18px',
                         borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 700,
-                        background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: '#fff',
+                        background: 'linear-gradient(135deg,#1A73E8,#1A73E8)', color: '#fff',
                         whiteSpace: 'nowrap', flexShrink: 0,
                         opacity: !aisheCode.trim() ? 0.5 : 1,
                         transition: 'opacity 0.2s',
@@ -701,7 +701,7 @@ export default function RegisterCollegePage() {
           }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 18 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <div style={{ width: 26, height: 26, borderRadius: '50%', background: step2Done ? '#16A34A' : step1Done ? '#4F46E5' : '#E5E7EB', border: `2px solid ${step2Done ? '#16A34A' : step1Done ? '#4F46E5' : '#D1D5DB'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 800, color: step1Done ? '#fff' : '#6B7280', flexShrink: 0 }}>
+                <div style={{ width: 26, height: 26, borderRadius: '50%', background: step2Done ? '#16A34A' : step1Done ? '#1557B0' : '#E5E7EB', border: `2px solid ${step2Done ? '#16A34A' : step1Done ? '#1557B0' : '#D1D5DB'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 800, color: step1Done ? '#fff' : '#6B7280', flexShrink: 0 }}>
                   {step2Done ? <Check size={13} /> : '2'}
                 </div>
                 <div>
@@ -762,7 +762,7 @@ export default function RegisterCollegePage() {
           }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 18 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <div style={{ width: 26, height: 26, borderRadius: '50%', background: step3Done ? '#16A34A' : step2Done ? '#4F46E5' : '#E5E7EB', border: `2px solid ${step3Done ? '#16A34A' : step2Done ? '#4F46E5' : '#D1D5DB'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 800, color: step2Done ? '#fff' : '#6B7280', flexShrink: 0 }}>
+                <div style={{ width: 26, height: 26, borderRadius: '50%', background: step3Done ? '#16A34A' : step2Done ? '#1557B0' : '#E5E7EB', border: `2px solid ${step3Done ? '#16A34A' : step2Done ? '#1557B0' : '#D1D5DB'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 800, color: step2Done ? '#fff' : '#6B7280', flexShrink: 0 }}>
                   {step3Done ? <Check size={13} /> : '3'}
                 </div>
                 <div>
@@ -821,7 +821,7 @@ export default function RegisterCollegePage() {
             pointerEvents: step3Done ? 'auto' : 'none',
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18 }}>
-              <div style={{ width: 26, height: 26, borderRadius: '50%', background: step3Done ? '#4F46E5' : '#E5E7EB', border: `2px solid ${step3Done ? '#4F46E5' : '#D1D5DB'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 800, color: step3Done ? '#fff' : '#6B7280', flexShrink: 0 }}>4</div>
+              <div style={{ width: 26, height: 26, borderRadius: '50%', background: step3Done ? '#1557B0' : '#E5E7EB', border: `2px solid ${step3Done ? '#1557B0' : '#D1D5DB'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 800, color: step3Done ? '#fff' : '#6B7280', flexShrink: 0 }}>4</div>
               <div>
                 <div style={{ fontSize: 15, fontWeight: 700, color: '#111827' }}>Create Account</div>
                 <div style={{ fontSize: 12, color: '#6B7280', marginTop: 1 }}>Create login credentials for your institution account.</div>
@@ -871,7 +871,7 @@ export default function RegisterCollegePage() {
           {/* Declaration + Submit */}
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 20, padding: '16px 18px', background: '#F8FAFC', borderRadius: 10, border: '1px solid #E2E8F0' }}>
             <button type="button" onClick={() => setAgreed(v => !v)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginTop: 1, flexShrink: 0 }}>
-              <div style={{ width: 18, height: 18, borderRadius: 4, border: `2px solid ${agreed ? '#4F46E5' : '#D1D5DB'}`, background: agreed ? '#4F46E5' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s' }}>
+              <div style={{ width: 18, height: 18, borderRadius: 4, border: `2px solid ${agreed ? '#1557B0' : '#D1D5DB'}`, background: agreed ? '#1557B0' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s' }}>
                 {agreed && <Check size={11} color="#fff" />}
               </div>
             </button>
@@ -888,9 +888,9 @@ export default function RegisterCollegePage() {
               style={{
                 display: 'flex', alignItems: 'center', gap: 8,
                 padding: '13px 28px', borderRadius: 10, border: 'none', cursor: 'pointer',
-                background: 'linear-gradient(135deg,#6366F1,#8B5CF6)',
+                background: 'linear-gradient(135deg,#1A73E8,#1A73E8)',
                 color: '#fff', fontSize: 14, fontWeight: 700,
-                boxShadow: '0 4px 15px rgba(99,102,241,0.35)',
+                boxShadow: '0 4px 15px rgba(26,115,232,0.35)',
                 opacity: !step1Done || !agreed ? 0.5 : 1,
                 whiteSpace: 'nowrap',
                 transition: 'opacity 0.2s, transform 0.15s',
@@ -913,7 +913,7 @@ export default function RegisterCollegePage() {
           <div className="card" style={{ padding: '18px 20px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
               <div style={{ width: 28, height: 28, borderRadius: 8, background: 'rgba(79,70,229,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Shield size={14} color="#4F46E5" />
+                <Shield size={14} color="#1557B0" />
               </div>
               <span style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>Why Verification is Important?</span>
             </div>
@@ -948,8 +948,8 @@ export default function RegisterCollegePage() {
                 <span style={{ fontSize: 16, flexShrink: 0 }}>{m.icon}</span>
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <span style={{ fontSize: 12, fontWeight: 700, color: m.preferred ? '#4F46E5' : '#111827' }}>{m.label}</span>
-                    {m.preferred && <span style={{ fontSize: 9, fontWeight: 700, color: '#4F46E5', background: 'rgba(79,70,229,0.1)', padding: '1px 6px', borderRadius: 10, textTransform: 'uppercase', letterSpacing: 0.5 }}>Preferred</span>}
+                    <span style={{ fontSize: 12, fontWeight: 700, color: m.preferred ? '#1557B0' : '#111827' }}>{m.label}</span>
+                    {m.preferred && <span style={{ fontSize: 9, fontWeight: 700, color: '#1557B0', background: 'rgba(79,70,229,0.1)', padding: '1px 6px', borderRadius: 10, textTransform: 'uppercase', letterSpacing: 0.5 }}>Preferred</span>}
                   </div>
                   <div style={{ fontSize: 11, color: '#6B7280', marginTop: 1 }}>{m.sub}</div>
                 </div>
@@ -972,7 +972,7 @@ export default function RegisterCollegePage() {
               'Account activation via email',
             ].map((step, i) => (
               <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', marginBottom: 10 }}>
-                <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'rgba(79,70,229,0.1)', border: '1px solid rgba(79,70,229,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: '#4F46E5', flexShrink: 0 }}>{i + 1}</div>
+                <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'rgba(79,70,229,0.1)', border: '1px solid rgba(79,70,229,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: '#1557B0', flexShrink: 0 }}>{i + 1}</div>
                 <span style={{ fontSize: 12, color: '#374151', lineHeight: 1.5, marginTop: 2 }}>{step}</span>
               </div>
             ))}
@@ -992,14 +992,14 @@ export default function RegisterCollegePage() {
               { icon: <Clock size={12} />, val: 'Mon – Sat: 9:00 AM – 6:00 PM' },
             ].map(c => (
               <div key={c.val} style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 8, fontSize: 12, color: '#374151' }}>
-                <span style={{ color: '#4F46E5', flexShrink: 0 }}>{c.icon}</span> {c.val}
+                <span style={{ color: '#1557B0', flexShrink: 0 }}>{c.icon}</span> {c.val}
               </div>
             ))}
           </div>
 
           {/* Trust count */}
-          <div style={{ padding: '16px 18px', background: 'linear-gradient(135deg,rgba(79,70,229,0.07),rgba(124,58,237,0.07))', border: '1px solid rgba(79,70,229,0.2)', borderRadius: 12, textAlign: 'center' }}>
-            <div style={{ fontSize: 28, fontWeight: 900, color: '#4F46E5', marginBottom: 2 }}>500+</div>
+          <div style={{ padding: '16px 18px', background: 'linear-gradient(135deg,rgba(79,70,229,0.07),rgba(26,115,232,0.07))', border: '1px solid rgba(79,70,229,0.2)', borderRadius: 12, textAlign: 'center' }}>
+            <div style={{ fontSize: 28, fontWeight: 900, color: '#1557B0', marginBottom: 2 }}>500+</div>
             <div style={{ fontSize: 12, fontWeight: 700, color: '#111827', marginBottom: 4 }}>Trusted by Institutions</div>
             <div style={{ fontSize: 11, color: '#6B7280' }}>Join 500+ verified institutions using Librix</div>
             <div style={{ display: 'flex', justifyContent: 'center', gap: 3, marginTop: 10 }}>

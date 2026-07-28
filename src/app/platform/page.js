@@ -171,13 +171,13 @@ export default function PlatformPage() {
             border: '1px solid rgba(99, 102, 241, 0.15)', borderRadius: 40, padding: '5px 14px',
             marginBottom: 20
           }}>
-            <Users size={13} color="#4F46E5" />
-            <span style={{ fontSize: 12, fontWeight: 600, color: '#4F46E5', letterSpacing: '0.01em' }}>Trusted by 1,200+ Libraries Worldwide</span>
+            <Users size={13} color="#1557B0" />
+            <span style={{ fontSize: 12, fontWeight: 600, color: '#1557B0', letterSpacing: '0.01em' }}>Trusted by 1,200+ Libraries Worldwide</span>
           </div>
 
           {/* Headline */}
-          <h1 style={{ fontSize: 54, fontWeight: 900, fontFamily: 'Inter', letterSpacing: '-0.03em', lineHeight: 1.15, color: '#0F172A', marginBottom: 20, textShadow: '0 10px 40px rgba(99,102,241,0.1)' }}>
-            All-in-one platform to manage your <span style={{ color: '#6366F1' }}>Librix</span> library
+          <h1 style={{ fontSize: 54, fontWeight: 900, fontFamily: 'Inter', letterSpacing: '-0.03em', lineHeight: 1.15, color: '#0F172A', marginBottom: 20, textShadow: '0 10px 40px rgba(26,115,232,0.1)' }}>
+            All-in-one platform to manage your <span style={{ color: '#1A73E8' }}>Librix</span> library
           </h1>
 
           {/* Subtitle */}
@@ -198,7 +198,7 @@ export default function PlatformPage() {
               style={{ flex: 1, border: 'none', outline: 'none', fontSize: 16, color: '#0F172A', background: 'transparent', minWidth: 0 }}
             />
             <button style={{
-              background: '#6366F1', color: 'white', padding: '12px 28px', borderRadius: 999,
+              background: '#1A73E8', color: 'white', padding: '12px 28px', borderRadius: 999,
               fontSize: 16, fontWeight: 600, border: 'none', cursor: 'pointer',
               boxShadow: '0 4px 12px rgba(99, 102, 241, 0.3)', transition: 'background 0.2s'
             }}>
@@ -380,13 +380,13 @@ export default function PlatformPage() {
 
           <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 50 }}>
             <h2 style={{ fontSize: 44, fontWeight: 800, textAlign: 'left', color: '#0F172A', letterSpacing: '-0.02em', lineHeight:"1.3em", margin: 0 }}>
-              People just like you<br />are already using <span style={{ color: '#6366F1' }}>Librix</span>
+              People just like you<br />are already using <span style={{ color: '#1A73E8' }}>Librix</span>
             </h2>
             <div style={{ display: 'flex', gap: 12, paddingBottom: 10 }}>
               <button style={{ width: 48, height: 48, borderRadius: '50%', background: '#FFFFFF', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s', boxShadow: '0 4px 12px rgba(0,0,0,0.03)' }}>
                 <ChevronLeft size={24} color="#94A3B8" />
               </button>
-              <button style={{ width: 48, height: 48, borderRadius: '50%', background: '#6366F1', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s', boxShadow: '0 4px 16px rgba(99,102,241,0.25)' }}>
+              <button style={{ width: 48, height: 48, borderRadius: '50%', background: '#1A73E8', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s', boxShadow: '0 4px 16px rgba(26,115,232,0.25)' }}>
                 <ChevronRight size={24} color="#FFFFFF" />
               </button>
             </div>
@@ -473,7 +473,7 @@ export default function PlatformPage() {
           {/* Scroll indicator dots */}
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8, marginTop: 40 }}>
             <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#CBD5E1' }} />
-            <div style={{ width: 24, height: 8, borderRadius: 4, background: '#6366F1', animation: 'floatSlow 2s ease-in-out infinite' }} />
+            <div style={{ width: 24, height: 8, borderRadius: 4, background: '#1A73E8', animation: 'floatSlow 2s ease-in-out infinite' }} />
             <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#CBD5E1' }} />
           </div>
         </div>
