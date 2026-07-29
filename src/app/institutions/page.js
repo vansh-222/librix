@@ -1,10 +1,54 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { BookOpen, MapPin, Building2, Users, ShieldCheck, ArrowRight, Star, Search, ChevronRight } from 'lucide-react';
+import { useTypewriterPlaceholder } from '@/hooks/useTypewriterPlaceholder';
 
 const BLUE = '#1A73E8';
 const DARK = '#052033';
+
+const AnimatedNumber = ({ endString }) => {
+  const [count, setCount] = useState(0);
+  const ref = useRef(null);
+
+  const numStr = endString.replace(/[^0-9.]/g, '');
+  const endVal = parseFloat(numStr);
+  const suffix = endString.replace(/[0-9.]/g, '');
+  
+  useEffect(() => {
+    let startTime;
+    let animationFrame;
+    const duration = 2000;
+    
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        const animate = (time) => {
+          if (!startTime) startTime = time;
+          const progress = Math.min((time - startTime) / duration, 1);
+          const easeOut = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+          setCount(easeOut * endVal);
+          if (progress < 1) {
+            animationFrame = requestAnimationFrame(animate);
+          }
+        };
+        animationFrame = requestAnimationFrame(animate);
+        observer.disconnect();
+      }
+    }, { threshold: 0.1 });
+    
+    if (ref.current) observer.observe(ref.current);
+    
+    return () => {
+      if (animationFrame) cancelAnimationFrame(animationFrame);
+      observer.disconnect();
+    };
+  }, [endVal]);
+  
+  const hasDecimals = numStr.includes('.');
+  const displayVal = hasDecimals ? count.toFixed(1) : Math.floor(count);
+  
+  return <span ref={ref}>{displayVal}{suffix}</span>;
+};
 
 const NAV_LINKS = ['Home', 'Platform', 'AI Features', 'Institutions'];
 
@@ -14,7 +58,7 @@ const INSTITUTIONS = [
     location: 'New Delhi, India',
     type: 'Engineering Institute',
     image: 'https://images.unsplash.com/photo-1562774053-701939374585?w=600&q=80',
-    logo: 'https://upload.wikimedia.org/wikipedia/en/thumb/6/6e/IIT_Delhi_logo.svg/150px-IIT_Delhi_logo.svg.png',
+    logo: 'https://res.cloudinary.com/dadiutcqh/image/upload/v1781966485/5d9d4ba558d3c5f069df8b6dba80b4871fe18641_aiv1sb.png',
     stats: [{ label: 'Books', val: '45,000+' }, { label: 'Students', val: '12,000+' }],
     tag: null,
   },
@@ -42,7 +86,7 @@ const INSTITUTIONS = [
     name: 'Punjab Technical University',
     location: 'Punjab, India',
     type: 'State University',
-    image: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=600&q=80',
+    image: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=600&q=80',
     logo: 'https://res.cloudinary.com/dadiutcqh/image/upload/v1781967270/587a99a4b332f8a653f7020f2f5b4655e03686ef_niq00b.png',
     stats: [],
     tag: 'Digital Resource Center',
@@ -132,6 +176,7 @@ const INSTITUTIONS = [
 
 export default function InstitutionsPage() {
   const [search, setSearch] = useState('');
+  const searchPlaceholder = useTypewriterPlaceholder("Search institutions...|Search colleges...|Search universities...|Find your library...", 50, 20, 2500);
 
   const filtered = INSTITUTIONS.filter(inst =>
     inst.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -164,10 +209,7 @@ export default function InstitutionsPage() {
         <nav style={{ maxWidth: 1386, margin: '0 auto', background: 'white', boxShadow: '0px 4px 25.3px rgba(26,115,232,0.23)', borderRadius: 40, border: '1px solid #D9D9D9', padding: '0 40px', height: 71, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <img src="https://res.cloudinary.com/dadiutcqh/image/upload/v1784448482/e2d37f27-b9e1-484c-a59b-79e086b1aec2_rah6h8.png" alt="Librix Logo" style={{ height: 50, width: 'auto', objectFit: 'contain', transform: 'scale(1.3)' }} />
-            <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1 }}>
-              <span style={{ fontSize: 20, fontWeight: 800, color: '#052033', fontFamily: 'Inter', letterSpacing: '-0.03em' }}>Librix</span>
-              <span style={{ fontSize: 10, fontWeight: 500, color: '#64748B', fontFamily: 'Inter', letterSpacing: '0.02em' }}>Smart Library Management</span>
-            </div>
+  
           </Link>
           <div style={{ display: 'flex', alignItems: 'center', gap: 44 }}>
             {NAV_LINKS.map(l => (
@@ -219,7 +261,7 @@ export default function InstitutionsPage() {
           </p>
           <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap' }}>
             <Link href="/register" className="hero-btn-primary">
-              Request Demo <ArrowRight size={16} />
+              Explore Now <ArrowRight size={16} />
             </Link>
             <Link href="/register" className="hero-btn-outline">
               Register Institution
@@ -248,7 +290,7 @@ export default function InstitutionsPage() {
                   {s.icon}
                 </div>
                 <div>
-                  <div style={{ fontSize: 26, fontWeight: 800, color: '#0F172A', lineHeight: 1.1 }}>{s.val}</div>
+                  <div style={{ fontSize: 26, fontWeight: 800, color: '#0F172A', lineHeight: 1.1 }}><AnimatedNumber endString={s.val} /></div>
                   <div style={{ fontSize: 13, fontWeight: 600, color: '#334155', marginTop: 1 }}>{s.label}</div>
                   <div style={{ fontSize: 11, color: '#94A3B8' }}>{s.sub}</div>
                 </div>
@@ -281,7 +323,7 @@ export default function InstitutionsPage() {
               <input
                 className="search-input"
                 type="text"
-                placeholder="Search institutions, cities, types..."
+                placeholder={searchPlaceholder}
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 style={{ width: '100%', padding: '12px 16px 12px 44px', borderRadius: 40, border: '1.5px solid #E2E8F0', fontSize: 14, color: '#334155', background: 'white', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', transition: 'all 0.2s', fontFamily: 'Inter' }}
@@ -427,6 +469,17 @@ export default function InstitutionsPage() {
                 ))}
               </div>
             ))}
+          </div>
+          {/* Payment Methods */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 40, paddingTop: 40, borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+            <h4 style={{ color: 'white', fontSize: 18, fontWeight: 600, fontFamily: 'Inter', marginBottom: 20 }}>Payment Methods Accepted</h4>
+            <div style={{ display: 'flex', gap: 16 }}>
+              {[{src: 'https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo_2014.svg', alt: 'Visa'}, {src: 'https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg', alt: 'Mastercard'}, {src: 'https://upload.wikimedia.org/wikipedia/commons/f/fd/Maestro_logo.svg', alt: 'Maestro'}, {src: 'https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg', alt: 'PayPal'}].map((card, idx) => (
+                <div key={idx} style={{ width: 64, height: 40, background: 'white', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 8px' }}>
+                  <img src={card.src} alt={card.alt} style={{ width: '100%', height: 'auto', maxHeight: 24, objectFit: 'contain' }} />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
         <div style={{ background: '#0B1B2D', padding: '18px 24px', textAlign: 'center' }}>

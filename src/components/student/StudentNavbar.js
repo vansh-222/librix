@@ -4,9 +4,11 @@ import { signOut, useSession } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { Search, Bell, ChevronDown, LogOut, User } from 'lucide-react';
+import { useTypewriterPlaceholder } from '@/hooks/useTypewriterPlaceholder';
 
 export default function StudentNavbar({ searchPlaceholder = "Search books, authors, ISBN...", unreadCount = 0 }) {
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const animatedPlaceholder = useTypewriterPlaceholder(searchPlaceholder + "|Search by keywords...|Find course materials...", 50, 20, 3000);
   const pathname = usePathname();
   const { data: session } = useSession();
   const userName = session?.user?.name || "Student";
@@ -66,7 +68,7 @@ export default function StudentNavbar({ searchPlaceholder = "Search books, autho
         <div style={{ position: 'relative' }}>
           <Search size={15} color="#9CA3AF" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
           <input 
-            placeholder={searchPlaceholder}
+            placeholder={animatedPlaceholder}
             style={{ width: '100%', padding: '9px 16px 9px 38px', border: '1px solid #E5E7EB', borderRadius: 8, fontSize: 13, color: '#111827', outline: 'none', background: '#F9FAFB', fontFamily: 'Inter' }} 
           />
           <style>{`

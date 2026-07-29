@@ -768,7 +768,7 @@ function SignupContent() {
               ) : (
                 <div style={{ marginBottom: 16 }}>
                   <label style={{ display: 'block', fontSize: 13, fontWeight: 700, color: '#0F172A', marginBottom: 6 }}>
-                    Institution / College Library Code <span style={{ color: '#EF4444' }}>*</span>
+                    College Library Code <span style={{ color: '#EF4444' }}>*</span>
                   </label>
                   <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
                     <div style={{ position: 'absolute', left: 14, color: '#64748B', pointerEvents: 'none' }}>

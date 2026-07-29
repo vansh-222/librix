@@ -1,5 +1,5 @@
 'use client';
-import { useState, Suspense } from 'react';
+import { useState, Suspense, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { signIn } from 'next-auth/react';
@@ -139,12 +139,35 @@ function LoginContent() {
   const [remember, setRemember] = useState(true);
   const [loading, setLoading]   = useState(false);
   const [error, setError]       = useState(
+    searchParams.get('error') === 'NotRegistered' ? 'This email is not registered. Please sign up first.' :
     searchParams.get('error') ? 'Invalid credentials. Please try again.' : ''
   );
+
+  useEffect(() => {
+    // Auto-redirect if user is already authenticated (e.g. returning from Google OAuth)
+    const checkSession = async () => {
+      const res = await fetch('/api/auth/session');
+      const session = await res.json();
+      if (session?.user) {
+        if (session.user.role === 'librarian' || session.user.role === 'super_admin') {
+          router.push('/librarian/dashboard');
+        } else {
+          router.push('/student/dashboard');
+        }
+      }
+    };
+    checkSession();
+  }, [router]);
 
   const set = (k) => (e) => {
     setError('');
     setForm(f => ({ ...f, [k]: e.target.value }));
+  };
+
+  const handleGoogleLogin = async () => {
+    setError('');
+    setLoading(true);
+    await signIn('google'); // NextAuth handles the redirect to Google
   };
 
   const handleSubmit = async (e) => {
@@ -167,10 +190,10 @@ function LoginContent() {
       return;
     }
 
-    // Fetch session and redirect based on role stored in DB
-    const res      = await fetch('/api/auth/session');
-    const session  = await res.json();
-    const userRole = session?.user?.role;
+        // Fetch session and redirect based on role stored in DB
+        const res      = await fetch('/api/auth/session');
+        const session  = await res.json();
+        const userRole = session?.user?.role;
 
     if (userRole === 'librarian' || userRole === 'super_admin') {
       router.push('/librarian/dashboard');
@@ -561,7 +584,7 @@ function LoginContent() {
               {/* Google Login Button */}
               <button
                 type="button"
-                onClick={() => alert('Google Authentication option selected. Configure Google OAuth client ID in NextAuth to activate.')}
+                onClick={handleGoogleLogin}
                 style={{
                   width: '100%',
                   height: 46,

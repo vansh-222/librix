@@ -2,12 +2,14 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { BookOpen, Star, Play, CheckCircle2, BarChart2, Users, Clock, ShieldCheck, Sparkles, Layers, Zap, Search, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useTypewriterPlaceholder } from '@/hooks/useTypewriterPlaceholder';
 
 const BLUE = '#1A73E8';
 const DARK = '#052033';
 
 export default function PlatformPage() {
   const NAV = ['Home', 'Platform', 'AI Features', 'Institutions'];
+  const searchPlaceholder = useTypewriterPlaceholder("Search library resources...|Search research papers...|Find digital archives...", 50, 20, 2500);
 
   return (
     <div style={{ fontFamily: 'Inter, sans-serif', background: '#FFFFFF', color: '#0F172A', overflowX: 'hidden', minHeight: '100vh' }}>
@@ -56,10 +58,7 @@ export default function PlatformPage() {
         <nav style={{ maxWidth: 1386, margin: '0 auto', background: 'white', boxShadow: '0px 4px 25.3px rgba(26,115,232,0.23)', borderRadius: 40, border: '1px solid #D9D9D9', padding: '0 40px', height: 71, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <img src="https://res.cloudinary.com/dadiutcqh/image/upload/v1784448482/e2d37f27-b9e1-484c-a59b-79e086b1aec2_rah6h8.png" alt="Librix Logo" style={{ height: 50, width: 'auto', objectFit: 'contain', transform: 'scale(1.3)' }} />
-            <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1 }}>
-              <span style={{ fontSize: 20, fontWeight: 800, color: '#052033', fontFamily: 'Inter', letterSpacing: '-0.03em' }}>Librix</span>
-              <span style={{ fontSize: 10, fontWeight: 500, color: '#64748B', fontFamily: 'Inter', letterSpacing: '0.02em' }}>Smart Library Management</span>
-            </div>
+           
           </Link>
           <div style={{ display: 'flex', alignItems: 'center', gap: 44 }}>
             {NAV.map(l => (
@@ -198,7 +197,7 @@ export default function PlatformPage() {
             <Search size={22} color="#64748B" style={{ flexShrink: 0, marginRight: 12 }} />
             <input
               type="text"
-              placeholder="Search library resources..."
+              placeholder={searchPlaceholder}
               style={{ flex: 1, border: 'none', outline: 'none', fontSize: 16, color: '#0F172A', background: 'transparent', minWidth: 0 }}
             />
             <button style={{
@@ -510,6 +509,17 @@ export default function PlatformPage() {
                 ))}
               </div>
             ))}
+          </div>
+          {/* Payment Methods */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 40, paddingTop: 40, borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+            <h4 style={{ color: 'white', fontSize: 18, fontWeight: 600, fontFamily: 'Inter', marginBottom: 20 }}>Payment Methods Accepted</h4>
+            <div style={{ display: 'flex', gap: 16 }}>
+              {[{src: 'https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo_2014.svg', alt: 'Visa'}, {src: 'https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg', alt: 'Mastercard'}, {src: 'https://upload.wikimedia.org/wikipedia/commons/f/fd/Maestro_logo.svg', alt: 'Maestro'}, {src: 'https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg', alt: 'PayPal'}].map((card, idx) => (
+                <div key={idx} style={{ width: 64, height: 40, background: 'white', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 8px' }}>
+                  <img src={card.src} alt={card.alt} style={{ width: '100%', height: 'auto', maxHeight: 24, objectFit: 'contain' }} />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
         <div style={{ background: '#0B1B2D', padding: '18px 24px', textAlign: 'center' }}>

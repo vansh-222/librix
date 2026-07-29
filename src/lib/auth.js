@@ -1,11 +1,16 @@
 import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
+import GoogleProvider from 'next-auth/providers/google';
 import connectDB from './db';
 import User from '@/models/User';
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   debug: false,
   providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    }),
     Credentials({
       name: 'Credentials',
       credentials: {
@@ -55,7 +60,35 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async signIn({ user, account, profile }) {
+      if (account.provider === 'google') {
+        await connectDB();
+        const email = user.email.trim().toLowerCase();
+        const dbUser = await User.findOne({ email });
+        
+        if (!dbUser) {
+          console.log('[Auth] Google login blocked - email not registered:', email);
+          // Return a specific URL with an error query parameter
+          return '/login?error=NotRegistered';
+        }
+        
+        if (!dbUser.isActive) {
+          console.log('[Auth] Google login blocked - user inactive:', email);
+          return false;
+        }
+
+        // Attach DB user properties to the NextAuth user object for jwt callback
+        user.id = dbUser._id.toString();
+        user.role = dbUser.role;
+        user.collegeId = dbUser.collegeId ? dbUser.collegeId.toString() : null;
+        user.avatarUrl = dbUser.avatarUrl || '';
+        
+        await User.findByIdAndUpdate(dbUser._id, { lastLogin: new Date() });
+        return true;
+      }
+      return true; // For credentials provider
+    },
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         token.id        = user.id;
         token.role      = user.role;
