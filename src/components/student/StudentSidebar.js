@@ -26,11 +26,11 @@ export default function StudentSidebar({ unreadCount = 0 }) {
       display: 'flex',
       flexShrink: 0,
       flexDirection: 'column',
-      padding: '20px 12px',
+      padding: '10px 12px',
       overflowY: 'auto',
     }}>
       {/* Logo */}
-      <Link href="/student/dashboard" style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '0 8px', textDecoration: 'none' }}>
+      <Link href="/student/dashboard" style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '0px', textDecoration: 'none' }}>
         <img src="https://res.cloudinary.com/dadiutcqh/image/upload/v1784449649/c7205191-78c8-486e-9996-7894591bf72b_szzaji.png" alt="Librix Logo" style={{ height: 40, width: 'auto', objectFit: 'contain' }} />
         <div>
    <span style={{ fontSize: 18, fontWeight: 800, color: '#052033', fontFamily: 'Inter', letterSpacing: '-0.03em' }}>Librix</span>

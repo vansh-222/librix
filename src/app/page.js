@@ -1,6 +1,7 @@
 'use client';
 import { useRef, useEffect, useState } from 'react';
 import Link from 'next/link';
+import Footer from '@/components/shared/Footer';
 import { BookOpen, Star } from 'lucide-react';
 
 const BLUE = '#1A73E8';
@@ -88,7 +89,7 @@ export default function LandingPage() {
   useEffect(() => {
     const word = TYPING_WORDS[typingIdx];
     let typingSpeed = isDeleting ? 40 : 100;
-    
+
     if (!isDeleting && typewriterText === word) {
       typingSpeed = 2000;
     } else if (isDeleting && typewriterText === '') {
@@ -111,51 +112,7 @@ export default function LandingPage() {
     return () => clearTimeout(timeout);
   }, [typewriterText, isDeleting, typingIdx]);
 
-  // Scroll-triggered animation for book cards
-  const cardsRef = useRef(null);
-  useEffect(() => {
-    const el = cardsRef.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          el.querySelectorAll('.card-hidden').forEach((card) => {
-            card.classList.remove('card-hidden');
-            card.classList.add('card-visible');
-          });
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.15 }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
 
-  // Scroll-triggered animation for left text column
-  const textRef = useRef(null);
-  useEffect(() => {
-    const el = textRef.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          el.querySelectorAll('.txt-hidden').forEach((node) => {
-            node.classList.remove('txt-hidden');
-            node.classList.add('txt-visible');
-          });
-          el.querySelectorAll('.line-hidden').forEach((node) => {
-            node.classList.remove('line-hidden');
-            node.classList.add('line-visible');
-          });
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.2 }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
 
   // Scroll-triggered animation for Feature rows
   useEffect(() => {
@@ -181,31 +138,7 @@ export default function LandingPage() {
     return () => observer.disconnect();
   }, []);
 
-  // Scroll-triggered animation for Trusted section
-  const trustedRef = useRef(null);
-  useEffect(() => {
-    const el = trustedRef.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          el.querySelectorAll('.txt-hidden').forEach((node) => {
-            node.classList.remove('txt-hidden'); node.classList.add('txt-visible');
-          });
-          el.querySelectorAll('.line-hidden').forEach((node) => {
-            node.classList.remove('line-hidden'); node.classList.add('line-visible');
-          });
-          el.querySelectorAll('.logo-hidden').forEach((node) => {
-            node.classList.remove('logo-hidden'); node.classList.add('logo-visible');
-          });
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.15 }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
+
 
   return (
     <div style={{ fontFamily: 'Inter,sans-serif', background: 'white', color: 'black', overflowX: 'hidden', minHeight: '100vh' }}>
@@ -308,7 +241,7 @@ export default function LandingPage() {
         <nav style={{ maxWidth: 1386, margin: '0 auto', background: 'white', boxShadow: '0px 4px 25.3px rgba(26,115,232,0.23)', borderRadius: 40, border: '1px solid #D9D9D9', padding: '0 40px', height: 71, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <img src="https://res.cloudinary.com/dadiutcqh/image/upload/v1784448482/e2d37f27-b9e1-484c-a59b-79e086b1aec2_rah6h8.png" alt="Librix Logo" style={{ height: 50, width: 'auto', objectFit: 'contain', transform: 'scale(1.3)' }} />
-            
+
           </Link>
           <div style={{ display: 'flex', alignItems: 'center', gap: 44 }}>
             {NAV.map(l => <Link key={l} href={l === 'Platform' ? '/platform' : l === 'AI Features' ? '/ai-features' : l === 'Institutions' ? '/institutions' : '/'} className="nl" style={{ color: l === 'Home' ? BLUE : 'black', fontSize: 16, fontFamily: 'Inter', fontWeight: l === 'Home' ? 600 : 400, transition: 'color 0.2s', borderBottom: l === 'Home' ? `2px solid ${BLUE}` : 'none', paddingBottom: l === 'Home' ? 2 : 0 }}>{l}</Link>)}
@@ -393,39 +326,27 @@ export default function LandingPage() {
         <div style={{ display: 'flex', gap: 60, alignItems: 'flex-start', flexWrap: 'wrap' }}>
 
           {/* LEFT: Text + arrows */}
-          <div ref={textRef} style={{ flex: '0 0 298px', minWidth: 240 }}>
+          <div style={{ flex: '0 0 298px', minWidth: 240 }}>
             <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start', marginBottom: 20 }}>
-              {/* Blue line — grows downward */}
-              <div
-                className="line-hidden"
-                style={{ width: 7, minHeight: 72, background: BLUE, borderRadius: 11, flexShrink: 0, marginTop: 4, animationDelay: '0s' }}
-              />
+              {/* Blue vertical line */}
+              <div style={{ width: 7, minHeight: 72, background: BLUE, borderRadius: 11, flexShrink: 0, marginTop: 4 }} />
               <div>
                 {/* GET MORE CLOSER */}
-                <div
-                  className="txt-hidden"
-                  style={{ fontSize: 16, fontFamily: 'Inter', fontWeight: 400, marginBottom: 6, animationDelay: '0.15s' }}
-                >
+                <div style={{ fontSize: 16, fontFamily: 'Inter', fontWeight: 400, marginBottom: 6 }}>
                   <span style={{ color: 'black' }}>GET MORE </span><span style={{ color: BLUE }}>CLOSER</span>
                 </div>
                 {/* Big heading */}
-                <div
-                  className="txt-hidden"
-                  style={{ fontSize: 48, fontWeight: 500, fontFamily: 'Inter', lineHeight: 1.15, animationDelay: '0.28s' }}
-                >
+                <div style={{ fontSize: 48, fontWeight: 500, fontFamily: 'Inter', lineHeight: 1.15 }}>
                   <span style={{ color: 'black' }}>Marketplace<br />for </span><span style={{ color: BLUE }}>Creativity</span>
                 </div>
               </div>
             </div>
             {/* Description */}
-            <p
-              className="txt-hidden"
-              style={{ color: 'rgba(0,0,0,0.60)', fontSize: 16, fontWeight: 400, fontFamily: 'Inter', lineHeight: 1.6, marginBottom: 32, animationDelay: '0.42s' }}
-            >
+            <p style={{ color: 'rgba(0,0,0,0.60)', fontSize: 16, fontWeight: 400, fontFamily: 'Inter', lineHeight: 1.6, marginBottom: 32 }}>
               Organize books, track availability, manage members and simplify daily library operations.
             </p>
             {/* Navigation arrows */}
-            <div className="txt-hidden" style={{ display: 'flex', gap: 8, animationDelay: '0.55s' }}>
+            <div style={{ display: 'flex', gap: 8 }}>
               {['←', '→'].map((arrow, i) => (
                 <button key={i} style={{
                   width: 37, height: 37, borderRadius: '50%',
@@ -448,8 +369,8 @@ export default function LandingPage() {
               }}>View All</Link>
             </div>
 
-            {/* 3 Book cards — staggered wave: down → up → down */}
-            <div ref={cardsRef} style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16, marginBottom: 12, alignItems: 'start' }}>
+            {/* 3 Book cards */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16, marginBottom: 12, alignItems: 'start' }}>
               {[
                 { title: 'Best Author', img1: 'https://res.cloudinary.com/dadiutcqh/image/upload/v1781966160/2b6bdc8890caf6725bac452d668983177171fe75_pd81vb.png', img2: 'https://res.cloudinary.com/dadiutcqh/image/upload/v1781966397/7dc2c9ce9f7e759580caf98f5b105fd21d5d57f4_t1sghw.png', offset: 40 },
                 { title: 'Deep Understanding', img1: 'https://res.cloudinary.com/dadiutcqh/image/upload/v1781966485/5d9d4ba558d3c5f069df8b6dba80b4871fe18641_aiv1sb.png', img2: 'https://res.cloudinary.com/dadiutcqh/image/upload/v1781966543/1b5dd1dc0ba2203d7616047bc3e67e2539ab5ebd_hoyhdt.png', offset: 80 },
@@ -457,13 +378,11 @@ export default function LandingPage() {
               ].map(({ title, img1, img2, offset }, idx) => (
                 <div
                   key={title}
-                  className="card-hidden"
                   style={{
                     background: 'white', borderRadius: 14,
                     border: '1px solid rgba(0,0,0,0.19)',
                     overflow: 'hidden',
                     marginTop: offset,
-                    animationDelay: `${idx * 0.18}s`,
                   }}
                 >
                   {/* 3D Book Page Flip */}
@@ -484,7 +403,7 @@ export default function LandingPage() {
                       <p style={{ marginBottom: '4px', textIndent: '10px' }}>In hac habitasse platea dictumst. Vivamus sit amet congue nisl. Sed interdum, turpis sed fringilla congue, orci tellus tristique nisi, nec congue.</p>
                       <p style={{ textIndent: '10px' }}>Nullam congue eros non ipsum ullamcorper, eu varius felis tristique. Mauris laoreet justo id arcu ullamcorper, vel finibus est feugiat.</p>
                     </div>
-                    
+
                     {/* Flipping page 2 (Chapter 1) */}
                     <div style={{
                       position: 'absolute', top: 0, left: '50%', width: '50%', height: '100%',
@@ -576,14 +495,14 @@ export default function LandingPage() {
             {/* Scattered app/integration icons */}
             <div style={{ position: 'relative', height: 140, width: '100%' }}>
               {[
-                { top: 0,   left: 20,  src: 'https://res.cloudinary.com/dadiutcqh/image/upload/v1782013762/b3a987cea2e498984971cfc2731b4913ef10fecb_dznqwa.png' },
-                { top: 10,  left: 100, src: 'https://res.cloudinary.com/dadiutcqh/image/upload/v1782013761/2d38b483c75df2b40e70d9d424e08568cb14e0ad_wnmgub.png' },
-                { top: 0,   left: 180, src: 'https://res.cloudinary.com/dadiutcqh/image/upload/v1782013758/ec070c4d0d94568b1dbac3768f7e6d115fbd7488_gqlkj4.png' },
-                { top: -20,  left: 260,   src: 'https://res.cloudinary.com/dadiutcqh/image/upload/v1782013756/146063117eebaaf335d7359721918fd29e27a8c2_mka5ay.png' },
-                { top: 70,  left: 50, src: 'https://res.cloudinary.com/dadiutcqh/image/upload/v1782013755/6f8addfb06251431ead80835267843f16a8532e0_kqtzuh.png' },
-                { top: 70,  left: 150, src: 'https://res.cloudinary.com/dadiutcqh/image/upload/v1782013746/52f2e660feb571c8566cfe781c4414c338d8602a_vm6llz.png' },
-                { top: 50,  left: 240, src: 'https://res.cloudinary.com/dadiutcqh/image/upload/v1782013744/533bfd07bcaf92a339876fcb9c18ed03475f8094_ofuqlt.png' },
-                { top: -70, left: 205,  src: 'https://res.cloudinary.com/dadiutcqh/image/upload/v1782013742/e406aef0637df5f89df3b5c916d8c59020092e25_mkem3z.png' },
+                { top: 0, left: 20, src: 'https://res.cloudinary.com/dadiutcqh/image/upload/v1782013762/b3a987cea2e498984971cfc2731b4913ef10fecb_dznqwa.png' },
+                { top: 10, left: 100, src: 'https://res.cloudinary.com/dadiutcqh/image/upload/v1782013761/2d38b483c75df2b40e70d9d424e08568cb14e0ad_wnmgub.png' },
+                { top: 0, left: 180, src: 'https://res.cloudinary.com/dadiutcqh/image/upload/v1782013758/ec070c4d0d94568b1dbac3768f7e6d115fbd7488_gqlkj4.png' },
+                { top: -20, left: 260, src: 'https://res.cloudinary.com/dadiutcqh/image/upload/v1782013756/146063117eebaaf335d7359721918fd29e27a8c2_mka5ay.png' },
+                { top: 70, left: 50, src: 'https://res.cloudinary.com/dadiutcqh/image/upload/v1782013755/6f8addfb06251431ead80835267843f16a8532e0_kqtzuh.png' },
+                { top: 70, left: 150, src: 'https://res.cloudinary.com/dadiutcqh/image/upload/v1782013746/52f2e660feb571c8566cfe781c4414c338d8602a_vm6llz.png' },
+                { top: 50, left: 240, src: 'https://res.cloudinary.com/dadiutcqh/image/upload/v1782013744/533bfd07bcaf92a339876fcb9c18ed03475f8094_ofuqlt.png' },
+                { top: -70, left: 205, src: 'https://res.cloudinary.com/dadiutcqh/image/upload/v1782013742/e406aef0637df5f89df3b5c916d8c59020092e25_mkem3z.png' },
               ].map((item, i) => (
                 <div key={i} style={{
                   position: 'absolute', top: item.top, left: item.left,
@@ -707,29 +626,20 @@ export default function LandingPage() {
 
       {/* TRUSTED */}
       <section style={{ padding: '80px 80px' }}>
-        <div ref={trustedRef} style={{ maxWidth: 1320, margin: '0 auto' }}>
+        <div style={{ maxWidth: 1320, margin: '0 auto' }}>
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 16 }}>
-            {/* Blue line grows down */}
-            <div
-              className="line-hidden"
-              style={{ width: 7, height: 61, background: BLUE, borderRadius: 11, flexShrink: 0, marginTop: 4, animationDelay: '0s' }}
-            />
+            {/* Blue vertical line */}
+            <div style={{ width: 7, height: 61, background: BLUE, borderRadius: 11, flexShrink: 0, marginTop: 4 }} />
             <div>
-              <h2
-                className="txt-hidden"
-                style={{ fontSize: 32, fontWeight: 600, fontFamily: 'Inter', animationDelay: '0.15s' }}
-              >
+              <h2 style={{ fontSize: 32, fontWeight: 600, fontFamily: 'Inter' }}>
                 <span style={{ color: 'black' }}>Trusted by the </span><span style={{ color: BLUE }}>best.</span>
               </h2>
-              <p
-                className="txt-hidden"
-                style={{ fontSize: 16, fontWeight: 400, fontFamily: 'Inter', color: 'rgba(0,0,0,0.60)', marginTop: 8, animationDelay: '0.28s' }}
-              >
+              <p style={{ fontSize: 16, fontWeight: 400, fontFamily: 'Inter', color: 'rgba(0,0,0,0.60)', marginTop: 8 }}>
                 Our growth hackers are experts in the identifying and capitalizing on the most
               </p>
             </div>
           </div>
-          {/* Logo cards — staggered pop-up */}
+          {/* Logo cards */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 20, marginTop: 32 }}>
             {[
               'https://res.cloudinary.com/dadiutcqh/image/upload/v1782017261/2decbdfc393cbd31588216ba72e677316ba73125_tqtah5.png',
@@ -740,13 +650,11 @@ export default function LandingPage() {
             ].map((src, i) => (
               <div
                 key={i}
-                className="logo-hidden"
                 style={{
                   background: 'white', boxShadow: '0 4px 4px rgba(0,0,0,0.05)',
                   borderRadius: 10, padding: '28px 20px',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   border: '1px solid rgba(0,0,0,0.06)',
-                  animationDelay: `${0.35 + i * 0.1}s`,
                 }}
               >
                 <img src={src} alt={`Partner ${i + 1}`} style={{ maxHeight: 40, maxWidth: '100%', objectFit: 'contain' }} />
@@ -759,11 +667,11 @@ export default function LandingPage() {
       {/* FEATURES */}
       <section id="features" style={{ padding: '50px 80px' }}>
         <div style={{ maxWidth: 1320, margin: '0 auto' }}>
-          <div className="feature-row" style={{ display: 'flex', gap: 60, alignItems: 'center', marginBottom: 100, flexWrap: 'wrap', justifyContent: 'center' }}>
-            <div className="anim-left-hidden" style={{ flex: '1 1 0', maxWidth: 500, borderRadius: 20, overflow: 'hidden', boxShadow: '0 4px 30px rgba(26,115,232,0.1)' }}>
+          <div style={{ display: 'flex', gap: 60, alignItems: 'center', marginBottom: 100, flexWrap: 'wrap', justifyContent: 'center' }}>
+            <div style={{ flex: '1 1 0', maxWidth: 500, borderRadius: 20, overflow: 'hidden', boxShadow: '0 4px 30px rgba(26,115,232,0.1)' }}>
               <img src="https://res.cloudinary.com/dadiutcqh/image/upload/v1784617028/14d18450-1565-4045-b65b-4a3f94d8965f_kr8fct.png" alt="Digital library experience" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
             </div>
-            <div className="anim-right-hidden" style={{ flex: '1 1 0', maxWidth: 500, minWidth: 260 }}>
+            <div style={{ flex: '1 1 0', maxWidth: 500, minWidth: 260 }}>
               <h2 style={{ fontSize: 32, fontWeight: 600, fontFamily: 'Inter', color: 'black', marginBottom: 16 }}>Digital library experience</h2>
               <p style={{ fontSize: 16, fontWeight: 500, fontFamily: 'Inter', color: 'rgba(0,0,0,0.60)', lineHeight: 1.6, marginBottom: 24 }}>
                 Librix makes it simple to search, explore, and access resources while giving colleges a smarter way to manage books, members, requests, and everyday library operations.
@@ -771,15 +679,15 @@ export default function LandingPage() {
               <Link href="/register" style={{ display: 'inline-flex', padding: '10px 24px', borderRadius: 38, background: BLUE, color: 'white', fontSize: 16, fontWeight: 500, fontFamily: 'Inter' }}>View All</Link>
             </div>
           </div>
-          <div className="feature-row" style={{ display: 'flex', gap: 60, alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
-            <div className="anim-left-hidden" style={{ flex: '1 1 0', maxWidth: 500, minWidth: 260 }}>
+          <div style={{ display: 'flex', gap: 60, alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
+            <div style={{ flex: '1 1 0', maxWidth: 500, minWidth: 260 }}>
               <h2 style={{ fontSize: 32, fontWeight: 600, fontFamily: 'Inter', color: 'black', marginBottom: 16 }}>Complete library control</h2>
               <p style={{ fontSize: 16, fontWeight: 500, fontFamily: 'Inter', color: 'rgba(0,0,0,0.60)', lineHeight: 1.6, marginBottom: 24 }}>
                 Librix provides colleges with a centralized library management system that simplifies book tracking, automates workflows, and helps librarians make smarter decisions with detailed insights.
               </p>
               <Link href="/register" style={{ display: 'inline-flex', padding: '10px 24px', borderRadius: 38, background: BLUE, color: 'white', fontSize: 16, fontWeight: 500, fontFamily: 'Inter' }}>View All</Link>
             </div>
-            <div className="anim-right-hidden" style={{ flex: '1 1 0', maxWidth: 500, borderRadius: 20, overflow: 'hidden', boxShadow: '0 4px 30px rgba(26,115,232,0.1)' }}>
+            <div style={{ flex: '1 1 0', maxWidth: 500, borderRadius: 20, overflow: 'hidden', boxShadow: '0 4px 30px rgba(26,115,232,0.1)' }}>
               <img src="https://res.cloudinary.com/dadiutcqh/image/upload/v1784617837/afcbcb5b-40f5-4a4e-b590-cce3850eab54_ofaagn.png" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
             </div>
           </div>
@@ -812,50 +720,9 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* FOOTER */}
-      <footer style={{ background: DARK }}>
-        <div style={{ maxWidth: 1320, margin: '0 auto', padding: '60px 70px 40px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', gap: 40, marginBottom: 48 }}>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16}}>
-                <img src="https://res.cloudinary.com/dadiutcqh/image/upload/v1784448482/e2d37f27-b9e1-484c-a59b-79e086b1aec2_rah6h8.png" alt="Librix Logo" style={{ height: 44, width: 'auto', objectFit: 'contain', borderRadius: 6 }} />
-              </div>
-              <p style={{ color: 'white', fontSize: 16, fontWeight: 400, fontFamily: 'Inter', lineHeight: 1.6, marginBottom: 12 }}>Empowering smarter libraries worldwide</p>
-              <p style={{ color: 'white', fontSize: 16, fontWeight: 400, fontFamily: 'Inter' }}>Info@librix.app</p>
-            </div>
-            {[
-              { title: 'Product', links: ['Features', 'Solutions', 'Pricing'] },
-              { title: 'Platform', links: ['Student Portal', 'Librarian Dashboard', 'Book Management'] },
-              { title: 'Resources', links: ['Help Center', 'FAQs', 'Contact Support'] },
-              { title: 'Company', links: ['About Us', 'Careers', 'Privacy Policy', 'Terms & Conditions'] },
-            ].map(col => (
-              <div key={col.title}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-                  <div style={{ width: 4, height: 20, background: BLUE, borderRadius: 11 }} />
-                  <div style={{ color: 'white', fontSize: 20, fontWeight: 500, fontFamily: 'Inter' }}>{col.title}</div>
-                </div>
-                {col.links.map(l => (
-                  <div key={l} style={{ color: 'rgba(255,255,255,0.53)', fontSize: 16, fontWeight: 500, fontFamily: 'Inter', marginBottom: 12, cursor: 'pointer' }}>{l}</div>
-                ))}
-              </div>
-            ))}
-          </div>
-          {/* Payment Methods */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 40, paddingTop: 40, borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-            <h4 style={{ color: 'white', fontSize: 18, fontWeight: 600, fontFamily: 'Inter', marginBottom: 20 }}>Payment Methods Accepted</h4>
-            <div style={{ display: 'flex', gap: 16 }}>
-              {[{src: 'https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo_2014.svg', alt: 'Visa'}, {src: 'https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg', alt: 'Mastercard'}, {src: 'https://upload.wikimedia.org/wikipedia/commons/f/fd/Maestro_logo.svg', alt: 'Maestro'}, {src: 'https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg', alt: 'PayPal'}].map((card, idx) => (
-                <div key={idx} style={{ width: 64, height: 40, background: 'white', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 8px' }}>
-                  <img src={card.src} alt={card.alt} style={{ width: '100%', height: 'auto', maxHeight: 24, objectFit: 'contain' }} />
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-        <div style={{ background: DARK, padding: '18px 24px', textAlign: 'center' }}>
-          <div style={{ color: 'white', fontSize: 12, fontWeight: 500, fontFamily: 'Inter' }}>© 2026 Librix. All rights reserved.</div>
-        </div>
-      </footer>
+      {/* ── FOOTER ── */}
+      <Footer />
     </div>
   );
 }
+

@@ -33,7 +33,7 @@ export default function LibrarianSidebar({ unreadCount = 0 }) {
       overflowY: 'auto',
     }}>
       {/* Logo */}
-      <div style={{ padding: '18px 16px 14px', borderBottom: '1px solid #F3F4F6' }}>
+      <div style={{ padding: '18px 16px 7px', borderBottom: '1px solid #F3F4F6' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
           <img src="https://res.cloudinary.com/dadiutcqh/image/upload/v1784449649/c7205191-78c8-486e-9996-7894591bf72b_szzaji.png" alt="Librix Logo" style={{ height: 40, width: 'auto', objectFit: 'contain' }} />
           <div>
@@ -44,7 +44,7 @@ export default function LibrarianSidebar({ unreadCount = 0 }) {
       </div>
 
       {/* Nav items */}
-      <div style={{ flex: 1, overflowY: 'auto', paddingTop: 8, paddingBottom: 8 }}>
+      <div style={{ flex: 1, overflowY: 'auto', paddingTop: 15, paddingBottom: 8 }}>
         {NAV.map(item => {
           const active = pathname === item.href;
           return (

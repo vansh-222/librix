@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import Footer from '@/components/shared/Footer';
 import { BookOpen, MapPin, Building2, Users, ShieldCheck, ArrowRight, Star, Search, ChevronRight } from 'lucide-react';
 import { useTypewriterPlaceholder } from '@/hooks/useTypewriterPlaceholder';
 
@@ -443,49 +444,7 @@ export default function InstitutionsPage() {
       </section>
 
       {/* ── FOOTER ── */}
-      <footer style={{ background: DARK }}>
-        <div style={{ maxWidth: 1320, margin: '0 auto', padding: '60px 70px 40px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', gap: 40, marginBottom: 48 }}>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-                <img src="https://res.cloudinary.com/dadiutcqh/image/upload/v1784448482/e2d37f27-b9e1-484c-a59b-79e086b1aec2_rah6h8.png" alt="Librix Logo" style={{ height: 44, width: 'auto', objectFit: 'contain' }} />
-              </div>
-              <p style={{ color: 'white', fontSize: 16, fontWeight: 400, lineHeight: 1.6, marginBottom: 12 }}>Empowering smarter libraries worldwide</p>
-              <p style={{ color: 'white', fontSize: 16, fontWeight: 400 }}>Info@librix.app</p>
-            </div>
-            {[
-              { title: 'Product', links: ['Features', 'Solutions', 'Pricing'] },
-              { title: 'Platform', links: ['Student Portal', 'Librarian Dashboard', 'Book Management'] },
-              { title: 'Resources', links: ['Help Center', 'FAQs', 'Contact Support'] },
-              { title: 'Company', links: ['About Us', 'Careers', 'Privacy Policy', 'Terms & Conditions'] },
-            ].map(col => (
-              <div key={col.title}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-                  <div style={{ width: 4, height: 20, background: BLUE, borderRadius: 11 }} />
-                  <div style={{ color: 'white', fontSize: 20, fontWeight: 500 }}>{col.title}</div>
-                </div>
-                {col.links.map(l => (
-                  <div key={l} style={{ color: 'rgba(255,255,255,0.53)', fontSize: 16, fontWeight: 500, marginBottom: 12, cursor: 'pointer' }}>{l}</div>
-                ))}
-              </div>
-            ))}
-          </div>
-          {/* Payment Methods */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 40, paddingTop: 40, borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-            <h4 style={{ color: 'white', fontSize: 18, fontWeight: 600, fontFamily: 'Inter', marginBottom: 20 }}>Payment Methods Accepted</h4>
-            <div style={{ display: 'flex', gap: 16 }}>
-              {[{src: 'https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo_2014.svg', alt: 'Visa'}, {src: 'https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg', alt: 'Mastercard'}, {src: 'https://upload.wikimedia.org/wikipedia/commons/f/fd/Maestro_logo.svg', alt: 'Maestro'}, {src: 'https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg', alt: 'PayPal'}].map((card, idx) => (
-                <div key={idx} style={{ width: 64, height: 40, background: 'white', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 8px' }}>
-                  <img src={card.src} alt={card.alt} style={{ width: '100%', height: 'auto', maxHeight: 24, objectFit: 'contain' }} />
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-        <div style={{ background: '#0B1B2D', padding: '18px 24px', textAlign: 'center' }}>
-          <div style={{ color: 'white', fontSize: 12, fontWeight: 500 }}>© 2026 Librix. All rights reserved.</div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

@@ -21,7 +21,6 @@ export default function Sidebar({ user, navItems }) {
             {user?.role?.replace('_', ' ')}
           </div>
         </div>
-      </div>
 
       {/* Nav Items */}
       <nav style={{ flex: 1, padding: '12px 0', overflowY: 'auto' }}>
