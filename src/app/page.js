@@ -465,7 +465,7 @@ export default function LandingPage() {
 
 
       {/* VISION */}
-      <section id="about" style={{ background: 'rgba(26,115,232,0.05)', padding: '80px 80px' }}>
+      <section id="about" style={{ background: 'rgba(26,115,232,0.05)', padding: '60px 80px' }}>
         <div style={{ maxWidth: 1320, margin: '0 auto', display: 'flex', gap: 60, alignItems: 'flex-start', flexWrap: 'wrap' }}>
 
           {/* LEFT column */}
@@ -518,17 +518,9 @@ export default function LandingPage() {
 
           {/* RIGHT: Dashboard panel */}
           <div style={{ flex: 1, minWidth: 440 }}>
-            {/* "Business" tab sits ABOVE the card, outside */}
-            <div style={{ display: 'flex', alignItems: 'flex-end', gap: 0, marginBottom: 0 }}>
-              <div style={{
-                padding: '12px 24px', color: 'black', fontSize: 24, fontWeight: 500, fontFamily: 'Inter',
-                background: 'white', borderRadius: '14px 14px 0 0',
-                border: '1px solid rgba(0,0,0,0.08)', borderBottom: 'none',
-              }}>Business</div>
-            </div>
 
             {/* White card */}
-            <div style={{ background: 'white', borderRadius: '0 14px 14px 14px', overflow: 'hidden', boxShadow: '0 4px 30px rgba(0,0,0,0.1)' }}>
+            <div style={{ background: 'white', borderRadius: '14px 14px 14px 14px', overflow: 'hidden', boxShadow: '0 4px 30px rgba(0,0,0,0.1)', marginTop: 60 }}>
               {/* Personal tab bar (active, dark bg) */}
               <div style={{ background: DARK, padding: '12px 20px', display: 'flex', alignItems: 'center', gap: 0 }}>
                 <div style={{ color: 'white', fontSize: 24, fontWeight: 500, fontFamily: 'Inter', flex: 1 }}>Personal</div>
