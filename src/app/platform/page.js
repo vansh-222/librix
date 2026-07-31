@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Footer from '@/components/shared/Footer';
-import { BookOpen, Star, Play, CheckCircle2, BarChart2, Users, Clock, ShieldCheck, Sparkles, Layers, Zap, Search, ChevronLeft, ChevronRight } from 'lucide-react';
+import { BookOpen, Star, Play, CheckCircle2, BarChart2, Users, Clock, ShieldCheck, Sparkles, Layers, Zap, Search, ChevronLeft, ChevronRight, GraduationCap } from 'lucide-react';
 import { useTypewriterPlaceholder } from '@/hooks/useTypewriterPlaceholder';
 
 const BLUE = '#1A73E8';
@@ -74,8 +74,8 @@ export default function PlatformPage() {
             ))}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <Link href="/register" style={{ padding: '7px 28px', borderRadius: 38, border: '1px solid rgba(5,32,51,0.42)', color: DARK, fontSize: 16, fontFamily: 'Inter', fontWeight: 400 }}>Register College</Link>
-            <Link href="/login" style={{ padding: '7px 24px', borderRadius: 38, background: BLUE, color: 'white', fontSize: 16, fontFamily: 'Inter', fontWeight: 500 }}>Login</Link>
+            <Link href="/login" className="btn-login">Login</Link>
+            <Link href="/register" className="btn-register"><GraduationCap size={18} strokeWidth={2.2} /> For College</Link>
           </div>
         </nav>
       </div>

@@ -56,7 +56,7 @@ export default function NotificationsPage() {
     setNotifications(prev => {
       const updated = prev.map(n => n._id === id ? { ...n, read: true } : n);
       const newUnread = updated.filter(n => !n.read).length;
-      window.dispatchEvent(new CustomEvent('notifications-updated', { detail: { count: newUnread } }));
+      setTimeout(() => window.dispatchEvent(new CustomEvent('notifications-updated', { detail: { count: newUnread } })), 0);
       return updated;
     });
   };
@@ -66,7 +66,7 @@ export default function NotificationsPage() {
     setNotifications(prev => {
       const updated = prev.filter(n => n._id !== id);
       const newUnread = updated.filter(n => !n.read).length;
-      window.dispatchEvent(new CustomEvent('notifications-updated', { detail: { count: newUnread } }));
+      setTimeout(() => window.dispatchEvent(new CustomEvent('notifications-updated', { detail: { count: newUnread } })), 0);
       return updated;
     });
   };
@@ -74,7 +74,7 @@ export default function NotificationsPage() {
   const markAllRead = async () => {
     await fetch('/api/notifications', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ markAll: true }) });
     setNotifications(prev => prev.map(n => ({ ...n, read: true })));
-    window.dispatchEvent(new CustomEvent('notifications-updated', { detail: { count: 0 } }));
+    setTimeout(() => window.dispatchEvent(new CustomEvent('notifications-updated', { detail: { count: 0 } })), 0);
   };
 
   const deleteAllRead = async () => {
@@ -83,7 +83,7 @@ export default function NotificationsPage() {
     setNotifications(prev => {
       const updated = prev.filter(n => !n.read);
       const newUnread = updated.filter(n => !n.read).length;
-      window.dispatchEvent(new CustomEvent('notifications-updated', { detail: { count: newUnread } }));
+      setTimeout(() => window.dispatchEvent(new CustomEvent('notifications-updated', { detail: { count: newUnread } })), 0);
       return updated;
     });
   };

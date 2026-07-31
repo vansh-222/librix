@@ -6,7 +6,7 @@ import {
   Sparkles, Bot, Search, TrendingUp, ThumbsUp, FileText, Tag, 
   Copy, BarChart3, BookOpen, BellRing, RefreshCw, MessageSquare, 
   Database, Cpu, LineChart, Settings, Eye, Lock, ShieldCheck, 
-  Users, Layers, ArrowRight
+  Users, Layers, ArrowRight, GraduationCap
 } from 'lucide-react';
 
 const BLUE = '#1A73E8';
@@ -102,8 +102,8 @@ export default function AIFeaturesPage() {
             ))}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <Link href="/register" style={{ padding: '7px 28px', borderRadius: 38, border: '1px solid rgba(5,32,51,0.42)', color: DARK, fontSize: 16, fontFamily: 'Inter', fontWeight: 400 }}>Register College</Link>
-            <Link href="/login" style={{ padding: '7px 24px', borderRadius: 38, background: BLUE, color: 'white', fontSize: 16, fontFamily: 'Inter', fontWeight: 500 }}>Login</Link>
+            <Link href="/login" className="btn-login">Login</Link>
+            <Link href="/register" className="btn-register"><GraduationCap size={18} strokeWidth={2.2} /> For College</Link>
           </div>
         </nav>
       </div>

@@ -2,7 +2,7 @@
 import { useRef, useEffect, useState } from 'react';
 import Link from 'next/link';
 import Footer from '@/components/shared/Footer';
-import { BookOpen, Star } from 'lucide-react';
+import { BookOpen, Star, GraduationCap } from 'lucide-react';
 
 const BLUE = '#1A73E8';
 const DARK = '#052033';
@@ -147,7 +147,7 @@ export default function LandingPage() {
         *{box-sizing:border-box;margin:0;padding:0}
         html,body{height:auto!important;overflow:visible!important;min-height:100vh}
         html{scroll-behavior:smooth}a{text-decoration:none}
-        .nl:hover{color:#1A73E8!important}.hl:hover{opacity:.85}
+
         @keyframes slideRightToLeftFade {
           0% { opacity: 0; transform: translateX(15px); }
           100% { opacity: 1; transform: translateX(0); }
@@ -244,11 +244,11 @@ export default function LandingPage() {
 
           </Link>
           <div style={{ display: 'flex', alignItems: 'center', gap: 44 }}>
-            {NAV.map(l => <Link key={l} href={l === 'Platform' ? '/platform' : l === 'AI Features' ? '/ai-features' : l === 'Institutions' ? '/institutions' : '/'} className="nl" style={{ color: l === 'Home' ? BLUE : 'black', fontSize: 16, fontFamily: 'Inter', fontWeight: l === 'Home' ? 600 : 400, transition: 'color 0.2s', borderBottom: l === 'Home' ? `2px solid ${BLUE}` : 'none', paddingBottom: l === 'Home' ? 2 : 0 }}>{l}</Link>)}
+            {NAV.map(l => <Link key={l} href={l === 'Platform' ? '/platform' : l === 'AI Features' ? '/ai-features' : l === 'Institutions' ? '/institutions' : '/'} className="nl" style={{ color: l === 'Home' ? BLUE : 'black', fontSize: 16, fontFamily: 'Inter', fontWeight: l === 'Home' ? 600 : 400 }}>{l}</Link>)}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <Link href="/register" style={{ padding: '7px 28px', borderRadius: 38, border: '1px solid rgba(5,32,51,0.42)', color: DARK, fontSize: 16, fontFamily: 'Inter', fontWeight: 400 }}>Register College</Link>
-            <Link href="/login" style={{ padding: '7px 24px', borderRadius: 38, background: BLUE, color: 'white', fontSize: 16, fontFamily: 'Inter', fontWeight: 500 }}>Login</Link>
+            <Link href="/login" className="btn-login">Login</Link>
+            <Link href="/register" className="btn-register"><GraduationCap size={18} strokeWidth={2.2} /> For College</Link>
           </div>
         </nav>
       </div>
@@ -287,10 +287,10 @@ export default function LandingPage() {
             Librix is an all-in-one library management system to manage books, members, requests, issue &amp; return, fines and reports — designed for colleges, universities, and modern libraries.
           </p>
           <div style={{ display: 'flex', gap: 15, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 48 }}>
-            <Link href="/signup" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 231, height: 47, background: DARK, borderRadius: 38, color: 'white', fontSize: 20, fontFamily: 'Inter', fontWeight: 500 }}>
+            <Link href="/signup" className="btn-cta" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 231, height: 47, background: DARK, borderRadius: 38, color: 'white', fontSize: 20, fontFamily: 'Inter', fontWeight: 500, textDecoration: 'none' }}>
               Start Your Library
             </Link>
-            <a href="#features" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 212, height: 47, background: 'white', borderRadius: 38, border: `1px solid ${BLUE}`, color: BLUE, fontSize: 20, fontFamily: 'Inter', fontWeight: 500 }}>
+            <a href="#features" className="btn-cta" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 212, height: 47, background: 'white', borderRadius: 38, border: `1px solid ${BLUE}`, color: BLUE, fontSize: 20, fontFamily: 'Inter', fontWeight: 500, textDecoration: 'none' }}>
               Explore Features
             </a>
           </div>
@@ -362,10 +362,10 @@ export default function LandingPage() {
           <div style={{ flex: 1, minWidth: 300 }}>
             {/* View All aligned top-right */}
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16 }}>
-              <Link href="/register" style={{
+              <Link href="/register" className="btn-cta" style={{
                 padding: '10px 24px', height: 39, borderRadius: 38,
                 background: BLUE, color: 'white', fontSize: 16, fontWeight: 500,
-                fontFamily: 'Inter', display: 'inline-flex', alignItems: 'center',
+                fontFamily: 'Inter', display: 'inline-flex', alignItems: 'center', textDecoration: 'none'
               }}>View All</Link>
             </div>
 
@@ -668,7 +668,7 @@ export default function LandingPage() {
               <p style={{ fontSize: 16, fontWeight: 500, fontFamily: 'Inter', color: 'rgba(0,0,0,0.60)', lineHeight: 1.6, marginBottom: 24 }}>
                 Librix makes it simple to search, explore, and access resources while giving colleges a smarter way to manage books, members, requests, and everyday library operations.
               </p>
-              <Link href="/register" style={{ display: 'inline-flex', padding: '10px 24px', borderRadius: 38, background: BLUE, color: 'white', fontSize: 16, fontWeight: 500, fontFamily: 'Inter' }}>View All</Link>
+              <Link href="/register" className="btn-cta" style={{ display: 'inline-flex', padding: '10px 24px', borderRadius: 38, background: BLUE, color: 'white', fontSize: 16, fontWeight: 500, fontFamily: 'Inter', textDecoration: 'none' }}>View All</Link>
             </div>
           </div>
           <div style={{ display: 'flex', gap: 60, alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
@@ -677,7 +677,7 @@ export default function LandingPage() {
               <p style={{ fontSize: 16, fontWeight: 500, fontFamily: 'Inter', color: 'rgba(0,0,0,0.60)', lineHeight: 1.6, marginBottom: 24 }}>
                 Librix provides colleges with a centralized library management system that simplifies book tracking, automates workflows, and helps librarians make smarter decisions with detailed insights.
               </p>
-              <Link href="/register" style={{ display: 'inline-flex', padding: '10px 24px', borderRadius: 38, background: BLUE, color: 'white', fontSize: 16, fontWeight: 500, fontFamily: 'Inter' }}>View All</Link>
+              <Link href="/register" className="btn-cta" style={{ display: 'inline-flex', padding: '10px 24px', borderRadius: 38, background: BLUE, color: 'white', fontSize: 16, fontWeight: 500, fontFamily: 'Inter', textDecoration: 'none' }}>View All</Link>
             </div>
             <div style={{ flex: '1 1 0', maxWidth: 500, borderRadius: 20, overflow: 'hidden', boxShadow: '0 4px 30px rgba(26,115,232,0.1)' }}>
               <img src="https://res.cloudinary.com/dadiutcqh/image/upload/v1784617837/afcbcb5b-40f5-4a4e-b590-cce3850eab54_ofaagn.png" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
@@ -706,7 +706,7 @@ export default function LandingPage() {
               ))}
             </div>
           </div>
-          <Link href="/register" style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 28px', background: 'white', borderRadius: 38, color: 'rgba(0,0,0,0.81)', fontSize: 16, fontWeight: 500, fontFamily: 'Inter', flexShrink: 0 }}>
+          <Link href="/register" className="btn-cta" style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 28px', background: 'white', borderRadius: 38, color: 'rgba(0,0,0,0.81)', fontSize: 16, fontWeight: 500, fontFamily: 'Inter', flexShrink: 0, textDecoration: 'none' }}>
             <BookOpen size={20} color={DARK} /> Get Started
           </Link>
         </div>
