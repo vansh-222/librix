@@ -939,7 +939,7 @@ export default function RegisterCollegePage() {
               <span style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>Accepted Verification Methods</span>
             </div>
             {[
-              { icon: '🏛️', label: 'AISHE Code', sub: '6-digit code from AISHE portal', preferred: true },
+              { icon: '🏛️', label: 'AISHE Code', sub: '6-digit code filled by institute', preferred: true },
               { icon: '📄', label: 'AICTE Approval Letter', sub: 'For technical institutions', preferred: false },
               { icon: '📜', label: 'UGC Recognition Certificate', sub: 'For universities & colleges', preferred: false },
               { icon: '🏫', label: 'Affiliation Letter', sub: 'From university/board', preferred: false },
