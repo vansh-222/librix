@@ -1,5 +1,6 @@
 import connectDB from '@/lib/db';
 import BorrowRecord from '@/models/BorrowRecord';
+import BookCopy from '@/models/BookCopy';
 import CollegeBook from '@/models/CollegeBook';
 import Reservation from '@/models/Reservation';
 import Request from '@/models/Request';
@@ -28,6 +29,7 @@ export async function GET(req) {
     const records = await BorrowRecord.find(query)
       .populate('userId', 'name email studentId rollNumber avatarUrl')
       .populate('bookId', 'title author cover isbn category')
+      .populate('copyId', 'accessionNo')
       .sort({ createdAt: -1 })
       .lean();
 

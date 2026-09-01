@@ -25,6 +25,11 @@ const RequestSchema = new mongoose.Schema(
     note: { type: String, default: '' }, // librarian rejection note
     reason: { type: String, default: '' }, // student's stated reason for request
     daysNeeded: { type: Number, default: 14 }, // how many days student wants the book
+    copyId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'BookCopy',
+      default: null,
+    }, // physical copy assigned by librarian at approval
     respondedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',

@@ -21,22 +21,36 @@ function daysInfo(due) {
 }
 const BOOK_COLORS = ['#E05252','#5B8CDB','#2B6CB0','#D4A017','#4CAF50','#9C27B0','#26C6DA','#EA580C'];
 
-function BookCover({ color }) {
+function BookCover({ color, cover }) {
+  const [imgErr, setImgErr] = useState(false);
   return (
     <div style={{
       width: 42, height: 58, borderRadius: 4, flexShrink: 0, overflow: 'hidden', position: 'relative',
-      boxShadow: '1px 2px 4px rgba(0,0,0,0.15)', background: color
+      boxShadow: '1px 2px 4px rgba(0,0,0,0.15)',
     }}>
-      <div style={{ position: 'absolute', left: 0, top: 0, width: 5, height: '100%', background: 'rgba(0,0,0,0.15)' }} />
-      <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)' }}>
-        <BookOpen size={14} color="rgba(255,255,255,0.8)" />
-      </div>
+      {cover && !imgErr ? (
+        <img
+          src={cover}
+          alt="cover"
+          onError={() => setImgErr(true)}
+          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+        />
+      ) : (
+        <div style={{ width: '100%', height: '100%', background: color, position: 'relative' }}>
+          <div style={{ position: 'absolute', left: 0, top: 0, width: 5, height: '100%', background: 'rgba(0,0,0,0.15)' }} />
+          <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)' }}>
+            <BookOpen size={14} color="rgba(255,255,255,0.8)" />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
 export default function IssueReturnPage() {
   const [activeTab, setActiveTab]     = useState('issued');
+  const [page, setPage]               = useState(1);
+  const PAGE_SIZE = 5;
   const [selectedDate, setSelectedDate] = useState('May 16, 2026');
   const [showFilterMenu, setShowFilterMenu] = useState(false);
   const [records, setRecords]         = useState([]);
@@ -88,6 +102,25 @@ export default function IssueReturnPage() {
   const dueTodayRecs = records.filter(r => r.status === 'issued' && new Date(r.dueDate).toDateString() === new Date().toDateString());
   const displayRecs  = activeTab === 'issued' ? issuedRecs : returnedRecs;
 
+  // Pagination
+  const totalRecs   = displayRecs.length;
+  const totalPages  = Math.max(1, Math.ceil(totalRecs / PAGE_SIZE));
+  const safePage    = Math.min(page, totalPages);
+  const pageRecs    = displayRecs.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
+  const from        = totalRecs === 0 ? 0 : (safePage - 1) * PAGE_SIZE + 1;
+  const to          = Math.min(safePage * PAGE_SIZE, totalRecs);
+
+  // Build visible page numbers (max 5 shown)
+  const getPageNums = () => {
+    if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1);
+    const pages = [1];
+    if (safePage > 3) pages.push('...');
+    for (let p = Math.max(2, safePage - 1); p <= Math.min(totalPages - 1, safePage + 1); p++) pages.push(p);
+    if (safePage < totalPages - 2) pages.push('...');
+    pages.push(totalPages);
+    return pages;
+  };
+
   const STATS = [
     { icon: <BookOpen size={22} color="#1A73E8" />,      iconBg: '#EFF6FF', value: issuedRecs.length,   label: 'Books Issued'   },
     { icon: <ArrowLeftRight size={22} color="#16A34A" />, iconBg: '#DCFCE7', value: returnedRecs.length, label: 'Pending Returns' },
@@ -99,6 +132,8 @@ export default function IssueReturnPage() {
     { id: 'issued',   label: 'Issued Books',   count: issuedRecs.length   },
     { id: 'returned', label: 'Pending Returns', count: returnedRecs.length },
   ];
+
+  const switchTab = (id) => { setActiveTab(id); setPage(1); };
 
 
   return (
@@ -139,26 +174,27 @@ export default function IssueReturnPage() {
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
               {/* Tabs */}
               <div style={{ display: 'flex', gap: 8 }}>
-                {tabs.map(tab => (
+                {tabs.map(t => (
                   <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
+                    key={t.id}
+                    type="button"
+                    onClick={() => switchTab(t.id)}
                     style={{
                       padding: '11px 24px',
                       border: 'none',
                       borderRadius: 8,
-                      background: activeTab === tab.id ? '#1A73E8' : 'white',
-                      color: activeTab === tab.id ? 'white' : '#374151',
+                      background: activeTab === t.id ? '#1A73E8' : 'white',
+                      color: activeTab === t.id ? 'white' : '#374151',
                       fontSize: 13,
                       fontWeight: 500,
                       cursor: 'pointer',
                       fontFamily: 'Inter',
-                      boxShadow: activeTab === tab.id ? 'none' : '0 1px 2px rgba(0,0,0,0.05)',
+                      boxShadow: activeTab === t.id ? 'none' : '0 1px 2px rgba(0,0,0,0.05)',
                       whiteSpace: 'nowrap',
                       transition: 'all 0.15s ease'
                     }}
                   >
-                    {tab.label}
+                    {t.label}
                   </button>
                 ))}
               </div>
@@ -275,18 +311,24 @@ export default function IssueReturnPage() {
                 <tbody>
                   {displayRecs.length === 0 ? (
                     <tr><td colSpan={6} style={{ textAlign: 'center', padding: 32, color: '#9CA3AF' }}>No records found.</td></tr>
-                  ) : displayRecs.map((book, i) => {
+                  ) : pageRecs.map((book, i) => {
                     const isOverdue = new Date(book.dueDate) < new Date() && book.status === 'issued';
-                    const cover = BOOK_COLORS[i % BOOK_COLORS.length];
+                    const cover = BOOK_COLORS[((safePage - 1) * PAGE_SIZE + i) % BOOK_COLORS.length];
                     return (
-                    <tr key={book._id} className="tr-hover" style={{ borderBottom: i < displayRecs.length - 1 ? '1px solid #F3F4F6' : 'none' }}>
+                    <tr key={book._id} className="tr-hover" style={{ borderBottom: i < pageRecs.length - 1 ? '1px solid #F3F4F6' : 'none' }}>
                       <td style={{ padding: '10px 16px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                          <BookCover color={cover} />
+                          <BookCover color={cover} cover={book.bookId?.cover} />
                           <div style={{ minWidth: 0, flex: 1 }}>
                             <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{book.bookId?.title}</div>
                             <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 2 }}>{book.bookId?.author}</div>
                             <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 1 }}>ISBN: {book.bookId?.isbn || '—'}</div>
+                            {book.copyId?.accessionNo && (
+                              <div style={{ marginTop: 5, display: 'inline-flex', alignItems: 'center', gap: 4, background: '#EFF6FF', border: '1px solid #BFDBFE', borderRadius: 5, padding: '2px 8px' }}>
+                                <span style={{ fontSize: 10, color: '#6B7280', fontWeight: 600 }}>Copy</span>
+                                <span style={{ fontSize: 11, fontWeight: 700, color: '#1D4ED8', fontFamily: 'monospace' }}>#{book.copyId.accessionNo}</span>
+                              </div>
+                            )}
                           </div>
                         </div>
                       </td>
@@ -342,20 +384,34 @@ export default function IssueReturnPage() {
 
               {/* Pagination */}
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px', borderTop: '1px solid #F3F4F6' }}>
-                <span style={{ fontSize: 13, color: '#6B7280' }}>Showing 1 to 5 of 58 results</span>
+                <span style={{ fontSize: 13, color: '#6B7280' }}>
+                  {totalRecs === 0 ? 'No results' : `Showing ${from} to ${to} of ${totalRecs} results`}
+                </span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                  {['‹', '1', '2', '3', '...', '12', '›'].map((p, i) => (
-                    <button key={i} type="button" style={{
-                      minWidth: 32, height: 32, padding: '0 8px',
-                      border: p === '1' ? 'none' : '1px solid transparent',
-                      borderRadius: 8,
-                      background: p === '1' ? '#1A73E8' : 'transparent',
-                      color: p === '1' ? 'white' : (p === '‹' || p === '›' ? '#9CA3AF' : '#374151'),
-                      fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'Inter',
-                    }}>{p}</button>
+                  {/* Prev */}
+                  <button type="button" onClick={() => setPage(p => Math.max(1, p - 1))} disabled={safePage === 1}
+                    style={{ minWidth: 32, height: 32, padding: '0 8px', border: '1px solid transparent', borderRadius: 8, background: 'transparent', color: safePage === 1 ? '#D1D5DB' : '#9CA3AF', fontSize: 13, cursor: safePage === 1 ? 'default' : 'pointer', fontFamily: 'Inter' }}>‹</button>
+                  {/* Page numbers */}
+                  {getPageNums().map((p, i) => (
+                    <button key={i} type="button"
+                      disabled={p === '...'}
+                      onClick={() => typeof p === 'number' && setPage(p)}
+                      style={{
+                        minWidth: 32, height: 32, padding: '0 8px',
+                        border: p === safePage ? 'none' : '1px solid transparent',
+                        borderRadius: 8,
+                        background: p === safePage ? '#1A73E8' : 'transparent',
+                        color: p === safePage ? 'white' : (p === '...' ? '#9CA3AF' : '#374151'),
+                        fontSize: 13, fontWeight: 500,
+                        cursor: p === '...' ? 'default' : 'pointer',
+                        fontFamily: 'Inter',
+                      }}>{p}</button>
                   ))}
+                  {/* Next */}
+                  <button type="button" onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={safePage === totalPages}
+                    style={{ minWidth: 32, height: 32, padding: '0 8px', border: '1px solid transparent', borderRadius: 8, background: 'transparent', color: safePage === totalPages ? '#D1D5DB' : '#9CA3AF', fontSize: 13, cursor: safePage === totalPages ? 'default' : 'pointer', fontFamily: 'Inter' }}>›</button>
                 </div>
-                <span style={{ fontSize: 13, color: '#6B7280' }}>5 / page</span>
+                <span style={{ fontSize: 13, color: '#6B7280' }}>{PAGE_SIZE} / page</span>
               </div>
             </div>
 

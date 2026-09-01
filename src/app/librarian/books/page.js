@@ -62,7 +62,8 @@ const TD_STYLE = {
   verticalAlign: 'middle',
 };
 
-function BookCover({ color, size = 'md' }) {
+function BookCover({ color, cover, size = 'md' }) {
+  const [imgErr, setImgErr] = useState(false);
   const w = size === 'sm' ? 44 : 52;
   const h = size === 'sm' ? 62 : 72;
   return (
@@ -70,13 +71,22 @@ function BookCover({ color, size = 'md' }) {
       width: w, height: h, borderRadius: 4, flexShrink: 0, overflow: 'hidden', position: 'relative',
       boxShadow: '2px 2px 6px rgba(0,0,0,0.18)',
     }}>
-      <div style={{ width: '100%', height: '100%', background: color.bg, position: 'relative' }}>
-        <div style={{ position: 'absolute', left: 0, top: 0, width: 6, height: '100%', background: color.spine }} />
-        <div style={{ position: 'absolute', right: 0, top: 0, width: 3, height: '100%', background: 'rgba(255,255,255,0.15)' }} />
-        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)' }}>
-          <BookOpen size={size === 'sm' ? 14 : 18} color="rgba(255,255,255,0.7)" />
+      {cover && !imgErr ? (
+        <img
+          src={cover}
+          alt="cover"
+          onError={() => setImgErr(true)}
+          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+        />
+      ) : (
+        <div style={{ width: '100%', height: '100%', background: color.bg, position: 'relative' }}>
+          <div style={{ position: 'absolute', left: 0, top: 0, width: 6, height: '100%', background: color.spine }} />
+          <div style={{ position: 'absolute', right: 0, top: 0, width: 3, height: '100%', background: 'rgba(255,255,255,0.15)' }} />
+          <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)' }}>
+            <BookOpen size={size === 'sm' ? 14 : 18} color="rgba(255,255,255,0.7)" />
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
@@ -98,18 +108,35 @@ function SearchBookCover({ cover, title }) {
 
 function AddBookModal({ onClose, onAdded }) {
   /* Step 1 = search  |  Step 2 = confirm */
-  const [step, setStep]           = useState(1);
-  const [query, setQuery]         = useState('');
-  const [results, setResults]     = useState([]);
-  const [searching, setSearching] = useState(false);
-  const [searchErr, setSearchErr] = useState('');
-  const [selected, setSelected]   = useState(null);
-  const [form, setForm]           = useState({ copies: '1', shelf: '', section: '', floor: '' });
-  const [saving, setSaving]       = useState(false);
-  const [saveErr, setSaveErr]     = useState('');
-  const debounceRef               = useRef(null);
+  const [step, setStep]               = useState(1);
+  const [query, setQuery]             = useState('');
+  const [results, setResults]         = useState([]);
+  const [searching, setSearching]     = useState(false);
+  const [searchErr, setSearchErr]     = useState('');
+  const [selected, setSelected]       = useState(null);
+  const [form, setForm]               = useState({ copies: '1', shelf: '', section: '', floor: '' });
+  const [accessionNums, setAccessionNums] = useState(['']); // one entry per copy
+  const [saving, setSaving]           = useState(false);
+  const [saveErr, setSaveErr]         = useState('');
+  const debounceRef                   = useRef(null);
 
-  const upd = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }));
+  const upd = (k) => (e) => {
+    const val = e.target.value;
+    setForm(f => ({ ...f, [k]: val }));
+    // When copies count changes, resize accessionNums array
+    if (k === 'copies') {
+      const n = Math.max(1, Math.min(999, parseInt(val) || 1));
+      setAccessionNums(prev => Array.from({ length: n }, (_, i) => prev[i] || ''));
+    }
+  };
+
+  const updAccession = (idx, val) => {
+    setAccessionNums(prev => {
+      const next = [...prev];
+      next[idx] = val;
+      return next;
+    });
+  };
 
   /* Live search with 500ms debounce */
   useEffect(() => {
@@ -140,23 +167,24 @@ function AddBookModal({ onClose, onAdded }) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          title:         selected.title,
-          author:        selected.author,
-          isbn:          selected.isbn          || '',
-          publisher:     selected.publisher     || '',
-          publishedYear: selected.publishedYear || '',
-          cover:         selected.cover         || '',
-          description:   selected.description   || '',
-          category:      selected.category      || 'General',
-          language:      selected.language      || 'en',
-          pages:         selected.pages         || 0,
-          source:        selected.source        || 'google_books',
-          googleBooksId: selected.googleBooksId || '',
-          openLibraryId: selected.openLibraryId || '',
-          copies:  parseInt(form.copies),
-          shelf:   form.shelf,
-          section: form.section,
-          floor:   form.floor,
+          title:            selected.title,
+          author:           selected.author,
+          isbn:             selected.isbn          || '',
+          publisher:        selected.publisher     || '',
+          publishedYear:    selected.publishedYear || '',
+          cover:            selected.cover         || '',
+          description:      selected.description   || '',
+          category:         selected.category      || 'General',
+          language:         selected.language      || 'en',
+          pages:            selected.pages         || 0,
+          source:           selected.source        || 'google_books',
+          googleBooksId:    selected.googleBooksId || '',
+          openLibraryId:    selected.openLibraryId || '',
+          copies:           parseInt(form.copies),
+          shelf:            form.shelf,
+          section:          form.section,
+          floor:            form.floor,
+          accessionNumbers: accessionNums,
         }),
       });
       const data = await res.json();
@@ -315,6 +343,36 @@ function AddBookModal({ onClose, onAdded }) {
                     <input value={form.floor} onChange={upd('floor')} placeholder="e.g. Ground Floor" style={INP} />
                   </div>
                 </div>
+
+                {/* Per-copy accession number inputs */}
+                <div style={{ marginTop: 16 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: '#374151' }}>Accession Numbers</div>
+                    <span style={{ fontSize: 11, color: '#9CA3AF', background: '#F3F4F6', padding: '2px 8px', borderRadius: 9999 }}>Optional</span>
+                  </div>
+                  <div style={{ fontSize: 12, color: '#6B7280', marginBottom: 10, background: '#EFF6FF', padding: '8px 12px', borderRadius: 8, border: '1px solid #BFDBFE' }}>
+                    📋 Assign your college&apos;s catalog numbers to each copy. Students won&apos;t see these — only you will, to help locate the physical book.
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxHeight: 200, overflowY: 'auto', paddingRight: 4 }}>
+                    {accessionNums.map((num, idx) => (
+                      <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <div style={{
+                          width: 28, height: 28, borderRadius: 6, background: '#1A73E8',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          color: 'white', fontSize: 11, fontWeight: 700, flexShrink: 0
+                        }}>
+                          {idx + 1}
+                        </div>
+                        <input
+                          value={num}
+                          onChange={e => updAccession(idx, e.target.value)}
+                          placeholder={`Accession No. for Copy ${idx + 1}`}
+                          style={{ ...INP, flex: 1 }}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
 
               {saveErr && <div style={{ fontSize: 12, color: '#DC2626', background: '#FEF2F2', padding: '8px 12px', borderRadius: 8 }}>{saveErr}</div>}
@@ -402,6 +460,7 @@ export default function BooksManagement() {
     title:  b.title,
     author: b.author,
     date:   fmtDate(b.createdAt),
+    cover:  b.cover || '',
   }));
 
   // Derive category counts from current page
@@ -530,7 +589,7 @@ export default function BooksManagement() {
                     <tr key={b._id} className="tr-hover" style={{ borderBottom: i < books.length - 1 ? '1px solid #F3F4F6' : 'none' }}>
                       <td style={{ ...TD_STYLE, padding: '10px 16px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                          <BookCover color={COVER_COLORS[i % COVER_COLORS.length]} />
+                          <BookCover color={COVER_COLORS[i % COVER_COLORS.length]} cover={b.cover} />
                           <div style={{ minWidth: 0, flex: 1, overflow: 'hidden' }}>
                             <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', lineHeight: '18px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{b.title}</div>
                             <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>ISBN: {b.isbn || '—'}</div>
@@ -613,12 +672,16 @@ export default function BooksManagement() {
                   <div style={{
                     width: 42, height: 58, borderRadius: 4, flexShrink: 0,
                     background: RECENT_COLORS[i],
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
                     boxShadow: '1px 1px 4px rgba(0,0,0,0.15)',
                     position: 'relative', overflow: 'hidden',
                   }}>
-                    <div style={{ position: 'absolute', left: 0, top: 0, width: 5, height: '100%', background: 'rgba(0,0,0,0.15)' }} />
-                    <BookOpen size={14} color="rgba(255,255,255,0.8)" />
+                    {r.cover
+                      ? <img src={r.cover} alt={r.title} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} onError={e => { e.currentTarget.style.display = 'none'; }} />
+                      : null
+                    }
+                    {/* Spine overlay shown always as a subtle accent */}
+                    <div style={{ position: 'absolute', left: 0, top: 0, width: 5, height: '100%', background: 'rgba(0,0,0,0.12)', pointerEvents: 'none' }} />
+                    {!r.cover && <BookOpen size={14} color="rgba(255,255,255,0.8)" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)' }} />}
                   </div>
                   <div style={{ minWidth: 0 }}>
                     <div style={{ fontSize: 12, fontWeight: 600, color: '#111827', lineHeight: '16px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.title}</div>

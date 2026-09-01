@@ -2,6 +2,7 @@ import connectDB from '@/lib/db';
 import Request from '@/models/Request';
 import BorrowRecord from '@/models/BorrowRecord';
 import CollegeBook from '@/models/CollegeBook';
+import BookCopy from '@/models/BookCopy';
 import College from '@/models/College';
 import { createNotification } from '@/lib/notifications';
 import { requestApprovedEmail } from '@/lib/email';
@@ -113,7 +114,7 @@ export async function PATCH(req) {
     const session = await auth();
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const { requestId, action, note } = await req.json();
+    const { requestId, action, note, copyId } = await req.json();
     if (!requestId || !action) return NextResponse.json({ error: 'Missing fields' }, { status: 400 });
 
     await connectDB();
@@ -151,7 +152,17 @@ export async function PATCH(req) {
       request.status = 'approved';
       request.respondedBy = session.user.id;
       request.respondedAt = new Date();
+      if (copyId) request.copyId = copyId; // store the assigned copy
       await request.save();
+
+      // Look up accession number for the notification (if a copy was selected)
+      let accessionInfo = '';
+      if (copyId) {
+        const assignedCopy = await BookCopy.findById(copyId).lean();
+        if (assignedCopy?.accessionNo) {
+          accessionInfo = ` (Book Copy #${assignedCopy.accessionNo})`;
+        }
+      }
 
       // Notify student
       const college = await College.findById(request.collegeId).select('settings').lean();
@@ -160,13 +171,13 @@ export async function PATCH(req) {
         userId: request.userId._id,
         collegeId: request.collegeId,
         title: 'Book Request Approved!',
-        message: `Your request for "${request.bookId.title}" has been approved. Please collect it from the library.`,
+        message: `Your request for "${request.bookId.title}"${accessionInfo} has been approved. Please collect it from the library.`,
         type: 'request_approved',
         link: '/student/requests',
         sendEmail: true,
         emailTemplate: requestApprovedEmail({
           userName: request.userId.name,
-          bookTitle: request.bookId.title,
+          bookTitle: request.bookId.title + accessionInfo,
           dueDate: `${approvedDays} days from issue`,
         }),
       });
@@ -197,16 +208,34 @@ export async function PATCH(req) {
       const dueDate = new Date(issueDate);
       dueDate.setDate(dueDate.getDate() + maxDays);
 
-      await BorrowRecord.create({
+      const borrowRecord = await BorrowRecord.create({
         collegeId: request.collegeId,
         userId: request.userId._id,
         bookId: request.bookId._id,
         requestId: request._id,
+        copyId: request.copyId || null,
         issueDate,
         dueDate,
         issuedBy: session.user.id,
         status: 'issued',
       });
+
+      // Mark the specific copy (assigned at approval) as issued
+      if (request.copyId) {
+        await BookCopy.findByIdAndUpdate(request.copyId, { status: 'issued' });
+      } else {
+        // Fallback: mark first available copy for books added before this feature
+        const availableCopy = await BookCopy.findOne({
+          collegeId: request.collegeId,
+          bookId: request.bookId._id,
+          status: 'available',
+        }).sort({ accessionNo: 1, createdAt: 1 });
+        if (availableCopy) {
+          availableCopy.status = 'issued';
+          await availableCopy.save();
+          await BorrowRecord.findByIdAndUpdate(borrowRecord._id, { copyId: availableCopy._id });
+        }
+      }
 
       // Decrement inventory
       await CollegeBook.findOneAndUpdate(

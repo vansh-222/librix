@@ -27,32 +27,62 @@ function fmtRelativeTime(d) {
 const BOOK_COLORS = ['#E05252','#2B6CB0','#9C27B0','#F5F5F5','#D4A017','#26C6DA','#EA580C','#1A73E8'];
 
 
-function BookCover({ color }) {
+function BookCover({ color, cover }) {
+  const [imgErr, setImgErr] = useState(false);
   return (
     <div style={{
       width: 42, height: 58, borderRadius: 4, flexShrink: 0, overflow: 'hidden', position: 'relative',
-      boxShadow: '1px 2px 4px rgba(0,0,0,0.15)', background: color
+      boxShadow: '1px 2px 4px rgba(0,0,0,0.15)',
     }}>
-      <div style={{ position: 'absolute', left: 0, top: 0, width: 5, height: '100%', background: 'rgba(0,0,0,0.15)' }} />
-      <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)' }}>
-        <BookOpen size={14} color="rgba(255,255,255,0.8)" />
-      </div>
+      {cover && !imgErr ? (
+        <img
+          src={cover}
+          alt="cover"
+          onError={() => setImgErr(true)}
+          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+        />
+      ) : (
+        <div style={{ width: '100%', height: '100%', background: color, position: 'relative' }}>
+          <div style={{ position: 'absolute', left: 0, top: 0, width: 5, height: '100%', background: 'rgba(0,0,0,0.15)' }} />
+          <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)' }}>
+            <BookOpen size={14} color="rgba(255,255,255,0.8)" />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
 export default function RequestsPage() {
-  const [activeTab, setActiveTab] = useState('all');
-  const [requests, setRequests]   = useState([]);
-  const [acting, setActing]       = useState('');
-  const [toast, setToast]         = useState('');
+  const [activeTab, setActiveTab]   = useState('all');
+  const [requests, setRequests]     = useState([]);
+  const [copiesMap, setCopiesMap]   = useState({}); // bookId -> available copies []
+  const [selectedCopies, setSelectedCopies] = useState({}); // requestId -> copyId
+  const [acting, setActing]         = useState('');
+  const [toast, setToast]           = useState('');
 
   const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(''), 3000); };
 
   const load = useCallback(async () => {
     const res  = await fetch('/api/requests');
     const data = await res.json();
-    setRequests(data.requests || []);
+    const reqs = data.requests || [];
+    setRequests(reqs);
+
+    // Fetch available accession numbers for each unique book
+    const uniqueBookIds = [...new Set(reqs.map(r => r.bookId?._id).filter(Boolean))];
+    if (uniqueBookIds.length === 0) return;
+    const results = await Promise.all(
+      uniqueBookIds.map(async (bookId) => {
+        try {
+          const r = await fetch(`/api/books/copies?bookId=${bookId}`);
+          const d = await r.json();
+          const available = (d.copies || []).filter(c => c.status === 'available');
+          return [bookId, available];
+        } catch { return [bookId, []]; }
+      })
+    );
+    setCopiesMap(Object.fromEntries(results));
   }, []);
 
   useEffect(() => { load(); }, [load]);
@@ -69,18 +99,19 @@ export default function RequestsPage() {
     { icon: <XCircle size={22} color="#DC2626" />,       iconBg: '#FEE2E2', value: rejected,  label: 'Rejected Requests' },
   ];
 
-  const doAction = async (requestId, action) => {
-    
+  const doAction = async (requestId, action, copyId) => {
     setActing(requestId + action);
     try {
       const res = await fetch('/api/requests', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ requestId, action }),
+        body: JSON.stringify({ requestId, action, ...(copyId ? { copyId } : {}) }),
       });
       const data = await res.json();
       if (!res.ok) { showToast(data.error || 'Action failed.'); return; }
       showToast(action === 'approve' ? 'Request approved! ✅' : action === 'issue' ? 'Book issued! 📚' : 'Request rejected.');
+      // Clear the copy selection for this request
+      setSelectedCopies(prev => { const n = { ...prev }; delete n[requestId]; return n; });
       load();
     } catch { showToast('Something went wrong.'); }
     finally { setActing(''); }
@@ -212,7 +243,7 @@ export default function RequestsPage() {
                       <tr key={req._id} className="tr-hover" style={{ borderBottom: i < filteredRequests.length - 1 ? '1px solid #F3F4F6' : 'none' }}>
                         <td style={{ padding: '10px 16px' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                            <BookCover color={cover} />
+                            <BookCover color={cover} cover={req.bookId?.cover} />
                             <div style={{ minWidth: 0, flex: 1 }}>
                               <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{req.bookId?.title}</div>
                               <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 2 }}>{req.bookId?.author}</div>
@@ -251,29 +282,69 @@ export default function RequestsPage() {
                           </span>
                         </td>
                         <td style={{ padding: '10px 16px' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center' }}>
-                            {req.status === 'requested' ? (
-                              <>
-                                <button type="button" title="Approve Request"
-                                  disabled={acting === req._id + 'approve'}
-                                  onClick={() => doAction(req._id, 'approve')}
-                                  style={{ padding: '7px 14px', border: '1px solid #16A34A', background: 'white', color: '#16A34A', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 500, fontFamily: 'Inter', transition: 'all 0.15s ease' }}
-                                  onMouseEnter={e => { e.currentTarget.style.background = '#16A34A'; e.currentTarget.style.color = 'white'; }}
-                                  onMouseLeave={e => { e.currentTarget.style.background = 'white'; e.currentTarget.style.color = '#16A34A'; }}
-                                >
-                                  <Check size={14} /> Approve
-                                </button>
-                                <button type="button" title="Reject Request"
-                                  disabled={acting === req._id + 'reject'}
-                                  onClick={() => doAction(req._id, 'reject')}
-                                  style={{ padding: '7px 14px', border: '1px solid #DC2626', background: 'white', color: '#DC2626', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 500, fontFamily: 'Inter', transition: 'all 0.15s ease' }}
-                                  onMouseEnter={e => { e.currentTarget.style.background = '#DC2626'; e.currentTarget.style.color = 'white'; }}
-                                  onMouseLeave={e => { e.currentTarget.style.background = 'white'; e.currentTarget.style.color = '#DC2626'; }}
-                                >
-                                  <X size={14} /> Reject
-                                </button>
-                              </>
-                            ) : req.status === 'approved' ? (
+                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+                            {req.status === 'requested' ? (() => {
+                              const bookId = req.bookId?._id;
+                              const availCopies = bookId ? (copiesMap[bookId] || []) : [];
+                              const numberedCopies = availCopies.filter(c => c.accessionNo);
+                              const selectedCopyId = selectedCopies[req._id] || '';
+                              const needsSelection = numberedCopies.length > 0;
+                              const canApprove = !needsSelection || !!selectedCopyId;
+                              return (
+                                <>
+                                  {/* Copy selector dropdown — only shown if copies have accession numbers */}
+                                  {needsSelection && (
+                                    <select
+                                      value={selectedCopyId}
+                                      onChange={e => setSelectedCopies(prev => ({ ...prev, [req._id]: e.target.value }))}
+                                      style={{
+                                        width: '100%', padding: '6px 10px',
+                                        border: `1px solid ${selectedCopyId ? '#16A34A' : '#E5E7EB'}`,
+                                        borderRadius: 6, fontSize: 12, color: '#374151',
+                                        background: 'white', cursor: 'pointer',
+                                        fontFamily: 'Inter', outline: 'none',
+                                      }}
+                                    >
+                                      <option value="">— Select Copy No. —</option>
+                                      {numberedCopies.map(c => (
+                                        <option key={c._id} value={c._id}>
+                                          #{c.accessionNo}
+                                        </option>
+                                      ))}
+                                    </select>
+                                  )}
+                                  <div style={{ display: 'flex', gap: 6, width: '100%', justifyContent: 'center' }}>
+                                    <button type="button" title={needsSelection && !selectedCopyId ? 'Select a copy number first' : 'Approve Request'}
+                                      disabled={acting === req._id + 'approve' || !canApprove}
+                                      onClick={() => doAction(req._id, 'approve', selectedCopyId || undefined)}
+                                      style={{
+                                        padding: '7px 14px', border: '1px solid #16A34A',
+                                        background: canApprove ? 'white' : '#F9FAFB',
+                                        color: canApprove ? '#16A34A' : '#9CA3AF',
+                                        borderColor: canApprove ? '#16A34A' : '#E5E7EB',
+                                        borderRadius: 6, cursor: canApprove ? 'pointer' : 'not-allowed',
+                                        display: 'flex', alignItems: 'center', gap: 4,
+                                        fontSize: 12, fontWeight: 500, fontFamily: 'Inter',
+                                        transition: 'all 0.15s ease',
+                                      }}
+                                      onMouseEnter={e => { if (canApprove) { e.currentTarget.style.background = '#16A34A'; e.currentTarget.style.color = 'white'; } }}
+                                      onMouseLeave={e => { if (canApprove) { e.currentTarget.style.background = 'white'; e.currentTarget.style.color = '#16A34A'; } }}
+                                    >
+                                      <Check size={14} /> Approve
+                                    </button>
+                                    <button type="button" title="Reject Request"
+                                      disabled={acting === req._id + 'reject'}
+                                      onClick={() => doAction(req._id, 'reject')}
+                                      style={{ padding: '7px 14px', border: '1px solid #DC2626', background: 'white', color: '#DC2626', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 500, fontFamily: 'Inter', transition: 'all 0.15s ease' }}
+                                      onMouseEnter={e => { e.currentTarget.style.background = '#DC2626'; e.currentTarget.style.color = 'white'; }}
+                                      onMouseLeave={e => { e.currentTarget.style.background = 'white'; e.currentTarget.style.color = '#DC2626'; }}
+                                    >
+                                      <X size={14} /> Reject
+                                    </button>
+                                  </div>
+                                </>
+                              );
+                            })() : req.status === 'approved' ? (
                               <button type="button"
                                 disabled={acting === req._id + 'issue'}
                                 onClick={() => doAction(req._id, 'issue')}

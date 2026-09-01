@@ -42,6 +42,12 @@ const BorrowRecordSchema = new mongoose.Schema(
       enum: ['issued', 'return_pending', 'returned', 'overdue', 'lost'],
       default: 'issued',
     },
+    // Which physical copy (accession number) was issued — optional
+    copyId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'BookCopy',
+      default: null,
+    },
     issuedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
@@ -65,5 +71,6 @@ BorrowRecordSchema.index({ collegeId: 1, status: 1 });
 BorrowRecordSchema.index({ userId: 1 });
 BorrowRecordSchema.index({ dueDate: 1, status: 1 });
 
-export default mongoose.models.BorrowRecord ||
-  mongoose.model('BorrowRecord', BorrowRecordSchema);
+// Force re-registration so schema changes (e.g. new fields) are always picked up
+delete mongoose.models.BorrowRecord;
+export default mongoose.model('BorrowRecord', BorrowRecordSchema);

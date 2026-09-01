@@ -1,6 +1,7 @@
 import connectDB from '@/lib/db';
 import Book from '@/models/Book';
 import CollegeBook from '@/models/CollegeBook';
+import BookCopy from '@/models/BookCopy';
 import { auth } from '@/lib/auth';
 import { NextResponse } from 'next/server';
 
@@ -76,6 +77,7 @@ export async function POST(req) {
       title, author, isbn, publisher, publishedYear, cover, description,
       category, language, pages, source, googleBooksId, openLibraryId,
       copies, shelf, section, floor,
+      accessionNumbers, // optional string[] of per-copy accession numbers
     } = body;
 
     if (!title || !author) {
@@ -108,16 +110,36 @@ export async function POST(req) {
       });
     }
 
+    // Normalize accession numbers array
+    const numCopies = parseInt(copies) || 1;
+    const accNums = Array.isArray(accessionNumbers)
+      ? accessionNumbers.map(n => (n || '').trim())
+      : [];
+    // Pad to match numCopies (fill missing entries with empty string)
+    const paddedAccNums = Array.from({ length: numCopies }, (_, i) => accNums[i] || '');
+
     // Check if this college already has this book
     const existing = await CollegeBook.findOne({ collegeId, bookId: book._id });
     if (existing) {
       // Add more copies to existing inventory
-      existing.total     += parseInt(copies) || 1;
-      existing.available += parseInt(copies) || 1;
+      existing.total     += numCopies;
+      existing.available += numCopies;
       if (shelf)   existing.shelf   = shelf;
       if (section) existing.section = section;
       if (floor)   existing.floor   = floor;
       await existing.save();
+
+      // Create BookCopy documents for the new copies
+      await BookCopy.insertMany(
+        paddedAccNums.map(accNo => ({
+          collegeId,
+          bookId: book._id,
+          accessionNo: accNo,
+          status: 'available',
+          addedBy: session.user.id,
+        }))
+      );
+
       return NextResponse.json({ success: true, collegeBook: existing, book });
     }
 
@@ -125,13 +147,24 @@ export async function POST(req) {
     const collegeBook = await CollegeBook.create({
       collegeId,
       bookId:    book._id,
-      total:     parseInt(copies) || 1,
-      available: parseInt(copies) || 1,
+      total:     numCopies,
+      available: numCopies,
       shelf:     shelf   || '',
       section:   section || '',
       floor:     floor   || '',
       addedBy:   session.user.id,
     });
+
+    // Create BookCopy documents
+    await BookCopy.insertMany(
+      paddedAccNums.map(accNo => ({
+        collegeId,
+        bookId: book._id,
+        accessionNo: accNo,
+        status: 'available',
+        addedBy: session.user.id,
+      }))
+    );
 
     return NextResponse.json({ success: true, collegeBook, book }, { status: 201 });
   } catch (err) {
