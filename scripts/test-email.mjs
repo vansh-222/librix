@@ -51,7 +51,7 @@ try {
   const info = await transporter.sendMail({
     from:    `"Librarium" <${process.env.GMAIL_USER}>`,
     to:      TO,
-    subject: 'Librarium Email Test — please check this email',
+    subject: 'Librix Email Test — please check this email',
     html: `
       <div style="font-family:Arial;padding:24px;max-width:400px">
         <h2 style="color:#2563EB">✅ Email is working!</h2>

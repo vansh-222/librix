@@ -16,9 +16,11 @@ export default auth((req) => {
   if (
     publicRoutes.some(r => pathname === r) ||
     pathname.startsWith('/api/auth') ||
-    pathname.startsWith('/api/colleges/') ||      // all college registration + verification APIs
-    pathname.startsWith('/api/librarian/setup') || // librarian account creation
-    pathname.startsWith('/api/users/register')     // student self-registration
+    pathname.startsWith('/api/colleges/') ||          // all college registration + verification APIs
+    pathname.startsWith('/api/librarian/setup') ||    // librarian account creation
+    pathname.startsWith('/api/users/register') ||     // student self-registration
+    pathname === '/api/payments/plan-order' ||        // registration payment order (no auth yet)
+    pathname === '/api/payments/plan-verify'          // registration payment verify (no auth yet)
   ) {
     // Redirect authenticated users away from login/register
     if (session && (pathname === '/login' || pathname === '/signup' || pathname === '/register')) {

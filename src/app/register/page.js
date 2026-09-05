@@ -9,6 +9,18 @@ import {
   ChevronLeft, HelpCircle, MapPin, Home,
 } from 'lucide-react';
 
+// ── Load Razorpay checkout script ──────────────────────────────────────────────
+function loadRazorpayScript() {
+  return new Promise((resolve) => {
+    if (typeof window !== 'undefined' && window.Razorpay) { resolve(true); return; }
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.onload  = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+}
+
 // ── OTP Input ──────────────────────────────────────────────────────────────────
 function OTPInput({ value, onChange }) {
   const refs = [useRef(), useRef(), useRef(), useRef(), useRef(), useRef()];
@@ -83,6 +95,7 @@ export default function RegisterCollegePage() {
   const [showPwd,        setShowPwd]        = useState(false);
   const [showConf,       setShowConf]       = useState(false);
   const [agreed,         setAgreed]         = useState(false);
+  const [selectedPlan,   setSelectedPlan]   = useState('basic'); // basic|standard|premium
 
   // ── Flow state ──────────────────────────────────────────────────────────────
   const [stage,       setStage]       = useState('form'); // form|checking|otp|success
@@ -94,6 +107,7 @@ export default function RegisterCollegePage() {
   const [result,      setResult]      = useState(null);
   const [error,       setError]       = useState('');
   const [copied,      setCopied]      = useState('');
+  const [payingPlan,  setPayingPlan]  = useState(false); // true while Razorpay popup is open
 
   const copy = (text, id) => {
     navigator.clipboard.writeText(text);
@@ -159,29 +173,24 @@ export default function RegisterCollegePage() {
   };
 
   // ── Submit form ─────────────────────────────────────────────────────────────
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    if (aisheStatus !== 'verified') { setError('Please verify your AISHE code first.'); return; }
-    if (!officialEmail)             { setError('Official email is required.'); return; }
-    if (password.length < 8)        { setError('Password must be at least 8 characters.'); return; }
-    if (password !== confirmPwd)    { setError('Passwords do not match.'); return; }
-    if (!agreed)                    { setError('Please confirm the declaration to proceed.'); return; }
-
+  const doRegister = async (planPaymentId = null) => {
+    // Core registration call — shared by both free and paid flows
     setStage('checking');
     try {
       const res  = await fetch('/api/colleges/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name:        aisheRecord.institutionName,
-          university:  aisheRecord.university,
+          name:          aisheRecord.institutionName,
+          university:    aisheRecord.university,
           website,
-          email:       officialEmail,
-          aisheCode:   aisheCode.trim().toUpperCase(),
+          email:         officialEmail,
+          aisheCode:     aisheCode.trim().toUpperCase(),
           contactName,
           designation,
           mobile,
+          plan:          selectedPlan,
+          planPaymentId: planPaymentId || null,
         }),
       });
       const data = await res.json();
@@ -194,6 +203,102 @@ export default function RegisterCollegePage() {
       setStage('form');
     }
   };
+
+  const handleSubmit = async (e) => {
+    e?.preventDefault();
+    setError('');
+    if (aisheStatus !== 'verified') { setError('Please verify your AISHE code first.'); return; }
+    if (!officialEmail)             { setError('Official email is required.'); return; }
+    if (password.length < 8)        { setError('Password must be at least 8 characters.'); return; }
+    if (password !== confirmPwd)    { setError('Passwords do not match.'); return; }
+    if (!agreed)                    { setError('Please confirm the declaration to proceed.'); return; }
+
+    // ── FREE PLAN: proceed directly ──────────────────────────────────────────
+    if (selectedPlan === 'basic') {
+      await doRegister(null);
+      return;
+    }
+
+    // ── PAID PLAN: open Razorpay first ───────────────────────────────────────
+    setPayingPlan(true);
+    try {
+      const loaded = await loadRazorpayScript();
+      if (!loaded) {
+        setError('Failed to load payment gateway. Please check your internet connection.');
+        setPayingPlan(false);
+        return;
+      }
+
+      // Create order on backend (no auth needed)
+      const orderRes = await fetch('/api/payments/plan-order', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ plan: selectedPlan, contactName, email: officialEmail }),
+      });
+      const orderData = await orderRes.json();
+      if (!orderRes.ok) {
+        setError(orderData.error || 'Could not initiate payment.');
+        setPayingPlan(false);
+        return;
+      }
+
+      // Open Razorpay checkout popup
+      const options = {
+        key:         orderData.keyId,
+        amount:      orderData.amount,
+        currency:    orderData.currency,
+        name:        'Librix — Smart Library Management',
+        description: orderData.description,
+        order_id:    orderData.orderId,
+        prefill:     { name: orderData.name, email: orderData.email },
+        theme:       { color: '#1557B0' },
+        modal: {
+          ondismiss: () => {
+            setPayingPlan(false);
+            setError('Payment cancelled. Please try again to complete registration.');
+          },
+        },
+        handler: async (response) => {
+          // Verify payment signature server-side (HMAC-SHA256)
+          try {
+            const verifyRes = await fetch('/api/payments/plan-verify', {
+              method:  'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body:    JSON.stringify({
+                razorpay_order_id:   response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature:  response.razorpay_signature,
+                plan:                selectedPlan,
+              }),
+            });
+            const verifyData = await verifyRes.json();
+            if (!verifyRes.ok) {
+              setError(verifyData.error || 'Payment verification failed. Contact support.');
+              setPayingPlan(false);
+              return;
+            }
+            // ✓ Payment verified — proceed with registration
+            setPayingPlan(false);
+            await doRegister(verifyData.paymentId);
+          } catch {
+            setError('Payment verification error. Contact support with your payment ID.');
+            setPayingPlan(false);
+          }
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.on('payment.failed', (resp) => {
+        setError(`Payment failed: ${resp.error?.description || 'Unknown error'}`);
+        setPayingPlan(false);
+      });
+      rzp.open();
+    } catch (err) {
+      setError('Payment error: ' + err.message);
+      setPayingPlan(false);
+    }
+  };
+
 
   // ── OTP submit ──────────────────────────────────────────────────────────────
   const handleOTPSubmit = async (e) => {
@@ -243,8 +348,9 @@ export default function RegisterCollegePage() {
   const step1Done = aisheStatus === 'verified';
   const step2Done = step1Done && !!website;
   const step3Done = step2Done && !!contactName && !!officialEmail;
+  const step4Done = step3Done && password.length >= 8 && password === confirmPwd;
 
-  const currentStep = !step1Done ? 1 : !step2Done ? 2 : !step3Done ? 3 : 4;
+  const currentStep = !step1Done ? 1 : !step2Done ? 2 : !step3Done ? 3 : !step4Done ? 4 : 5;
 
   // Light theme CSS override — scoped to this page only
   const SCROLL = `
@@ -467,10 +573,11 @@ export default function RegisterCollegePage() {
   // MAIN REGISTRATION FORM
   // ─────────────────────────────────────────────────────────────────────────────
   const steps = [
-    { n: 1, label: 'Institution Verification', sub: 'Verify your institution', done: step1Done },
+    { n: 1, label: 'Institution Verification', sub: 'Verify your institution',  done: step1Done },
     { n: 2, label: 'Institution Details',       sub: 'Enter detailed information', done: step2Done },
     { n: 3, label: 'Contact Details',           sub: 'Official contact person',    done: step3Done },
-    { n: 4, label: 'Review & Submit',           sub: 'Verify & submit',            done: false    },
+    { n: 4, label: 'Create Account',            sub: 'Set login credentials',      done: step4Done },
+    { n: 5, label: 'Plan',                       sub: 'Choose your plan',           done: false    },
   ];
 
   return (
@@ -541,7 +648,7 @@ export default function RegisterCollegePage() {
           
 
           {/* Step progress */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 4, marginBottom: 28 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 4, marginBottom: 28 }}>
             {steps.map((s, idx) => {
               const active = currentStep === s.n;
               const done   = s.done;
@@ -554,7 +661,7 @@ export default function RegisterCollegePage() {
                       transition: 'background 0.3s',
                     }} />
                   )}
-                  {idx < 3 && (
+                  {idx < 4 && (
                     <div style={{
                       position: 'absolute', top: 14, left: '50%', right: 0,
                       height: 2, background: done ? '#1557B0' : '#E2E8F0',
@@ -868,6 +975,84 @@ export default function RegisterCollegePage() {
             </div>
           </div>
 
+          {/* ── Plan Selection ─────────────────────────────────────────────── */}
+          {(() => {
+            const PLANS = [
+              {
+                id: 'basic',
+                name: 'Basic',
+                badge: 'FREE',
+                color: '#1557B0',
+                bg: '#EFF6FF',
+                border: '#BFDBFE',
+                limits: ['1 Librarian', '50 Students', '100 Books'],
+              },
+              {
+                id: 'standard',
+                name: 'Standard',
+                badge: '₹399/- Month',
+                color: '#0891B2',
+                bg: '#ECFEFF',
+                border: '#A5F3FC',
+                limits: ['1 Librarian', '100 Students', '500 Books'],
+              },
+              {
+                id: 'premium',
+                name: 'Premium',
+                badge: '₹799/- Month',
+                color: '#7C3AED',
+                bg: '#F5F3FF',
+                border: '#DDD6FE',
+                limits: ['1 Librarian', 'Unlimited Students', 'Unlimited Books'],
+              },
+            ];
+            return (
+              <div style={{ marginBottom: 16, padding: '20px 22px', background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12, boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+                  <div style={{ width: 26, height: 26, borderRadius: '50%', background: '#1557B0', border: '2px solid #1557B0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 800, color: '#fff', flexShrink: 0 }}>5</div>
+                  <div>
+                    <div style={{ fontSize: 15, fontWeight: 700, color: '#111827' }}>Choose Your Plan</div>
+                    <div style={{ fontSize: 12, color: '#6B7280', marginTop: 1 }}>All plans are free. Upgrade anytime.</div>
+                  </div>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 10 }}>
+                  {PLANS.map(plan => {
+                    const active = selectedPlan === plan.id;
+                    return (
+                      <button key={plan.id} type="button" onClick={() => setSelectedPlan(plan.id)}
+                        style={{
+                          padding: '14px 12px', borderRadius: 10, cursor: 'pointer', textAlign: 'left',
+                          border: `2px solid ${active ? plan.color : '#E2E8F0'}`,
+                          background: active ? plan.bg : '#FAFAFA',
+                          transition: 'all 0.18s', outline: 'none',
+                          boxShadow: active ? `0 0 0 3px ${plan.border}` : 'none',
+                        }}
+                      >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
+                          <span style={{ fontSize: 13, fontWeight: 700, color: plan.color }}>{plan.name}</span>
+                          <span style={{ fontSize: 9, fontWeight: 800, letterSpacing: 0.8, padding: '2px 6px', borderRadius: 20, background: plan.color, color: '#fff' }}>{plan.badge}</span>
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                          {plan.limits.map((l, i) => (
+                            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, color: '#374151' }}>
+                              <div style={{ width: 5, height: 5, borderRadius: '50%', background: plan.color, flexShrink: 0 }} />
+                              {l}
+                            </div>
+                          ))}
+                        </div>
+                        {active && (
+                          <div style={{ marginTop: 8, fontSize: 10, fontWeight: 700, color: plan.color, display: 'flex', alignItems: 'center', gap: 3 }}>
+                            <Check size={10} /> Selected
+                          </div>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })()}
+
           {/* Declaration + Submit */}
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 20, padding: '16px 18px', background: '#F8FAFC', borderRadius: 10, border: '1px solid #E2E8F0' }}>
             <button type="button" onClick={() => setAgreed(v => !v)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginTop: 1, flexShrink: 0 }}>
@@ -881,22 +1066,42 @@ export default function RegisterCollegePage() {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 16 }}>
-            <div style={{ fontSize: 12, color: '#6B7280' }}>Our team will verify your details and activate your account.</div>
+            <div style={{ fontSize: 12, color: '#6B7280' }}>
+              {selectedPlan === 'basic'
+                ? 'Our team will verify your details and activate your account.'
+                : 'You will be redirected to Razorpay to complete payment.'}
+            </div>
             <button
               onClick={handleSubmit}
-              disabled={!step1Done || !agreed}
+              disabled={!step1Done || !agreed || payingPlan}
               style={{
                 display: 'flex', alignItems: 'center', gap: 8,
-                padding: '13px 28px', borderRadius: 10, border: 'none', cursor: 'pointer',
-                background: 'linear-gradient(135deg,#1A73E8,#1A73E8)',
+                padding: '13px 28px', borderRadius: 10, border: 'none', cursor: !step1Done || !agreed || payingPlan ? 'not-allowed' : 'pointer',
+                background: selectedPlan === 'premium'
+                  ? 'linear-gradient(135deg,#7C3AED,#6D28D9)'
+                  : selectedPlan === 'standard'
+                  ? 'linear-gradient(135deg,#0891B2,#0E7490)'
+                  : 'linear-gradient(135deg,#1A73E8,#1557B0)',
                 color: '#fff', fontSize: 14, fontWeight: 700,
-                boxShadow: '0 4px 15px rgba(26,115,232,0.35)',
+                boxShadow: selectedPlan === 'premium'
+                  ? '0 4px 15px rgba(124,58,237,0.35)'
+                  : selectedPlan === 'standard'
+                  ? '0 4px 15px rgba(8,145,178,0.35)'
+                  : '0 4px 15px rgba(26,115,232,0.35)',
                 opacity: !step1Done || !agreed ? 0.5 : 1,
                 whiteSpace: 'nowrap',
                 transition: 'opacity 0.2s, transform 0.15s',
               }}
             >
-              Submit for Verification <ArrowRight size={15} />
+              {payingPlan ? (
+                <><Loader2 size={15} style={{ animation: 'spin 1s linear infinite' }} /> Processing Payment…</>
+              ) : selectedPlan === 'standard' ? (
+                <>Pay ₹399 &amp; Register <ArrowRight size={15} /></>
+              ) : selectedPlan === 'premium' ? (
+                <>Pay ₹799 &amp; Register <ArrowRight size={15} /></>
+              ) : (
+                <>Submit for Verification <ArrowRight size={15} /></>
+              )}
             </button>
           </div>
 
